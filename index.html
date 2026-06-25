@@ -129,6 +129,8 @@ const PH=[
  {k:"d3",lab:"Fri 3 Jul · GO-LIVE",go:1},{k:"ff",lab:"Fast-follow",ff:1}
 ];
 const WS=["1 · Content Engine","2 · Contentful","3 · Frontend & technical","4 · URL & structure","5 · Editorial","6 · Images","7 · Scope & go-live"];
+// Published "done" list — single shared state, set by Niels only. Add an action id here to mark it done for everyone.
+const DONE=new Set(["1.0"]);
 // [id, ws, title, context, owner, depends, timeline, keep, contingency, crit, phase]
 const A=[
 ["1.0","1 · Content Engine","Integrate all System & User Prompts in Orq","Load every system + user prompt into Orq so the engine can run.","Niels","","Thu 25 Jun","Yes","Further testing cannot be done",1,"d25"],
@@ -236,7 +238,6 @@ const KEY="hp-enie-fullplan-v5";
 let S=JSON.parse(localStorage.getItem(KEY)||"{}");
 let planFilter='all';
 const save=()=>localStorage.setItem(KEY,JSON.stringify(S));
-if(!S.__seed_done1){S['done:1.0']=1;S.__seed_done1=1;save();}
 function renderPlan(){
  const root=document.getElementById('cards');root.innerHTML='';
  const PHLAB={};PH.forEach(p=>PHLAB[p.k]=p.lab);
@@ -246,7 +247,7 @@ function renderPlan(){
  fbar.querySelectorAll('.dfb').forEach(b=>b.onclick=()=>{planFilter=b.dataset.f;renderPlan();});
  WS.forEach(ws=>{const items=A.filter(a=>a[1]===ws&&(planFilter==='all'||a[10]===planFilter));if(!items.length)return;
   const h=document.createElement('div');h.className='ws';h.innerHTML=`<h2>${ws}</h2>`;root.appendChild(h);
-  items.forEach(a=>{const id=a[0],crit=a[9],tbc=a[10]==='tbc';const st=S[id]||{};const done=!!S['done:'+id];
+  items.forEach(a=>{const id=a[0],crit=a[9],tbc=a[10]==='tbc';const st=S[id]||{};const done=DONE.has(id);
    const c=document.createElement('div');c.className='card'+(crit?' crit':'')+(tbc?' tbc':'')+(done?' done':'');
    let rows='';
    FIELDS.forEach(([lab,key,idx])=>{const note=(st[key]||'');const has=note.trim()!=='';const keepN=(key==='keep'&&/drop/i.test(a[idx]));
@@ -258,16 +259,16 @@ function renderPlan(){
  });
  document.querySelectorAll('.fc').forEach(b=>b.onclick=()=>{const ta=b.parentElement.querySelector('.fnote');ta.classList.toggle('show');if(ta.classList.contains('show'))ta.focus();});
  document.querySelectorAll('.fnote').forEach(t=>t.oninput=()=>{const id=t.dataset.id,k=t.dataset.k;S[id]=S[id]||{};S[id][k]=t.value;if(!t.value.trim())delete S[id][k];save();t.closest('.frow').classList.toggle('has',!!t.value.trim());upd();});
- document.querySelectorAll('.dchk input').forEach(cb=>cb.onchange=()=>{const id=cb.dataset.id;if(cb.checked)S['done:'+id]=1;else delete S['done:'+id];save();cb.closest('.card').classList.toggle('done',cb.checked);upd();});
+ document.querySelectorAll('.dchk input').forEach(cb=>cb.onchange=()=>{const id=cb.dataset.id;if(cb.checked)DONE.add(id);else DONE.delete(id);cb.closest('.card').classList.toggle('done',cb.checked);upd();});
  upd();
 }
 function renderTime(){
  const root=document.getElementById('timeline');root.innerHTML='<div class="tl"></div>';const tl=root.firstChild;
  PH.forEach(p=>{const items=A.filter(a=>a[10]===p.k);
-  const allDone=items.length>0&&items.every(a=>S['done:'+a[0]]);
+  const allDone=items.length>0&&items.every(a=>DONE.has(a[0]));
   const d=document.createElement('div');d.className='ph'+(p.ff?' ff':'')+(p.tbc?' tbc':'')+(p.go?' go':'')+(allDone?' phdone':'');
   let h=`<h3>${p.lab}${allDone?' <span class="when" style="color:var(--g);border-color:var(--g)">✓ done</span>':''}</h3>`;
-  items.forEach(a=>{const dn=!!S['done:'+a[0]];h+=`<div class="titem${dn?' tdone':''}"><span class="tid">${a[0]}</span>${dn?'<span class="tchk">✓</span> ':(a[9]?'<span class="dot">●</span> ':'')}<span class="ttitle">${a[2]}</span><span class="ow">${a[4]}</span></div>`;});
+  items.forEach(a=>{const dn=DONE.has(a[0]);h+=`<div class="titem${dn?' tdone':''}"><span class="tid">${a[0]}</span>${dn?'<span class="tchk">✓</span> ':(a[9]?'<span class="dot">●</span> ':'')}<span class="ttitle">${a[2]}</span><span class="ow">${a[4]}</span></div>`;});
   h+=`<textarea class="phnote" data-ph="${p.k}" placeholder="Feedback on this day / sequence…">${(S['ph:'+p.k]||{}).note||''}</textarea>`;
   d.innerHTML=h;tl.appendChild(d);});
  document.querySelectorAll('.phnote').forEach(t=>t.oninput=()=>{S['ph:'+t.dataset.ph]={note:t.value};save();upd();});
@@ -313,7 +314,7 @@ function renderTech(){
  document.querySelectorAll('#techreqs .lbl').forEach(b=>b.onclick=()=>{const id=b.dataset.id;const s=S['tr:'+id]||{};s.label=(s.label===b.dataset.l?'':b.dataset.l);S['tr:'+id]=s;save();renderTech();});
  document.querySelectorAll('#techreqs .wifnote').forEach(t=>t.oninput=()=>{const s=S['tr:'+t.dataset.id]||{};s.note=t.value;S['tr:'+t.dataset.id]=s;save();t.classList.toggle('has',!!t.value.trim());});
 }
-function upd(){const n=A.filter(a=>{const s=S[a[0]];return s&&Object.keys(s).some(k=>s[k]&&s[k].trim());}).length;const dn=A.filter(a=>S['done:'+a[0]]).length;document.getElementById('count').textContent=`${dn}/${A.length} done · ${n} with notes`;}
+function upd(){const n=A.filter(a=>{const s=S[a[0]];return s&&Object.keys(s).some(k=>s[k]&&s[k].trim());}).length;const dn=A.filter(a=>DONE.has(a[0])).length;document.getElementById('count').textContent=`${dn}/${A.length} done · ${n} with notes`;}
 document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(t=>t.setAttribute('aria-selected',t===b));document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id===b.dataset.t));if(b.dataset.t==='time')renderTime();if(b.dataset.t==='whatif')renderWhatif();if(b.dataset.t==='tech')renderTech();window.scrollTo({top:0,behavior:'smooth'});});
 document.getElementById('reset').onclick=()=>{if(confirm('Clear all feedback?')){S={};save();renderPlan();}};
 document.getElementById('export').onclick=()=>{let o='en-IE Go-Live — feedback\n\n';const FL={owner:'Owner',depends:'Depends',timeline:'Timeline',keep:'Critical to go live',contingency:'If not done'};

@@ -97,7 +97,7 @@ footer{background:var(--ink);color:#fff;padding:16px 0;margin-top:18px;font-size
 
 <div class="hero"><div class="wrap">
 <h1>en-IE Go-Live — action plan & timeline</h1>
-<p>Pre-filled from your day-by-day (go-live <b>3 July</b>). Each action: a context line + <b>Owner · Depends on · Timeline · Keep? · If not done</b>. Click <b>✎</b> on any field to correct it (owner, dependency, etc.); export from the bar to send back. Items marked <b>⚠ confirm</b> aren't in your timeline yet — place or drop them. (● = critical path.)</p>
+<p>Day-by-day plan for go-live <b>3 July</b>. Each action shows <b>Owner · Depends on · Timeline · Critical to go live · If not done</b>. Tick <b>Done</b> as things complete; filter by day. (● = critical path.)</p>
 <div class="tabs" role="tablist">
 <button class="tab" role="tab" aria-selected="true" data-t="plan">Action plan</button>
 <button class="tab" role="tab" aria-selected="false" data-t="time">Timeline</button>
@@ -107,9 +107,7 @@ footer{background:var(--ink);color:#fff;padding:16px 0;margin-top:18px;font-size
 </div></div>
 
 <div class="bar"><div class="wrap">
-<span class="count" id="count">0 actions with notes</span><span class="spacer"></span>
-<button class="bbtn exp" id="export">Copy my feedback</button>
-<button class="bbtn" id="reset">Reset</button>
+<span class="count" id="count"></span>
 </div></div>
 
 <div class="panel active" id="plan"><div class="wrap">
@@ -118,8 +116,8 @@ footer{background:var(--ink);color:#fff;padding:16px 0;margin-top:18px;font-size
 <div id="cards"></div>
 </div></div>
 <div class="panel" id="time"><div class="wrap"><div id="timeline"></div></div></div>
-<div class="panel" id="whatif"><div class="wrap"><div class="decis"><b>Contingency scenarios</b> — each has my take (by logic) on what we'd do. Add your feedback per scenario; it exports with "Copy my feedback".</div><div id="whatifs"></div></div></div>
-<div class="panel" id="tech"><div class="wrap"><div class="decis"><b>Technical page requirements</b> — pulled from PDP v0-34, PLP v1-13 & FLP v0-15. Each shows its <span class="srcb">source</span> and my read (<span class="mylvl db">Deploy-block</span> <span class="mylvl rq">Required</span> <span class="mylvl df">Deferred/V2</span> <span class="mylvl cx">Context</span>). Set your call per item — Required · Nice-to-have · Deferred · Context — and add a note. Exports with "Copy my feedback".</div><div id="techreqs"></div></div></div>
+<div class="panel" id="whatif"><div class="wrap"><div class="decis"><b>Contingency scenarios</b> — each with my take (by logic) on what we'd do if it happens.</div><div id="whatifs"></div></div></div>
+<div class="panel" id="tech"><div class="wrap"><div class="decis"><b>Technical page requirements</b> — pulled from PDP v0-34, PLP v1-13 & FLP v0-15. Each shows its <span class="srcb">source</span> and status (<span class="mylvl db">Deploy-block</span> <span class="mylvl rq">Required</span> <span class="mylvl df">Deferred/V2</span> <span class="mylvl cx">Context</span>). Deferred items sit at the bottom behind a toggle.</div><div id="techreqs"></div></div></div>
 <footer><div class="wrap"><span>en-IE Go-Live · interactive plan (pre-filled) · 2026-06-24</span></div></footer>
 
 <script>
@@ -250,15 +248,11 @@ function renderPlan(){
   items.forEach(a=>{const id=a[0],crit=a[9],tbc=a[10]==='tbc';const st=S[id]||{};const done=DONE.has(id);
    const c=document.createElement('div');c.className='card'+(crit?' crit':'')+(tbc?' tbc':'')+(done?' done':'');
    let rows='';
-   FIELDS.forEach(([lab,key,idx])=>{const note=(st[key]||'');const has=note.trim()!=='';const keepN=(key==='keep'&&/drop/i.test(a[idx]));
-    rows+=`<div class="frow${has?' has':''}${keepN?' keepN':''}"><span class="fl">${lab}</span><span class="fv">${a[idx]}</span>
-      <button class="fc" data-id="${id}" data-k="${key}" title="Comment on ${lab}">✎</button>
-      <textarea class="fnote${has?' show':''}" data-id="${id}" data-k="${key}" placeholder="Your context on ${lab.toLowerCase()}…">${note}</textarea></div>`;});
+   FIELDS.forEach(([lab,key,idx])=>{const keepN=(key==='keep'&&/drop/i.test(a[idx]));
+    rows+=`<div class="frow${keepN?' keepN':''}"><span class="fl">${lab}</span><span class="fv">${a[idx]}</span></div>`;});
    c.innerHTML=`<div class="chead"><span class="id">${id}</span><span class="daychip">${PHLAB[a[10]]||''}</span><label class="dchk"><input type="checkbox" data-id="${id}" ${done?'checked':''}> Done</label></div><h3>${a[2]}${crit?' <span class="critb">CRITICAL</span>':''}${tbc?' <span class="tbcb">CONFIRM</span>':''}</h3><div class="ctx">${a[3]}</div>${rows}`;
    root.appendChild(c);});
  });
- document.querySelectorAll('.fc').forEach(b=>b.onclick=()=>{const ta=b.parentElement.querySelector('.fnote');ta.classList.toggle('show');if(ta.classList.contains('show'))ta.focus();});
- document.querySelectorAll('.fnote').forEach(t=>t.oninput=()=>{const id=t.dataset.id,k=t.dataset.k;S[id]=S[id]||{};S[id][k]=t.value;if(!t.value.trim())delete S[id][k];save();t.closest('.frow').classList.toggle('has',!!t.value.trim());upd();});
  document.querySelectorAll('.dchk input').forEach(cb=>cb.onchange=()=>{const id=cb.dataset.id;if(cb.checked)DONE.add(id);else DONE.delete(id);cb.closest('.card').classList.toggle('done',cb.checked);upd();});
  upd();
 }
@@ -269,28 +263,21 @@ function renderTime(){
   const d=document.createElement('div');d.className='ph'+(p.ff?' ff':'')+(p.tbc?' tbc':'')+(p.go?' go':'')+(allDone?' phdone':'');
   let h=`<h3>${p.lab}${allDone?' <span class="when" style="color:var(--g);border-color:var(--g)">✓ done</span>':''}</h3>`;
   items.forEach(a=>{const dn=DONE.has(a[0]);h+=`<div class="titem${dn?' tdone':''}"><span class="tid">${a[0]}</span>${dn?'<span class="tchk">✓</span> ':(a[9]?'<span class="dot">●</span> ':'')}<span class="ttitle">${a[2]}</span><span class="ow">${a[4]}</span></div>`;});
-  h+=`<textarea class="phnote" data-ph="${p.k}" placeholder="Feedback on this day / sequence…">${(S['ph:'+p.k]||{}).note||''}</textarea>`;
   d.innerHTML=h;tl.appendChild(d);});
- document.querySelectorAll('.phnote').forEach(t=>t.oninput=()=>{S['ph:'+t.dataset.ph]={note:t.value};save();upd();});
 }
 function renderWhatif(){
  const root=document.getElementById('whatifs');root.innerHTML='';
  WI.forEach(w=>{const note=(S['wi:'+w[0]]||{}).note||'';const has=note.trim()!=='';
   const c=document.createElement('div');c.className='card wif';
-  c.innerHTML=`<div class="q">${w[1]}</div><div class="aff">Affects: ${w[3]}</div><div class="a"><b>My take:</b> ${w[2]}</div>
-   <textarea class="wifnote${has?' has':''}" data-id="${w[0]}" placeholder="Your feedback on this scenario…">${note}</textarea>`;
+  c.innerHTML=`<div class="q">${w[1]}</div><div class="aff">Affects: ${w[3]}</div><div class="a"><b>My take:</b> ${w[2]}</div>`;
   root.appendChild(c);});
- document.querySelectorAll('#whatifs .wifnote').forEach(t=>t.oninput=()=>{S['wi:'+t.dataset.id]={note:t.value};save();t.classList.toggle('has',!!t.value.trim());upd();});
 }
 const LBLS=["Required","Nice-to-have","Deferred","Context"];
 const isDef=t=>t[5]==='Deferred'||t[5].indexOf('Defer')>=0||t[5].indexOf('V2')>=0;
-function trCard(t){const st=S['tr:'+t[0]]||{};const lvl=t[5];
+function trCard(t){const lvl=t[5];
  const lc=lvl==='Deploy-block'?'db':lvl==='Required'?'rq':lvl==='Nice-to-have'?'nh':(lvl.indexOf('Defer')>=0||lvl.indexOf('V2')>=0)?'df':'cx';
  const c=document.createElement('div');c.className='card'+(lvl==='Deploy-block'?' crit':'');
- const lbls=LBLS.map(l=>`<button class="lbl${st.label===l?' on':''}" data-id="${t[0]}" data-l="${l}">${l}</button>`).join('');
- c.innerHTML=`<h3 style="font-size:15px">${t[2]} <span class="srcb">${t[4]}</span> <span class="mylvl ${lc}">status: ${lvl}</span></h3><div class="ctx">${t[3]}</div>
-   <div class="lblrow">${lbls}</div>
-   <textarea class="wifnote${st.note?' has':''}" data-id="${t[0]}" placeholder="Optional note…">${st.note||''}</textarea>`;
+ c.innerHTML=`<h3 style="font-size:15px">${t[2]} <span class="srcb">${t[4]}</span> <span class="mylvl ${lc}">status: ${lvl}</span></h3><div class="ctx">${t[3]}</div>`;
  return c;}
 function renderTech(){
  const root=document.getElementById('techreqs');
@@ -311,19 +298,9 @@ function renderTech(){
   btn.onclick=()=>{const open=wrap.classList.toggle('show');btn.textContent=(open?'▾ Hide':'▸ Show')+` deferred (${deferred.length})`;};
   root.appendChild(btn);root.appendChild(wrap);
  }
- document.querySelectorAll('#techreqs .lbl').forEach(b=>b.onclick=()=>{const id=b.dataset.id;const s=S['tr:'+id]||{};s.label=(s.label===b.dataset.l?'':b.dataset.l);S['tr:'+id]=s;save();renderTech();});
- document.querySelectorAll('#techreqs .wifnote').forEach(t=>t.oninput=()=>{const s=S['tr:'+t.dataset.id]||{};s.note=t.value;S['tr:'+t.dataset.id]=s;save();t.classList.toggle('has',!!t.value.trim());});
 }
-function upd(){const n=A.filter(a=>{const s=S[a[0]];return s&&Object.keys(s).some(k=>s[k]&&s[k].trim());}).length;const dn=A.filter(a=>DONE.has(a[0])).length;document.getElementById('count').textContent=`${dn}/${A.length} done · ${n} with notes`;}
+function upd(){const dn=A.filter(a=>DONE.has(a[0])).length;document.getElementById('count').textContent=`${dn}/${A.length} done`;}
 document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(t=>t.setAttribute('aria-selected',t===b));document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id===b.dataset.t));if(b.dataset.t==='time')renderTime();if(b.dataset.t==='whatif')renderWhatif();if(b.dataset.t==='tech')renderTech();window.scrollTo({top:0,behavior:'smooth'});});
-document.getElementById('reset').onclick=()=>{if(confirm('Clear all feedback?')){S={};save();renderPlan();}};
-document.getElementById('export').onclick=()=>{let o='en-IE Go-Live — feedback\n\n';const FL={owner:'Owner',depends:'Depends',timeline:'Timeline',keep:'Critical to go live',contingency:'If not done'};
- WS.forEach(ws=>{let head=false;A.filter(a=>a[1]===ws).forEach(a=>{const s=S[a[0]]||{};const keys=Object.keys(s).filter(k=>s[k]&&s[k].trim());
-  if(keys.length){if(!head){o+=`## ${ws}\n`;head=true;}o+=`${a[0]} ${a[2]}\n`;keys.forEach(k=>o+=`   • ${FL[k]||k}: ${s[k]}\n`);}});if(head)o+='\n';});
- let tn='';PH.forEach(p=>{const s=S['ph:'+p.k];if(s&&s.note)tn+=`   • ${p.lab}: ${s.note}\n`;});if(tn)o+=`## Timeline notes\n${tn}`;
- let wn='';WI.forEach(w=>{const s=S['wi:'+w[0]];if(s&&s.note)wn+=`   • ${w[1]}\n     ${s.note}\n`;});if(wn)o+=`## What-if notes\n${wn}`;
- let rn='';TR.forEach(t=>{const s=S['tr:'+t[0]];if(s&&(s.label||s.note))rn+=`   • [${s.label||'—'}] ${t[2]}${s.note?' — '+s.note:''}\n`;});if(rn)o+=`## Technical-requirement feedback\n${rn}`;
- navigator.clipboard.writeText(o).then(()=>{const b=document.getElementById('export');b.textContent='Copied ✓';setTimeout(()=>b.textContent='Copy my feedback',1500);});};
 renderPlan();
 </script>
 </body></html>

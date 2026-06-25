@@ -113,7 +113,7 @@ footer{background:var(--ink);color:#fff;padding:16px 0;margin-top:18px;font-size
 </div></div>
 
 <div class="panel active" id="plan"><div class="wrap">
-<div class="decis"><b>Locked:</b> go-live 3 Jul · pcmProducts in (final numbers 25 Jun) · new CF space built (fill + fields next) · target_keywords field exists · V1 blocks = 1.5 (PDP) + 1.6 (PLP) · indexation engine runs standalone, into engine later · blog/helpcenter/tags/viz all by 1 Jul · drop CollectionPage · merge sitemaps · Merchant-Catalogue API + platform-catalog feed = post-launch (PDP facts from old space; FLP out) · no external blockers · contingency on logic.</div>
+<div class="decis"><b>Locked:</b> go-live 3 Jul · pcmProducts in (final numbers 25 Jun) · V1 blocks = 1.5 (PDP) + 1.6 (PLP) · indexation engine runs standalone, into engine later · blog/helpcenter/tags/viz all by 1 Jul · drop CollectionPage · merge sitemaps · Merchant-Catalogue API + platform-catalog feed = post-launch (PDP facts from old space; FLP out) · no external blockers · contingency on logic.</div>
 <div class="dayfilter" id="dayfilter"></div>
 <div id="cards"></div>
 </div></div>
@@ -144,10 +144,8 @@ const A=[
 ["1.9","1 · Content Engine","Mass generation — product pages","Generate all PDP text, auto (<200) unattended / manual (≥200) checked.","Niels & Michael","1.4, 1.5, 2.10","Sat–Sun 27–28 Jun","Yes","Blocks 3.7 / 7.6 / 7.3 — fallback: generate subset, tail fast-follow",1,"d2728"],
 ["1.9b","1 · Content Engine","Mass generation — landing pages","Generate all PLP text.","Niels & Michael","1.6, 7.8","Wed 1 Jul","Yes","Feeds 7.7 / 7.3 — fallback: subset; PLP can fast-follow",1,"d1"],
 ["1.8","1 · Content Engine","Image alt-text generation","Generate alt text into the Asset Description.","Defer (fast-follow)","","Fast-follow","No","No block — fallback: reuse/blank alt, backfill",0,"ff"],
-["2.1","2 · Contentful","Build new Contentful space","✓ Done — space is built. Remaining: fill it in + create the fields (see 2.1b).","ENG","","✓ Done — space built","✓ Done","n/a — complete",0,"d25"],
-["2.1b","2 · Contentful","Create Contentful fields","Create all required fields in the new space (separate item per your note).","Michael","2.1","Tue 30 Jun","Yes","Blocks 2.2 / 2.10 / 2.6 / 2.6b / 3.7 — fallback: PDP-critical fields first",1,"d30"],
+["2.1b","2 · Contentful","Create Contentful fields","Create all required fields in the new space (separate item per your note).","Michael","","Tue 30 Jun","Yes","Blocks 2.2 / 2.10 / 2.6 / 2.6b / 3.7 — fallback: PDP-critical fields first",1,"d30"],
 ["2.2","2 · Contentful","Product field-level split (CF vs catalog)","SEO/page fields in new space; facts → catalog (don't strip until feed exists).","Michael","2.1b","Tue 30 Jun","Yes","Affects 3.7 — fallback: keep facts in CF until the feed exists (post-launch)",1,"d30"],
-["2.5","2 · Contentful","target_keywords field","✓ Already exists on commercial entries — underpins routing/cannibalisation/sitemap.","ENG","","✓ Already exists","✓ Exists","n/a — complete",0,"d25"],
 ["2.10","2 · Contentful","Build engine ↔ Contentful write connection","The integration that writes generated content from the engine into Contentful.","Michael","2.1b","Mon 29 Jun","Yes","Blocks 1.9 / 3.7 — fallback: none, must land",1,"d29"],
 ["2.6","2 · Contentful","Fill + check meta-robots — PDP","Populate + verify per-locale meta-robots on PDPs.","Paula","2.1b","Tue 30 Jun","Yes (can sit outside engine, in a separate sheet)","Feeds 3.3 / 3.4 — fallback: default noindex,follow, flip after",1,"d30"],
 ["1.7","2 · Contentful","Migrate related products + review block to PDP","Add the related-products + reviews blocks (generic Trustpilot tags V1).","Niels & Paula + Michael","3.7","Tue 30 Jun","No","No launch block — fallback: company Trustpilot + author-curated related",0,"d30"],

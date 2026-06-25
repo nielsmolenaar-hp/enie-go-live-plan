@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow">
+<title>en-IE Go-Live — Action Plan & Timeline</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+:root{--f:"Inter",system-ui,sans-serif;--g:#008539;--gd:#006B2D;--gl:#00A651;--ink:#191919;--ink2:#333;--ink3:#555;
+--bg:#fff;--bg2:#f8f8f8;--bd:#e5e5e5;--am:#f59e0b;--ambg:#fff7ea;--ambd:#f3d39a;--rd:#d32f2f;--rdbg:#fdecec;--info:#2196f3;--okbg:#e8f5e9;--g50:#ecfdf3;--teal:#00897b;--r:12px;--rl:16px;--p:9999px;--sh:0 1px 2px rgb(0 0 0/.05)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--f);font-size:15px;line-height:1.5;color:var(--ink);background:var(--bg2)}
+.wrap{max-width:980px;margin:0 auto;padding:0 20px}
+h1{font-size:27px;font-weight:800;letter-spacing:-.02em}
+.top{background:var(--ink);color:#fff}.top .wrap{display:flex;align-items:center;gap:12px;height:56px}
+.hm{width:24px;height:24px}.hm path{fill:var(--gl)}.bn{font-weight:700;font-size:17px}.tag{margin-left:auto;font-size:12px;color:rgba(255,255,255,.7);text-transform:uppercase;letter-spacing:.08em}
+.hero{background:var(--bg);border-bottom:1px solid var(--bd)}.hero .wrap{padding:22px 20px 0}
+.hero p{color:var(--ink2);font-size:13.5px;margin-top:6px;max-width:800px}
+.tabs{display:flex;gap:6px;margin-top:18px}
+.tab{border:1px solid var(--bd);border-bottom:none;background:var(--bg2);color:var(--ink2);font-family:var(--f);font-size:14px;font-weight:600;padding:11px 22px;border-radius:10px 10px 0 0;cursor:pointer}
+.tab[aria-selected=true]{background:var(--bg);color:var(--g);box-shadow:inset 0 -3px 0 var(--g)}
+.bar{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--bd);box-shadow:var(--sh)}
+.bar .wrap{display:flex;align-items:center;gap:10px;padding:9px 20px;font-size:13px}
+.count{font-weight:700}.spacer{flex:1}
+.bbtn{border:1px solid var(--bd);background:var(--bg);border-radius:var(--p);padding:5px 12px;font:inherit;font-size:12px;font-weight:600;cursor:pointer;color:var(--ink2)}
+.bbtn.exp{border-color:var(--g);color:var(--gd)}
+.panel{display:none}.panel.active{display:block}
+.decis{margin:18px 0;background:var(--g50);border:1px solid #b7e0c4;border-radius:var(--r);padding:11px 15px;font-size:12.5px;color:var(--gd)}
+.ws{margin:24px 0 8px}.ws h2{font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--g)}
+.card{background:var(--bg);border:1px solid var(--bd);border-radius:var(--rl);box-shadow:var(--sh);padding:15px 17px;margin-bottom:12px}
+.card.crit{border-left:4px solid var(--rd)}.card.tbc{border-left:4px solid var(--am)}
+.card .id{font-size:11px;font-weight:800;color:var(--gd)}
+.chead{display:flex;align-items:center;gap:8px}
+.dayfilter{display:flex;gap:6px;flex-wrap:wrap;margin:16px 0 4px}
+.dfb{border:1px solid var(--bd);background:var(--bg);border-radius:var(--p);padding:5px 13px;font:inherit;font-size:12px;font-weight:600;color:var(--ink2);cursor:pointer}
+.dfb:hover{border-color:var(--g)}
+.dfb.on{background:var(--g);border-color:var(--g);color:#fff}
+.daychip{font-size:10px;font-weight:700;color:var(--gd);background:var(--g50);border:1px solid #b7e0c4;border-radius:var(--p);padding:1px 8px}
+.dchk{margin-left:auto;display:flex;align-items:center;gap:5px;font-size:11px;font-weight:800;color:var(--ink3);text-transform:uppercase;letter-spacing:.04em;cursor:pointer;user-select:none}
+.dchk input{width:17px;height:17px;accent-color:var(--g);cursor:pointer;margin:0}
+.card.done{border-left:4px solid var(--g);background:var(--g50)}
+.card.done h3{color:var(--gd)}
+.card.done .dchk{color:var(--g)}
+.titem.tdone .ttitle{text-decoration:line-through;opacity:.65}
+.titem.tdone{color:var(--g)}
+.tchk{color:var(--g);font-weight:800}
+.ph.phdone::before{background:var(--g)!important}
+.card h3{font-size:16px;font-weight:700;margin:2px 0 5px;display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+.critb{font-size:10px;font-weight:800;color:var(--rd);background:var(--rdbg);border-radius:var(--p);padding:1px 7px}
+.tbcb{font-size:10px;font-weight:800;color:var(--am);background:var(--ambg);border:1px solid var(--ambd);border-radius:var(--p);padding:1px 7px}
+.ctx{font-size:13.5px;color:var(--ink2);margin-bottom:10px}
+.frow{display:grid;grid-template-columns:118px 1fr auto;gap:8px;align-items:start;padding:6px 0;border-top:1px solid var(--bg2)}
+.frow .fl{font-size:11px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.03em;padding-top:2px}
+.frow .fv{font-size:13.5px;color:var(--ink)}
+.frow.keepN .fv{color:var(--rd);font-weight:600}
+.frow .fc{border:1px solid var(--bd);background:var(--bg);border-radius:var(--p);width:26px;height:26px;font-size:13px;cursor:pointer;color:var(--ink3);line-height:1}
+.frow.has .fc{background:var(--ambg);border-color:var(--am);color:var(--am)}
+.frow.has{background:var(--ambg);border-radius:8px}
+.fnote{grid-column:1 / -1;margin-top:6px;width:100%;border:1px solid var(--ambd);border-radius:8px;padding:7px 10px;font:inherit;font-size:13px;resize:vertical;min-height:34px;display:none;background:#fffdf8}
+.fnote.show{display:block}
+.tl{position:relative;margin:8px 0 0 6px;padding-left:26px;border-left:3px solid var(--bd)}
+.ph{position:relative;margin-bottom:20px}
+.ph::before{content:"";position:absolute;left:-35px;top:2px;width:15px;height:15px;border-radius:var(--p);background:var(--g);border:3px solid var(--bg2)}
+.ph.ff::before{background:var(--ink3)}.ph.tbc::before{background:var(--am)}.ph.go::before{background:var(--rd)}
+.ph h3{font-size:16px;font-weight:700;display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+.ph .when{font-size:11px;font-weight:700;color:var(--ink3);background:var(--bg);border:1px solid var(--bd);border-radius:var(--p);padding:2px 9px}
+.titem{font-size:13px;padding:4px 0;border-bottom:1px solid var(--bg2);display:flex;gap:8px;align-items:baseline}
+.titem:last-child{border-bottom:none}.titem .tid{font-weight:700;color:var(--gd);font-size:11px;min-width:32px}
+.titem .dot{color:var(--rd);font-weight:800}.titem .ow{margin-left:auto;font-size:10px;font-weight:700;color:var(--ink3);background:var(--bg2);border:1px solid var(--bd);border-radius:var(--p);padding:1px 7px}
+.phnote{margin-top:8px;width:100%;border:1px solid var(--bd);border-radius:var(--r);padding:7px 10px;font:inherit;font-size:12.5px;resize:vertical;min-height:30px}
+.wif{border-left:4px solid var(--am)}
+.wif .q{font-size:16px;font-weight:700;margin-bottom:7px}
+.wif .aff{font-size:11px;font-weight:700;color:var(--gd);background:var(--g50);border:1px solid #b7e0c4;border-radius:var(--p);padding:2px 9px;display:inline-block;margin-bottom:9px}
+.wif .a{font-size:13.5px;color:var(--ink2);margin-bottom:10px}
+.wifnote{width:100%;border:1px solid var(--ambd);border-radius:8px;padding:8px 10px;font:inherit;font-size:13px;resize:vertical;min-height:42px;background:#fffdf8}
+.wifnote.has{border-color:var(--am);background:var(--ambg)}
+.srcb{font-size:10px;font-weight:800;color:var(--ink3);background:var(--bg2);border:1px solid var(--bd);border-radius:var(--p);padding:1px 7px}
+.mylvl{font-size:10px;font-weight:700;border-radius:var(--p);padding:1px 7px}
+.mylvl.db{color:var(--rd);background:var(--rdbg)}.mylvl.rq{color:var(--gd);background:var(--g50)}
+.mylvl.df{color:var(--am);background:var(--ambg)}.mylvl.cx{color:var(--info);background:#e7f3fe}
+.mylvl.nh{color:var(--teal);background:#e0f2f1}
+.lblrow{display:flex;gap:6px;flex-wrap:wrap;margin:9px 0 7px}
+.lbl{border:1px solid var(--bd);background:var(--bg);border-radius:var(--p);padding:4px 12px;font:inherit;font-size:12px;font-weight:600;color:var(--ink3);cursor:pointer}
+.lbl:hover{border-color:var(--g)}
+.lbl.on{background:var(--g);border-color:var(--g);color:#fff}
+.deftoggle{margin:22px 0 4px;border:1px dashed var(--bd);background:var(--bg2);border-radius:10px;padding:11px 16px;font:inherit;font-size:13px;font-weight:700;color:var(--ink2);cursor:pointer;width:100%;text-align:left}
+.deftoggle:hover{border-color:var(--g);color:var(--gd)}
+#defwrap{display:none}#defwrap.show{display:block}
+.defhead{font-size:12px;color:var(--ink3);margin:8px 0 10px;font-style:italic}
+footer{background:var(--ink);color:#fff;padding:16px 0;margin-top:18px;font-size:12px}
+@media(max-width:680px){.tabs{flex-direction:column}.tab{border-radius:10px;border-bottom:1px solid var(--bd)}.frow{grid-template-columns:1fr auto}.frow .fl{grid-column:1}}
+</style></head>
+<body>
+<div class="top"><div class="wrap">
+<svg class="hm" viewBox="0 0 260 260" aria-hidden="true"><g transform="translate(0,260) scale(0.1,-0.1)"><path d="M757 2584 c-1 -1 -28 -5 -60 -8 -114 -14 -266 -73 -376 -148 -174 -120 -331 -374 -269 -436 34 -34 90 -10 295 130 287 194 465 219 540 75 42 -82 32 -214 -34 -427 -35 -113 -142 -413 -151 -422 -4 -4 -86 -10 -182 -13 -288 -10 -343 -18 -381 -56 -28 -28 -24 -59 20 -125 84 -127 111 -139 303 -131 l127 4 -10 -26 c-6 -14 -44 -116 -86 -226 -41 -110 -95 -249 -118 -310 -59 -149 -74 -254 -50 -349 18 -69 53 -101 110 -100 91 3 185 87 254 229 40 81 57 128 208 565 46 135 87 248 91 252 6 6 37 10 182 24 30 3 64 7 75 9 11 1 56 6 100 10 44 4 91 8 104 10 13 3 61 7 105 11 45 3 84 8 89 11 9 6 10 8 -13 -72 -29 -99 -58 -225 -79 -333 -65 -338 40 -594 264 -645 61 -14 79 -14 175 -2 149 20 307 98 487 242 l93 74 -24 47 c-27 54 -51 122 -55 153 0 6 -25 -11 -53 -37 -72 -64 -187 -138 -256 -164 -44 -17 -71 -21 -119 -17 -152 12 -187 115 -137 402 13 76 93 377 102 387 4 4 34 9 67 12 33 3 71 8 85 11 14 2 57 7 95 10 185 15 234 45 215 131 -10 45 -40 73 -79 75 -37 2 -207 -2 -263 -6 -27 -2 -48 0 -48 5 0 19 139 430 203 601 74 198 84 235 81 299 -5 95 -48 140 -137 140 -133 0 -197 -85 -312 -420 -32 -91 -61 -174 -66 -185 -4 -11 -40 -119 -79 -240 l-70 -220 -48 -1 c-44 -1 -193 -7 -469 -20 l-122 -6 8 29 c59 199 74 254 95 343 34 142 56 269 63 365 19 282 -147 469 -435 488 -29 2 -53 3 -55 1z"></path></g></svg>
+<span class="bn">Helloprint</span><span class="tag">en-IE Go-Live · 3 July</span></div></div>
+
+<div class="hero"><div class="wrap">
+<h1>en-IE Go-Live — action plan & timeline</h1>
+<p>Pre-filled from your day-by-day (go-live <b>3 July</b>). Each action: a context line + <b>Owner · Depends on · Timeline · Keep? · If not done</b>. Click <b>✎</b> on any field to correct it (owner, dependency, etc.); export from the bar to send back. Items marked <b>⚠ confirm</b> aren't in your timeline yet — place or drop them. (● = critical path.)</p>
+<div class="tabs" role="tablist">
+<button class="tab" role="tab" aria-selected="true" data-t="plan">Action plan</button>
+<button class="tab" role="tab" aria-selected="false" data-t="time">Timeline</button>
+<button class="tab" role="tab" aria-selected="false" data-t="whatif">What ifs?</button>
+<button class="tab" role="tab" aria-selected="false" data-t="tech">Technical requirements</button>
+</div>
+</div></div>
+
+<div class="bar"><div class="wrap">
+<span class="count" id="count">0 actions with notes</span><span class="spacer"></span>
+<button class="bbtn exp" id="export">Copy my feedback</button>
+<button class="bbtn" id="reset">Reset</button>
+</div></div>
+
+<div class="panel active" id="plan"><div class="wrap">
+<div class="decis"><b>Locked:</b> go-live 3 Jul · pcmProducts in (final numbers 25 Jun) · new CF space built (fill + fields next) · target_keywords field exists · V1 blocks = 1.5 (PDP) + 1.6 (PLP) · indexation engine runs standalone, into engine later · blog/helpcenter/tags/viz all by 1 Jul · drop CollectionPage · merge sitemaps · Merchant-Catalogue API + platform-catalog feed = post-launch (PDP facts from old space; FLP out) · no external blockers · contingency on logic.</div>
+<div class="dayfilter" id="dayfilter"></div>
+<div id="cards"></div>
+</div></div>
+<div class="panel" id="time"><div class="wrap"><div id="timeline"></div></div></div>
+<div class="panel" id="whatif"><div class="wrap"><div class="decis"><b>Contingency scenarios</b> — each has my take (by logic) on what we'd do. Add your feedback per scenario; it exports with "Copy my feedback".</div><div id="whatifs"></div></div></div>
+<div class="panel" id="tech"><div class="wrap"><div class="decis"><b>Technical page requirements</b> — pulled from PDP v0-34, PLP v1-13 & FLP v0-15. Each shows its <span class="srcb">source</span> and my read (<span class="mylvl db">Deploy-block</span> <span class="mylvl rq">Required</span> <span class="mylvl df">Deferred/V2</span> <span class="mylvl cx">Context</span>). Set your call per item — Required · Nice-to-have · Deferred · Context — and add a note. Exports with "Copy my feedback".</div><div id="techreqs"></div></div></div>
+<footer><div class="wrap"><span>en-IE Go-Live · interactive plan (pre-filled) · 2026-06-24</span></div></footer>
+
+<script>
+const PH=[
+ {k:"d25",lab:"Thu 25 Jun"},{k:"d26",lab:"Fri 26 Jun"},{k:"d2728",lab:"Sat–Sun 27–28 Jun"},
+ {k:"d29",lab:"Mon 29 Jun"},{k:"d30",lab:"Tue 30 Jun"},{k:"d1",lab:"Wed 1 Jul"},{k:"d2",lab:"Thu 2 Jul"},
+ {k:"d3",lab:"Fri 3 Jul · GO-LIVE",go:1},{k:"ff",lab:"Fast-follow",ff:1}
+];
+const WS=["1 · Content Engine","2 · Contentful","3 · Frontend & technical","4 · URL & structure","5 · Editorial","6 · Images","7 · Scope & go-live"];
+// [id, ws, title, context, owner, depends, timeline, keep, contingency, crit, phase]
+const A=[
+["1.1","1 · Content Engine","Product import","Pull every en-IE product's current content into the engine (by URL, old→new field map) as the generation input.","Michael","","Thu 25 Jun","Yes","Blocks mass-gen testing (1.9) — delays the whole process; fallback: seed from old-space content only",1,"d25"],
+["1.2","1 · Content Engine","Keyword analysis — PDPs","Run the analyzer (GSC+Ahrefs, transactional split) on PDPs; approve sets.","Niels & Paula","2.5","Thu 25 Jun","Yes","Blocks 1.3 (competitor) & content writing — fallback: run launch subset first, tail later",1,"d25"],
+["1.3","1 · Content Engine","Competitor analysis — PDPs","Run competitor analysis incl. page-match + content-angle (built into engine).","Niels & Paula","1.2","Thu 25 Jun","No","No block, but no competitor input in content writing — fallback: keyword-gap feed + human angle",0,"d25"],
+["1.5","1 · Content Engine","Add SEO-text + FAQ generation (= PDP V1 blocks)","Add SEO-text + FAQ generation to prompts + tool. This IS the PDP V1 block-library work.","Niels & Michael","2.1b","Thu 25 Jun","Yes","Blocks content testing & generation for PDPs; also pushes PLP further — fallback: ship lean, add post-launch",1,"d25"],
+["1.4","1 · Content Engine","Content testing — current fields","First content test (25th), finalise across all current fields (26th).","Paula","1.2 · Orq tooling ready","Thu 25 → Fri 26 Jun","Yes","Blocks 1.9 / 1.11 / 7.4e — fallback: test the launch subset first",1,"d25"],
+["1.11","1 · Content Engine","Integrate test + external (Irish) feedback","Tune prompts from the content test + the external Irish reviewer's feedback.","Niels","1.4, 7.4e","Fri 26 Jun","No","Blocks mass generation (1.9), but can go without Irish feedback — fallback: integrate top fixes only",0,"d26"],
+["1.10","1 · Content Engine","Full volume / intent sweep (all pages)","Run the analyzer across all ~6,754 pages for authoritative transactional SV + auto/manual lists.","Michael","1.2","Thu 25 Jun","No","Bulk keyword-analyser run; feeds 7.1 — fallback: first-cut + GSC to prioritise",0,"d25"],
+["1.12","1 · Content Engine","Semi-manually generate + approve high-SV pages","Manual path: generate + approve the high-SV PDP text.","Niels & Paula","1.2, 1.4","Fri 26 Jun","No","Feeds 7.6 — fallback: top high-SV pages only",0,"d26"],
+["1.6","1 · Content Engine","Integrate Landing Page into engine (= PLP V1 blocks)","Make prompts content-type-aware so the engine generates landing pages. This IS the PLP V1 block-library work.","Niels & Paula + Michael","1.13, 3.2","Mon 29 Jun","No","Can start with core blocks first (not all needed for first integration); blocks 1.9b — fallback: PDP launches, PLP fast-follow",0,"d29"],
+["1.13","1 · Content Engine","Define all Landing-Page content fields + integrate in prompts","Define every LP content field and wire them into the prompts.","Niels","","Mon 29 Jun","No","Blocks 1.6 — fallback: core LP fields first",0,"d29"],
+["1.9","1 · Content Engine","Mass generation — product pages","Generate all PDP text, auto (<200) unattended / manual (≥200) checked.","Niels & Michael","1.4, 1.5, 2.10","Sat–Sun 27–28 Jun","Yes","Blocks 3.7 / 7.6 / 7.3 — fallback: generate subset, tail fast-follow",1,"d2728"],
+["1.9b","1 · Content Engine","Mass generation — landing pages","Generate all PLP text.","Niels & Michael","1.6, 7.8","Wed 1 Jul","Yes","Feeds 7.7 / 7.3 — fallback: subset; PLP can fast-follow",1,"d1"],
+["1.8","1 · Content Engine","Image alt-text generation","Generate alt text into the Asset Description.","Defer (fast-follow)","","Fast-follow","No","No block — fallback: reuse/blank alt, backfill",0,"ff"],
+["2.1","2 · Contentful","Build new Contentful space","✓ Done — space is built. Remaining: fill it in + create the fields (see 2.1b).","ENG","","✓ Done — space built","✓ Done","n/a — complete",0,"d25"],
+["2.1b","2 · Contentful","Create Contentful fields","Create all required fields in the new space (separate item per your note).","Michael","2.1","Tue 30 Jun","Yes","Blocks 2.2 / 2.10 / 2.6 / 2.6b / 3.7 — fallback: PDP-critical fields first",1,"d30"],
+["2.2","2 · Contentful","Product field-level split (CF vs catalog)","SEO/page fields in new space; facts → catalog (don't strip until feed exists).","Michael","2.1b","Tue 30 Jun","Yes","Affects 3.7 — fallback: keep facts in CF until the feed exists (post-launch)",1,"d30"],
+["2.5","2 · Contentful","target_keywords field","✓ Already exists on commercial entries — underpins routing/cannibalisation/sitemap.","ENG","","✓ Already exists","✓ Exists","n/a — complete",0,"d25"],
+["2.10","2 · Contentful","Build engine ↔ Contentful write connection","The integration that writes generated content from the engine into Contentful.","Michael","2.1b","Mon 29 Jun","Yes","Blocks 1.9 / 3.7 — fallback: none, must land",1,"d29"],
+["2.6","2 · Contentful","Fill + check meta-robots — PDP","Populate + verify per-locale meta-robots on PDPs.","Paula","2.1b","Tue 30 Jun","Yes (can sit outside engine, in a separate sheet)","Feeds 3.3 / 3.4 — fallback: default noindex,follow, flip after",1,"d30"],
+["1.7","2 · Contentful","Migrate related products + review block to PDP","Add the related-products + reviews blocks (generic Trustpilot tags V1).","Niels & Paula + Michael","3.7","Tue 30 Jun","No","No launch block — fallback: company Trustpilot + author-curated related",0,"d30"],
+["2.4b","2 · Contentful","Migrate non-SEO blocks (kept) to PLP","Bring across the non-SEO PLP blocks we want to keep.","Niels & Paula + Michael","3.2","Thu 2 Jul","Yes (contains product links)","Affects PLP completeness & internal linking — fallback: minimal blocks first",1,"d2"],
+["2.6b","2 · Contentful","Fill + check meta-robots — PLP","Populate + verify per-locale meta-robots on PLPs.","Paula","2.1b","Thu 2 Jul","Yes (can sit outside engine, separate list)","Feeds 3.3 / 3.4 — fallback: default noindex,follow",1,"d2"],
+["2.8","2 · Contentful","Company pages via Figma→Code","Rebuild company pages in Contentful via the new design system.","Frederico","","Fast-follow","No","No block — fallback: keep on Webflow short-term",0,"ff"],
+["3.7","3 · Frontend & technical","Build PDP to staging (old + new space)","Build the product page to staging, sourcing from both the old and new Contentful space.","Michael","2.1b, 2.10, 1.9","Tue 30 Jun","Yes","Blocks 7.3 / 7.2 — fallback: subset to staging first",1,"d30"],
+["3.1","3 · Frontend & technical","Build PDP technical requirements (incl. schema)","Start 29th, finish 30th: rendering/schema/CI/indexation hooks for PDP (much already shipped — verify + close gaps).","Michael","","Mon 29 → Tue 30 Jun","Yes","Blocks 7.3 — fallback: close at-risk items; verify shipped layer",1,"d29"],
+["3.2","3 · Frontend & technical","Build PLP technical requirements (incl. schema)","Start 1st, finish 2nd: the ~60 PLP block renders + WebPage/ItemList schema (HEL-321) + INDEX-1.","Michael","","Wed 1 → Thu 2 Jul","Yes","Blocks 1.6 / 7.3 (PLP) — fallback: PDP-only launch if PLP slips",1,"d1"],
+["3.4","3 · Frontend & technical","Sitemap optimised + working","6-file-per-locale generator + guardrails + GSC/Bing submit.","Frederico","3.3, 4.1","Tue 30 Jun","No","Affects indexation speed / 7.5 — fallback: single sitemap of the subset, expand",0,"d30"],
+["3.3","3 · Frontend & technical","Indexation rule-engine (daily INDEX-1)","Runs standalone for launch (no need to be in the engine); fold into the engine later.","Defer (fast-follow)","2.6, 2.6b","Standalone by go-live · engine integration fast-follow","No","Feeds 3.4 — fallback: manual index flips for launch",0,"d2"],
+["3.5","3 · Frontend & technical","Filter engine (FLP)","Faceted filter engine + custom Contentful app.","Defer (fast-follow)","","Fast-follow","No","Dropped V1 — fallback: no FLP URLs at launch",0,"ff"],
+["4.3","4 · URL & structure","Define full URL redirect/modify scope","For Ireland, decide per industry/theme + location page: redirect or modify (your 3C — full scope).","Niels & Paula","","Thu 25 Jun","Yes","Blocks 4.2 — fallback: decide page-by-page redirect vs modify",1,"d25"],
+["4.2","4 · URL & structure","Define the full redirect list","List every old→new 301 up front; run via current redirect setup, same-moment with the move.","Niels & Paula","4.3, 5.2","Tue 30 Jun","Yes","Affects launch SEO continuity — fallback: redirect the confirmed moves only",1,"d30"],
+["4.4","4 · URL & structure","Internal linking via content engine working","Engine-generated internal links (Block 11, FAQ links) on top of nav/breadcrumbs.","Niels & Michael","","Fri 26 Jun","No","No block — fallback: baseline nav/footer/breadcrumb only",0,"d26"],
+["4.1","4 · URL & structure","URL setup — query params (technical)","Technical URL setup with query parameters. Will be deferred (commercial URLs unchanged at launch).","Michael & Niels","","Fast-follow (deferred)","No · deferred","Deferred — commercial URLs unchanged at launch",0,"ff"],
+["5.1","5 · Editorial","Helpcenter content defined + created","Dan defines + creates the helpcenter content.","DAN","","Fri 26 Jun","No","Blocks 5.1b — fallback: top articles first",0,"d26"],
+["5.1b","5 · Editorial","Helpcenter ToV rewrite + integration + URL migration + schema","Run content through ToV; Frederico integrates it; URL migration + category hubs + schema.","Frederico","5.1","Wed 1 Jul","No","No launch block — fallback: structure + top articles, rest fast-follow",0,"d1"],
+["5.2","5 · Editorial","Blog — keep decision + structure migration + 301s","Decide per existing blog whether to keep; migrate structure + ship 301s.","Paula","5.6, 4.2","Wed 1 Jul","Yes","Blocks 5.2b — fallback: ship structure + 301s, optimise content after",1,"d1"],
+["5.2b","5 · Editorial","Optimise scoped blog content","Run kept blogs through ToV + relevancy + internal-link + anti-cannibalisation.","Niels & Paula + Michael","5.2","Wed 1 Jul","No","No block — fallback: top blogs only",0,"d1"],
+["5.3","5 · Editorial","Blog visualisation feedback","Implement the outstanding blog visualisation feedback (Frederico).","Frederico","","Wed 1 Jul","No","No block — fallback: launch with current visualisation",0,"d1"],
+["5.6","5 · Editorial","Tag schema (auto via Frederico, else manual)","Tag taxonomy + auto-tagging check; else manual tagging for kept blogs.","Frederico","","Wed 1 Jul","No","Feeds 5.2 — fallback: manual tagging for the kept blogs",0,"d1"],
+["5.4","5 · Editorial","Wiki — hub + size pages + 2 proofs","Build wiki hub, migrate size pages, 2 proof entries.","Niels & Paula + Frederico","","Fast-follow","No","Fast-follow — fallback: 301-ready map, defer",0,"ff"],
+["5.5","5 · Editorial","Learn hub","Build the /learn hub.","Niels & Paula + Frederico","","Fast-follow","No","Fast-follow — fallback: keep /helpcenter header link interim",0,"ff"],
+["6.1","6 · Images","Product & landing pages carry their images","Make sure PDPs and landing pages actually contain their images — in Block S and the other formats where images are used. Reuse existing assets. Bundle-item images stay as they are.","Niels & Paula + Michael","","Tue 30 Jun","Yes (integrated in migration / block use)","Images must be in the page on migration — fallback: catalog fallback",1,"d30"],
+["6.2","6 · Images","Cornel crucial-image list (if needed)","If crucial images are needed, Cornel delivers the create/optimise list.","Defer","","Tue 30 Jun","No","No block — fallback: launch with reused images, improve later",0,"d30"],
+["6.3","6 · Images","Image-presence guarantee","Not a separate action point — covered by 6.1 (images integrated in migration). Deferred.","Niels & Paula + Michael","6.1","Fast-follow (deferred)","No · not an action point","Folded into 6.1 / migration — defer",0,"ff"],
+["7.1","7 · Scope & go-live","Full scope on numbers — all IE pages","Define the exact IE launch set + Top-100 list (final numbers, pcmProducts in).","Niels & Paula","1.10","Thu 25 Jun","Yes","Scopes 1.9 / 3.7 — fallback: launch indexable subset (~284 groups), expand",1,"d25"],
+["7.4e","7 · Scope & go-live","Receive manual feedback — Irish external","The external Irish reviewer reviews early sample pages.","Niels & Sarah","1.4","Thu 25 Jun","No","Feeds 1.11 — fallback: Niels reviews the samples himself",0,"d25"],
+["7.6","7 · Scope & go-live","Check mass-gen output (PDP) + finalise all PDP text","Review the PDP mass-gen output and finalise.","Niels & Paula","1.9","Mon 29 Jun","Yes","Feeds 7.3 — fallback: fix the top issues, accept rest",1,"d29"],
+["7.7","7 · Scope & go-live","Check mass-gen output (LP) + approve/optimise high-SV LP","Review the LP output; manually approve + optimise high-SV landing pages.","Niels & Paula","1.9b","Thu 2 Jul","Yes","Feeds 7.3 (PLP) — fallback: top LP only",1,"d2"],
+["7.8","7 · Scope & go-live","Test Landing Page content (start → finish)","Start LP content testing (30th), finish (1st).","Niels & Paula","1.6","Tue 30 Jun → Wed 1 Jul","Yes","Blocks 1.9b — fallback: test the LP subset first",1,"d30"],
+["7.3","7 · Scope & go-live","Test end-to-end flow of all pages — GO-LIVE","Full e2e test of all page types; launch.","ALL","3.7, 1.9, 1.9b, 3.1, 3.2","Fri 3 Jul","Yes","Blocks 7.2 (go-live gate) — fallback: launch the subset that passes",1,"d3"],
+["7.2","7 · Scope & go-live","Production cutover (staging → live)","Cut over from staging to production at go-live, after the e2e test passes.","Michael & Thijs","7.3","Fri 3 Jul","Yes","Go-live — fallback: per-slice cutover, rollback per slice",1,"d3"],
+["7.5","7 · Scope & go-live","Post-launch monitoring","Track en-IE vs control 4–8 wks; TVLM + alerts.","Niels & Paula","3.4","Fast-follow","No · post-launch","Post-launch (after go-live) — fallback: manual GSC watch",0,"ff"],
+];
+const FIELDS=[["Owner","owner",4],["Depends on (action points)","depends",5],["Timeline","timeline",6],["Critical to go live","keep",7],["If not done","contingency",8]];
+const WI=[
+ ["w1","What if checking the mass-generation content takes too much time?","First get the numbers: which pages are &gt;200 SV, low SV, and no SV (7.1). Lowest risk = no-SV products → auto-approve in bulk; if they miss the quality bar, skip non-essential content (intro paragraph, product USPs); if still failing, raise the threshold to noindex these pages. Significant-SV products: we get no traffic there today, so if manual approval is too slow we first lower our own quality bar for approval speed, then fall back to the same skip-content / noindex steps.","7.1, 7.6, 7.7, 1.9, 1.12"],
+ ["w2","What if the blog doesn't work?","Blog on the new stack (no fallbacks) IS critical to go-live. If visualisation isn't pixel-perfect we still ship — but foundations + structure must be there. The keep/migrate decision + redirects is critical; if it takes too long, bring everything over now and make deeper removal/optimisation calls after go-live.","5.2, 5.2b, 4.2 · blog = critical"],
+ ["w3","What if we can't integrate the PLP through the content engine?","Migrate the working PLP blocks directly into the new space: same content; decide which pages to migrate; decide which blocks not in the new CF space come from the old space or get removed. No fallback logic = critical → mass migration EN → en-IE.","1.6, 1.9b, 2.4b, 3.2"],
+ ["w4","What if company pages don't work?","Can technically stay on the old Webflow. If commercially we must move to the new stack: build via the component library + new blocks. Standard text is most important; if design isn't pixel-perfect, optimise later.","2.8"],
+ ["w5","What if we don't meet the technical requirements?","Very essential, and there are many — defined as the hard list in the 'Technical requirements' tab. Launch only page types that pass every deploy-block gate (PDP-only if PLP fails).","3.1, 3.2, 3.7, 7.3 · see Technical requirements tab"]
+];
+const TRG=["Content visible to Google","Speed","Mobile","Images & media","URLs & indexing","Sitemap, languages & redirects","Structured data (rich results)","Caching & freshness","Accessibility"];
+// [id, group, requirement, detail, source, myRead]
+const TR=[
+ ["t1","Content visible to Google","All content loads with the page, not after","Google must see the text and links on first load. Images can still load while you scroll — that's about file weight, not content. Only the readable content must be there from the start.","PDP","Deploy-block"],
+ ["t2","Content visible to Google","Menus, configurator and prices are readable by Google","Links, the live price and delivery come pre-loaded, not only after a click. (Filters are part of FLP — deferred.)","PDP·PLP","Required"],
+ ["t3","Content visible to Google","One page version for mobile and desktop","Same content both places, only the layout changes. Deferred to V2.","PLP·PDP","Deferred"],
+ ["t4","Content visible to Google","Trustpilot rating shows instantly","Shows the last saved score on load (hides if unavailable). Making it machine-readable for Google is a nice-to-have.","PDP","Nice-to-have"],
+ ["t5","Speed","Pages must hit the speed targets to launch","Deploy-blocking budgets (mobile, Lighthouse CI on every change): LCP ≤2.0s · CLS ≤0.05 · INP ≤150ms · TTFB ≤250ms cached / 600ms uncached · FCP ≤1.5s · JavaScript ≤250KB · first-screen image ≤400KB · inlined CSS ≤14KB. In short: green Core Web Vitals.","PDP","Deploy-block"],
+ ["t6","Speed","Main image loads first, the rest load while scrolling","Keeps the page fast on arrival.","PDP·PLP","Required"],
+ ["t7","Speed","Reserve space so nothing jumps while loading","As images and prices load in, their space is booked in advance so the text below doesn't suddenly jump down. Google scores this (the 'CLS' in Core Web Vitals).","PDP·PLP","Required"],
+ ["t8","Mobile","Every page declares it's mobile-friendly","Mobile work deferred.","PLP·PDP","Deferred"],
+ ["t9","Mobile","The right things fit on the first phone screen","Mobile work deferred.","PLP·PDP","Deferred"],
+ ["t10","Mobile","Phones download one lighter image per product","Mobile work deferred.","PLP·PDP","Deferred"],
+ ["t11","Mobile","Not building: AMP, app-style PWA, dark mode","Deferred.","PDP","Deferred"],
+ ["t12","Images & media","One high-quality image source, auto-resized per device","Same images for now — deferred.","PDP·PLP","Deferred"],
+ ["t13","Images & media","All product images are square","Same shape everywhere so the layout stays stable.","PDP","Nice-to-have"],
+ ["t14","Images & media","360° spins, video and video rich-results","Launch products only — fast-follow / later.","PDP","Deferred"],
+ ["t15","URLs & indexing","Keep the same URLs, with redirect logic","Reuse existing web addresses where we can; redirect any that change. Clean, lowercase, with the country/language prefix.","PLP·PDP","Required"],
+ ["t16","URLs & indexing","Only proven filter/variant pages get their own URL","Others stay as a parameter and point back to the main page. (Filter pages travel with FLP — deferred.)","PLP·PDP","Deferred"],
+ ["t17","URLs & indexing","Each page declares itself the master copy","Each page tells Google 'this exact address is the original' (the canonical tag), so versions with tracking codes or filter parameters aren't treated as duplicates. A build check confirms that master address loads (200) and is in the sitemap.","PLP·PDP","Required"],
+ ["t18","URLs & indexing","Index / no-index decided per page, per language","Every page starts hidden from Google until reviewed and switched on.","PLP·PDP","Required"],
+ ["t20","Sitemap, languages & redirects","An up-to-date map of all our good pages","Lists only pages we want in Google; refreshed daily and sent to Google + Bing.","PLP","Required"],
+ ["t21","Sitemap, languages & redirects","Language versions correctly linked to each other","So Google shows the right country/language.","PLP","Required"],
+ ["t22","Sitemap, languages & redirects","Old URLs redirect the moment they change","Redirects go live with the move and never point to a hidden page.","PLP","Required"],
+ ["t23","Sitemap, languages & redirects","Daily health-check crawl of all pages","Catches broken links and indexing mistakes.","PLP","Nice-to-have"],
+ ["t24","Structured data (rich results)","Product pages send price, stock & breadcrumb to Google","Powers rich results. No star rating on product pages — we don't have product-specific reviews, so the rating stays company-level only (see below). Required fields are checked at build; a breadcrumb mismatch is flagged as a warning, not blocked.","PDP","Deploy-block"],
+ ["t25","Structured data (rich results)","Category pages send their product list & breadcrumb","No star rating here either (no product-specific reviews). Product-list markup only on the main indexable page.","PLP","Required"],
+ ["t26","Structured data (rich results)","Company Trustpilot rating sent to Google","Star rating + review count, at company level.","PDP","Required"],
+ ["t27","Caching & freshness","Prices on the page stay fresh","Current speed is fine — deferred.","PDP","Deferred"],
+ ["t28","Caching & freshness","Edge-caching setup for filter pages","FLP, out of v1 — deferred.","FLP","Deferred"],
+ ["t29","Accessibility","Buttons and form text sized for phones","Mobile work deferred.","PLP·PDP","Deferred"],
+ ["t30","Accessibility","Respect 'reduce motion' settings","Mobile work deferred.","PLP·PDP","Deferred"],
+ ["t31","Content visible to Google","Standard behind-the-scenes page tags","The text-encoding tag, the page-language tag, and the preview tags shown when a page is shared (WhatsApp, social). Not mentioned in the specs — confirm engineering handles them.","All","Context"],
+ ["t32","Speed","Load only the JavaScript the first screen needs","Keep the first load light (≤250KB JS); everything else — chat, reviews, extras — loads after the page is usable. Also inline the critical styles and self-host fonts.","PDP","Required"],
+ ["t34","URLs & indexing","Every internal link goes to a live page","No links to dead (404) pages, from anywhere incl. header, footer and menus. (Automatic redirect-chain detection isn't required for launch.)","All","Required"],
+ ["t35","URLs & indexing","Removed products redirect, never 404","Out-of-stock / discontinued pages redirect to the nearest parent; empty category pages stay hidden from Google until filled (avoids a 'soft 404').","PDP·PLP","Required"],
+ ["t36","Sitemap, languages & redirects","Complete robots.txt — points to the sitemap, allows all bots","Lists the master sitemap and lets all search + AI/LLM bots crawl us; parameter URLs stay crawlable (not blocked) so Google can fold them into the main page.","All","Required"],
+ ["t37","URLs & indexing","Filter pages show products without JavaScript","A filter link returns a full page (200) with the filter already applied. Filter pages = FLP, out of v1.","FLP","Deferred"],
+ ["t38","URLs & indexing","Pagination: 'Load more' with a crawlable link graph","Pages 2+ stay out of Google but are still followed; sort/pagination/view never indexed. FLP, out of v1.","FLP","Deferred"]
+];
+const KEY="hp-enie-fullplan-v5";
+let S=JSON.parse(localStorage.getItem(KEY)||"{}");
+let planFilter='all';
+const save=()=>localStorage.setItem(KEY,JSON.stringify(S));
+function renderPlan(){
+ const root=document.getElementById('cards');root.innerHTML='';
+ const PHLAB={};PH.forEach(p=>PHLAB[p.k]=p.lab);
+ const fbar=document.getElementById('dayfilter');
+ const days=PH.filter(p=>A.some(a=>a[10]===p.k));
+ fbar.innerHTML=`<button class="dfb${planFilter==='all'?' on':''}" data-f="all">All days</button>`+days.map(p=>`<button class="dfb${planFilter===p.k?' on':''}" data-f="${p.k}">${p.lab}</button>`).join('');
+ fbar.querySelectorAll('.dfb').forEach(b=>b.onclick=()=>{planFilter=b.dataset.f;renderPlan();});
+ WS.forEach(ws=>{const items=A.filter(a=>a[1]===ws&&(planFilter==='all'||a[10]===planFilter));if(!items.length)return;
+  const h=document.createElement('div');h.className='ws';h.innerHTML=`<h2>${ws}</h2>`;root.appendChild(h);
+  items.forEach(a=>{const id=a[0],crit=a[9],tbc=a[10]==='tbc';const st=S[id]||{};const done=!!S['done:'+id];
+   const c=document.createElement('div');c.className='card'+(crit?' crit':'')+(tbc?' tbc':'')+(done?' done':'');
+   let rows='';
+   FIELDS.forEach(([lab,key,idx])=>{const note=(st[key]||'');const has=note.trim()!=='';const keepN=(key==='keep'&&/drop/i.test(a[idx]));
+    rows+=`<div class="frow${has?' has':''}${keepN?' keepN':''}"><span class="fl">${lab}</span><span class="fv">${a[idx]}</span>
+      <button class="fc" data-id="${id}" data-k="${key}" title="Comment on ${lab}">✎</button>
+      <textarea class="fnote${has?' show':''}" data-id="${id}" data-k="${key}" placeholder="Your context on ${lab.toLowerCase()}…">${note}</textarea></div>`;});
+   c.innerHTML=`<div class="chead"><span class="id">${id}</span><span class="daychip">${PHLAB[a[10]]||''}</span><label class="dchk"><input type="checkbox" data-id="${id}" ${done?'checked':''}> Done</label></div><h3>${a[2]}${crit?' <span class="critb">CRITICAL</span>':''}${tbc?' <span class="tbcb">CONFIRM</span>':''}</h3><div class="ctx">${a[3]}</div>${rows}`;
+   root.appendChild(c);});
+ });
+ document.querySelectorAll('.fc').forEach(b=>b.onclick=()=>{const ta=b.parentElement.querySelector('.fnote');ta.classList.toggle('show');if(ta.classList.contains('show'))ta.focus();});
+ document.querySelectorAll('.fnote').forEach(t=>t.oninput=()=>{const id=t.dataset.id,k=t.dataset.k;S[id]=S[id]||{};S[id][k]=t.value;if(!t.value.trim())delete S[id][k];save();t.closest('.frow').classList.toggle('has',!!t.value.trim());upd();});
+ document.querySelectorAll('.dchk input').forEach(cb=>cb.onchange=()=>{const id=cb.dataset.id;if(cb.checked)S['done:'+id]=1;else delete S['done:'+id];save();cb.closest('.card').classList.toggle('done',cb.checked);upd();});
+ upd();
+}
+function renderTime(){
+ const root=document.getElementById('timeline');root.innerHTML='<div class="tl"></div>';const tl=root.firstChild;
+ PH.forEach(p=>{const items=A.filter(a=>a[10]===p.k);
+  const allDone=items.length>0&&items.every(a=>S['done:'+a[0]]);
+  const d=document.createElement('div');d.className='ph'+(p.ff?' ff':'')+(p.tbc?' tbc':'')+(p.go?' go':'')+(allDone?' phdone':'');
+  let h=`<h3>${p.lab}${allDone?' <span class="when" style="color:var(--g);border-color:var(--g)">✓ done</span>':''}</h3>`;
+  items.forEach(a=>{const dn=!!S['done:'+a[0]];h+=`<div class="titem${dn?' tdone':''}"><span class="tid">${a[0]}</span>${dn?'<span class="tchk">✓</span> ':(a[9]?'<span class="dot">●</span> ':'')}<span class="ttitle">${a[2]}</span><span class="ow">${a[4]}</span></div>`;});
+  h+=`<textarea class="phnote" data-ph="${p.k}" placeholder="Feedback on this day / sequence…">${(S['ph:'+p.k]||{}).note||''}</textarea>`;
+  d.innerHTML=h;tl.appendChild(d);});
+ document.querySelectorAll('.phnote').forEach(t=>t.oninput=()=>{S['ph:'+t.dataset.ph]={note:t.value};save();upd();});
+}
+function renderWhatif(){
+ const root=document.getElementById('whatifs');root.innerHTML='';
+ WI.forEach(w=>{const note=(S['wi:'+w[0]]||{}).note||'';const has=note.trim()!=='';
+  const c=document.createElement('div');c.className='card wif';
+  c.innerHTML=`<div class="q">${w[1]}</div><div class="aff">Affects: ${w[3]}</div><div class="a"><b>My take:</b> ${w[2]}</div>
+   <textarea class="wifnote${has?' has':''}" data-id="${w[0]}" placeholder="Your feedback on this scenario…">${note}</textarea>`;
+  root.appendChild(c);});
+ document.querySelectorAll('#whatifs .wifnote').forEach(t=>t.oninput=()=>{S['wi:'+t.dataset.id]={note:t.value};save();t.classList.toggle('has',!!t.value.trim());upd();});
+}
+const LBLS=["Required","Nice-to-have","Deferred","Context"];
+const isDef=t=>t[5]==='Deferred'||t[5].indexOf('Defer')>=0||t[5].indexOf('V2')>=0;
+function trCard(t){const st=S['tr:'+t[0]]||{};const lvl=t[5];
+ const lc=lvl==='Deploy-block'?'db':lvl==='Required'?'rq':lvl==='Nice-to-have'?'nh':(lvl.indexOf('Defer')>=0||lvl.indexOf('V2')>=0)?'df':'cx';
+ const c=document.createElement('div');c.className='card'+(lvl==='Deploy-block'?' crit':'');
+ const lbls=LBLS.map(l=>`<button class="lbl${st.label===l?' on':''}" data-id="${t[0]}" data-l="${l}">${l}</button>`).join('');
+ c.innerHTML=`<h3 style="font-size:15px">${t[2]} <span class="srcb">${t[4]}</span> <span class="mylvl ${lc}">status: ${lvl}</span></h3><div class="ctx">${t[3]}</div>
+   <div class="lblrow">${lbls}</div>
+   <textarea class="wifnote${st.note?' has':''}" data-id="${t[0]}" placeholder="Optional note…">${st.note||''}</textarea>`;
+ return c;}
+function renderTech(){
+ const root=document.getElementById('techreqs');
+ const prev=document.getElementById('defwrap');const wasOpen=prev&&prev.classList.contains('show');
+ root.innerHTML='';
+ const active=TR.filter(t=>!isDef(t)),deferred=TR.filter(isDef);
+ TRG.forEach(g=>{const items=active.filter(t=>t[1]===g);if(!items.length)return;
+  const h=document.createElement('div');h.className='ws';h.innerHTML=`<h2>${g}</h2>`;root.appendChild(h);
+  items.forEach(t=>root.appendChild(trCard(t)));});
+ if(deferred.length){
+  const btn=document.createElement('button');btn.className='deftoggle';btn.id='showdef';
+  const wrap=document.createElement('div');wrap.id='defwrap';if(wasOpen)wrap.classList.add('show');
+  btn.textContent=(wasOpen?'▾ Hide':'▸ Show')+` deferred (${deferred.length})`;
+  const dh=document.createElement('div');dh.className='defhead';dh.textContent='Deferred for the en-IE launch — kept for the record.';wrap.appendChild(dh);
+  TRG.forEach(g=>{const items=deferred.filter(t=>t[1]===g);if(!items.length)return;
+   const h=document.createElement('div');h.className='ws';h.innerHTML=`<h2>${g}</h2>`;wrap.appendChild(h);
+   items.forEach(t=>wrap.appendChild(trCard(t)));});
+  btn.onclick=()=>{const open=wrap.classList.toggle('show');btn.textContent=(open?'▾ Hide':'▸ Show')+` deferred (${deferred.length})`;};
+  root.appendChild(btn);root.appendChild(wrap);
+ }
+ document.querySelectorAll('#techreqs .lbl').forEach(b=>b.onclick=()=>{const id=b.dataset.id;const s=S['tr:'+id]||{};s.label=(s.label===b.dataset.l?'':b.dataset.l);S['tr:'+id]=s;save();renderTech();});
+ document.querySelectorAll('#techreqs .wifnote').forEach(t=>t.oninput=()=>{const s=S['tr:'+t.dataset.id]||{};s.note=t.value;S['tr:'+t.dataset.id]=s;save();t.classList.toggle('has',!!t.value.trim());});
+}
+function upd(){const n=A.filter(a=>{const s=S[a[0]];return s&&Object.keys(s).some(k=>s[k]&&s[k].trim());}).length;const dn=A.filter(a=>S['done:'+a[0]]).length;document.getElementById('count').textContent=`${dn}/${A.length} done · ${n} with notes`;}
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(t=>t.setAttribute('aria-selected',t===b));document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id===b.dataset.t));if(b.dataset.t==='time')renderTime();if(b.dataset.t==='whatif')renderWhatif();if(b.dataset.t==='tech')renderTech();window.scrollTo({top:0,behavior:'smooth'});});
+document.getElementById('reset').onclick=()=>{if(confirm('Clear all feedback?')){S={};save();renderPlan();}};
+document.getElementById('export').onclick=()=>{let o='en-IE Go-Live — feedback\n\n';const FL={owner:'Owner',depends:'Depends',timeline:'Timeline',keep:'Critical to go live',contingency:'If not done'};
+ WS.forEach(ws=>{let head=false;A.filter(a=>a[1]===ws).forEach(a=>{const s=S[a[0]]||{};const keys=Object.keys(s).filter(k=>s[k]&&s[k].trim());
+  if(keys.length){if(!head){o+=`## ${ws}\n`;head=true;}o+=`${a[0]} ${a[2]}\n`;keys.forEach(k=>o+=`   • ${FL[k]||k}: ${s[k]}\n`);}});if(head)o+='\n';});
+ let tn='';PH.forEach(p=>{const s=S['ph:'+p.k];if(s&&s.note)tn+=`   • ${p.lab}: ${s.note}\n`;});if(tn)o+=`## Timeline notes\n${tn}`;
+ let wn='';WI.forEach(w=>{const s=S['wi:'+w[0]];if(s&&s.note)wn+=`   • ${w[1]}\n     ${s.note}\n`;});if(wn)o+=`## What-if notes\n${wn}`;
+ let rn='';TR.forEach(t=>{const s=S['tr:'+t[0]];if(s&&(s.label||s.note))rn+=`   • [${s.label||'—'}] ${t[2]}${s.note?' — '+s.note:''}\n`;});if(rn)o+=`## Technical-requirement feedback\n${rn}`;
+ navigator.clipboard.writeText(o).then(()=>{const b=document.getElementById('export');b.textContent='Copied ✓';setTimeout(()=>b.textContent='Copy my feedback',1500);});};
+renderPlan();
+</script>
+</body></html>

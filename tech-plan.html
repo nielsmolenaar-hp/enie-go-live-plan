@@ -1,0 +1,431 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="robots" content="noindex,nofollow">
+<title>en-IE Go-Live - Technical Implementation Plan</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+:root{--g:#008539;--gd:#006B2D;--ink:#191919;--ink2:#333;--ink3:#666;--bd:#e5e5e5;--bg:#fff;--bg2:#f8f8f8;--g50:#ecfdf3;--am:#f59e0b}
+*{box-sizing:border-box}
+body{font-family:"Inter",system-ui,sans-serif;color:var(--ink);max-width:920px;margin:0 auto;padding:28px 22px 80px;line-height:1.55;font-size:15px;background:var(--bg)}
+h1{font-size:26px;font-weight:800;letter-spacing:-.02em;margin:.2em 0 .4em}
+h2{font-size:20px;font-weight:800;margin:1.4em 0 .4em;padding-top:.5em;border-top:2px solid var(--g);color:var(--gd)}
+h3{font-size:16px;font-weight:700;margin:1.1em 0 .3em}
+p,li{color:var(--ink2)}
+a{color:var(--gd)}
+code{background:var(--bg2);border:1px solid var(--bd);border-radius:5px;padding:1px 5px;font-size:13px}
+table{border-collapse:collapse;width:100%;margin:1em 0;font-size:13.5px}
+th,td{border:1px solid var(--bd);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--g50);color:var(--gd);font-weight:700}
+blockquote{border-left:4px solid var(--am);background:#fff7ea;margin:1em 0;padding:8px 14px;border-radius:0 8px 8px 0;color:var(--ink2)}
+details{border:1px solid var(--bd);border-radius:8px;padding:8px 12px;margin:8px 0;background:var(--bg2)}
+summary{cursor:pointer;font-weight:700;font-size:13px;color:var(--ink3)}
+details[open]{background:#fff}
+hr{border:none;border-top:1px solid var(--bd);margin:1.6em 0}
+.topbar{background:var(--ink);color:#fff;margin:-28px -22px 18px;padding:14px 22px;font-weight:700;display:flex;gap:10px;align-items:center}
+.topbar a{color:#9fe6b6;font-size:13px;margin-left:auto;font-weight:600}
+</style></head><body>
+<div class="topbar"><span>Helloprint - en-IE Go-Live</span><a href="./index.html">Back to the go-live plan</a></div>
+<h1>en-IE Go-Live — Technical Requirements (User-Story Overview)</h1>
+<p>A human-readable overview of what the new staging build must deliver for the Helloprint Ireland (en-IE) launch. Each requirement is written as a <strong>user story</strong> with <strong>commercial acceptance criteria and the business benefit</strong> first. The <strong>technical detail, acceptance criteria and Linear tickets</strong> sit in a collapsible <em>"Technical detail &amp; tickets"</em> block under each one — there for context and engineering, but out of the way for a quick read.</p>
+<p><strong>Priority tiers:</strong> <strong>§A Must pass to launch</strong> (a build/CI gate blocks go-live if it fails) · <strong>§B Required for launch</strong> · <strong>§C After launch</strong> (deferred / V2).</p>
+<p><strong>Ticket status shorthand:</strong> ✅ Built — verify on staging · 🔧 Todo/in progress · ⛔ Blocked · 🆕 No ticket yet · ⚠️ Ticket conflicts with the agreed spec.</p>
+<hr />
+<h2>The commercial picture (read this first)</h2>
+<p>The en-IE launch puts ~6,754 product and category pages in front of Google and Irish customers. Everything below protects three commercial outcomes:</p>
+<ul>
+<li><strong>Get found</strong> — Google and AI search must be able to read, understand and index every page. A page they can't read earns no organic revenue.</li>
+<li><strong>Get the click</strong> — rich results (price, stars, breadcrumbs), correct country/language targeting, and fast pages win the click in the Irish search results.</li>
+<li><strong>Keep what we have</strong> — clean redirects, no dead links, and per-page index control protect existing rankings during the migration and stop thin/duplicate pages dragging the site down.</li>
+</ul>
+<p><strong>Where we stand today (from Linear):</strong> the <strong>product-page (PDP) foundation is essentially built and just needs verifying on en-IE staging.</strong> The <strong>category-page (PLP) build is mostly still open</strong>, and the <strong>sitemap, the canonical-vs-sitemap check, and the robots/bot-access work are not done yet.</strong> So the real launch work is: <em>verify the PDP gates, finish the PLP build, ship the sitemap/robots/canonical layer, and fix a handful of open staging defects.</em></p>
+<blockquote>
+<p>⚠️ <strong>Two tickets need re-scoping before the PLP schema is built:</strong> <strong>HEL-321</strong> and <strong>HEL-326</strong> still describe the old "CollectionPage + category star-rating" model. The agreed spec dropped both (category pages now use <code>WebPage</code> + product-list + breadcrumb, and there's no category-level star rating). Update these before building. <em>(The related category-rating ticket HEL-330 is already cancelled — consistent.)</em></p>
+<p><strong>Open en-IE staging defects to fix as part of this work:</strong> JSON-LD template-token leak (<strong>HEL-1168</strong>), category-page links to a 404 (<strong>HEL-1139</strong>), contradictory filter-page prices (<strong>HEL-1145</strong>).</p>
+</blockquote>
+<hr />
+<h2>✅ Live staging check — en-IE (browsed as a customer, 30 Jun)</h2>
+<p>I went through <code>v4.staging.helloprint.dev/en-ie</code> like a customer and inspected the pages. <strong>Good news: more is already live than the tickets imply.</strong></p>
+<p><strong>Confirmed working on en-IE staging:</strong>
+- Pages render with real content; the <strong>canonical</strong> is clean and self-referencing — a product page stays canonical to its bare URL even when the configurator adds parameters to the address.
+- <strong>hreflang</strong> present (en-ie + en-gb/nl-nl/de-de/fr-fr siblings); page <strong>language = en-IE</strong> and <strong>UTF-8</strong> are set; <strong>Open Graph + Twitter share tags are present</strong> — so the "head tags" gap (C16) is effectively already handled.
+- <strong>robots.txt</strong> is live and correct: allows all bots, blocks only cart/checkout/account/login, and declares the sitemap.
+- <strong>Sitemap</strong> is live: master index → per-locale en-ie index → product / collection / pages / blog / help type-files (so the sitemap <em>structure</em> exists despite HEL-320 reading "Todo").
+- <strong>Product-page schema</strong> is correct: Product + Offer (price in EUR) + BreadcrumbList.</p>
+<p><strong>Issues found live (fix or decide before launch):</strong>
+- ⚠️ <strong>Category pages still emit the old <code>CollectionPage</code> schema (+ breadcrumb), with no <code>WebPage</code> + product-list (<code>ItemList</code>).</strong> This is the withdrawn model (HEL-321 needs rewriting) — the product list isn't being sent to Google yet. <em>(B8.)</em>
+- ⚠️ <strong>Product pages emit a star rating (<code>aggregateRating</code>)</strong> — but we agreed product pages have no product-specific reviews at launch. Decide: remove it, or confirm it's the legitimate company-level rating. <em>(A5/A6.)</em>
+- ⚠️ <strong>Two <code>&lt;h1&gt;</code> on the product page</strong> ("Stapled Booklets" twice) — there should be exactly one. Fix before launch. <em>(→ D4.)</em>
+- ✅ <strong><code>x-default</code> hreflang points to en-gb</strong> and is working — <strong>kept for V1</strong> (decision: it's live and fine). <em>(A7.)</em>
+- ⚠️ Live pages are <code>index, follow</code>; the spec default for <em>unreviewed</em> pages should be <code>noindex, follow</code>. Confirm the <strong>default</strong> is safe (the live ticket HEL-288 reportedly shipped <code>index,follow</code> as default) — this matters for the ~6,754 pages before they're reviewed. <em>(B1.)</em></p>
+<p><strong>What this means:</strong> the launch is in better shape than the ticket board suggests — the heavy plumbing (SSR, canonical, hreflang, sitemap, robots, head tags, PDP schema) is largely <em>live on en-IE</em>. The real remaining work is the <strong>PLP schema rewrite, the deploy-gate enforcement, and a short list of live fixes</strong> — plus the newly-surfaced items in §D.</p>
+<hr />
+<h2>V1 vs V2 — the split (your decisions applied)</h2>
+<p><strong>Decisions locked in:</strong>
+1. <strong>robots.txt</strong> — correct as-is on staging (allows all bots incl. AI bots); V1, no change.
+2. <strong>Trustpilot ratings</strong> — <strong>company-level rating → V1</strong>; <strong>product/category-specific Trustpilot rating → V2</strong>.
+3. <strong>Mobile</strong> — <strong>essentials → V1</strong>, full <strong>optimisation → V2</strong>.
+4. <strong>Product pages</strong> — <strong>company-level rating only at launch</strong> (no product star rating in V1).
+5. <strong>Head tags</strong> (charset / <code>&lt;html lang&gt;</code> / Open Graph) — <strong>V1</strong> (already live).
+6. <strong>Earned filter pages / FLP</strong> — <strong>out of scope</strong> for now (not V1).
+7. <strong>meta-robots default = <code>noindex, follow</code></strong> for unreviewed pages — V1.
+8. <strong>Category schema (HEL-321/326)</strong> re-scoped to <code>WebPage</code> + product-list + breadcrumb — V1.</p>
+<table>
+<thead>
+<tr>
+<th>Area</th>
+<th><strong>V1 — launch (3 July)</strong></th>
+<th><strong>V2 — after launch</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Indexing &amp; robots</td>
+<td>meta-robots default <code>noindex,follow</code>; per-page index control; robots.txt allow-all</td>
+<td>indexation rule-engine automation + daily review</td>
+</tr>
+<tr>
+<td>Content readable by Google</td>
+<td>SSR content; nav/configurator/price; canonical + build-check; hreflang</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Schema</td>
+<td>PDP Product+Offer+Breadcrumb; PLP WebPage+ItemList+Breadcrumb; <strong>company Trustpilot rating</strong></td>
+<td><strong>product/category-specific Trustpilot rating</strong>; VideoObject</td>
+</tr>
+<tr>
+<td>Speed</td>
+<td>PDP Core Web Vitals gate; image loading; no layout shift; lean build</td>
+<td>PLP/FLP perf gating + fine-tuning</td>
+</tr>
+<tr>
+<td>Mobile</td>
+<td><strong>essentials:</strong> viewport, one responsive page, content parity, head tags</td>
+<td><strong>optimisation:</strong> first-viewport fit, lighter mobile images, touch targets, reduced-motion</td>
+</tr>
+<tr>
+<td>Sitemap / redirects / links</td>
+<td>sitemap; hreflang; redirects (list already defined); removed-product 301; internal links resolve 200</td>
+<td>post-regen crawler + drop-off automation</td>
+</tr>
+<tr>
+<td>Head tags</td>
+<td>charset, <code>&lt;html lang&gt;</code>, Open Graph/Twitter (live)</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Filters / FLP</td>
+<td><strong>out of scope</strong></td>
+<td>earned filter pages, filter SSR, pagination graph, edge cache</td>
+</tr>
+<tr>
+<td>Newly surfaced (§D)</td>
+<td>D1 slug-uniqueness, D2 locale-casing, D3 AI-bot access, D4 one-H1 gate, D5 company-rating sequencing, D6 soft-404, D7 token validation</td>
+<td>D8 cache/purge, D9 company pages</td>
+</tr>
+</tbody>
+</table>
+<p>Below, <strong>§A + §B = V1</strong> (must-pass gates + required); <strong>Part 2 = V2</strong> (after launch). §D items carry their own V1/V2 tag.</p>
+<hr />
+<h1>Part 1 · V1 — required for the 3 July launch</h1>
+<h2>§A — Must pass to launch (deploy-block gates)</h2>
+<h3>A1 · Google can read every page's content on load 🔴</h3>
+<p><strong>User story.</strong> <em>As a search engine (and AI assistant), I want a page's full content in the first response, so I can index it and rank it — and send Helloprint organic traffic.</em>
+<strong>What "done" looks like (commercial):</strong>
+- Open any en-IE product or category page with JavaScript off — the title, description, price, reviews and links are all already there.
+- Nothing important appears only after a click or scroll.
+<strong>Benefit:</strong> a page Google can't read earns nothing. This is the floor under <em>every</em> page's ability to rank.</p>
+<details><summary>Technical detail & tickets</summary>
+
+- CI parser (cheerio/jsdom) asserts every SEO-bearing element is present + non-empty in the server HTML (H1, headings, breadcrumb + BreadcrumbList, intro, USPs, description, specs, FAQ Q&A incl. collapsed, SEO text incl. "show more", related tiles, JSON-LD, canonical/hreflang/robots, every `<img alt>`, anchor text). Forbidden (build fails): `fetch()`-on-mount or client-render-only for indexable content; `display:none` on SEO-bearing elements; DOM removal.
+- **Tickets:** ✅ **HEL-285** SSR-output validators (deploy-blocking) *Done* — verify on en-IE. 🔧 PLP blocks: intro **HEL-327**, grid **HEL-328** *Todo*. ⚠️ open defect **HEL-1168** (token leak into JSON-LD).
+- **Owner:** ENG (Michael). **Source:** `mob-35/36`, g-mobile content parity.
+</details>
+
+<h3>A2 · Pages are fast enough to rank and convert 🔴 (PDP gated; PLP/FLP monitored)</h3>
+<p><strong>User story.</strong> <em>As an Irish mobile customer, I want pages to load quickly and not jump around, so I stay and buy — and as the business we keep Google's "good" speed rating that helps us rank.</em>
+<strong>What "done" looks like (commercial):</strong>
+- Product pages pass Google's "good" Core Web Vitals on a mid-range phone; a slow page can't reach production.
+- Category pages are monitored to the same targets (not a hard gate yet).
+<strong>Benefit:</strong> speed is both a ranking factor and a conversion lever — slow mobile pages lose rank <em>and</em> sales.</p>
+<details><summary>Technical detail & tickets</summary>
+
+- **PDP (deploy-blocking, Lighthouse CI per PR, Moto G4/slow-4G):** LCP ≤2.0s · CLS ≤0.05 · INP ≤150ms · TTFB ≤250ms cached/600ms uncached · FCP ≤1.5s · JS ≤250KB gz · first-screen image ≤400KB · inlined CSS ≤14KB. **PLP (guideline, not gated):** same targets, JS ≤240KB gz, sampled weekly. **FLP (out of v1):** LCP ≤2.5 · INP ≤200 · CLS ≤0.1.
+- **Tickets:** ✅ **HEL-286** Lighthouse CI deploy-blocking gate *Done* — verify it runs on en-IE staging. (Homepage CWV fix **HEL-566** *Done* confirms the gate is live.)
+- **Owner:** Frontend (Frederico) + ENG. **Source:** `mob-19`, `mob-41`, g-mobile §3.16.
+</details>
+
+<h3>A3 · The menu, configurator and prices are visible to Google 🔴</h3>
+<p><strong>User story.</strong> <em>As a search engine, I want the navigation, configurator options and live price/delivery in the page on load, so I can index our core commercial content and show it in results.</em>
+<strong>What "done" looks like (commercial):</strong>
+- Every menu link, configurator option, and the live price + delivery date are present in the page without clicking.
+- If the price service is slow, the last known price still shows (never blank).
+<strong>Benefit:</strong> the configurator and price are our main conversion content and key ranking/answer-engine signals — hidden behind a click, they're invisible to Google.</p>
+<details><summary>Technical detail & tickets</summary>
+
+- Nav L1/L2/L3 = real `<a href>` in raw HTML; configurator fully expanded on first paint (every option string in DOM, no "show more" gate); price + delivery SSR with last-good cached fallback.
+- **Tickets:** ✅ configurator SSR price/delivery **HEL-297** *Done*; nav verified via **HEL-289**. 🔧 PLP grid SSR price **HEL-328** *Todo*. ⚠️ FLP price mismatch **HEL-1145**.
+- **Owner:** ENG. **Source:** `b5-17/24/25`, NAV crawl rows.
+</details>
+
+<h3>A4 · Each page is its own "original" (and we prove the link works) 🔴</h3>
+<p><strong>User story.</strong> <em>As the SEO team, I want every page to declare itself the canonical and a build check to confirm that address loads and is in the sitemap, so tracking/filter variants aren't treated as duplicates and we never ship a broken canonical.</em>
+<strong>What "done" looks like (commercial):</strong>
+- Versions of a page with tracking codes or filter parameters all point back to one clean "master" address.
+- The build refuses to ship a page whose master address is dead or missing from the sitemap.
+<strong>Benefit:</strong> stops Google splitting ranking signals across duplicates and wasting crawl budget — and prevents a silent, hard-to-spot ranking leak.</p>
+<details><summary>Technical detail & tickets</summary>
+
+- Self-canonical, normalised (HTTPS · no-www · no trailing slash · lowercase · strip utm/gclid/fbclid/msclkid/ref). Query URLs self-canonical + `noindex,follow`. Never cross-locale. **Build validation (PLP/FLP):** canonical resolves 200 AND (if index) in sitemap, else build fails (GUIDELINE on PDP).
+- **Tickets:** ✅ emission **HEL-288** *Done*. ⛔ the resolves-200/in-sitemap validator is **HEL-322** *Blocked* — unblock for launch.
+- **Owner:** ENG. **Source:** `meta-10..18`, g-meta (master).
+</details>
+
+<h3>A5 · Product pages show price, stock &amp; breadcrumb in Google 🔴</h3>
+<p><strong>User story.</strong> <em>As an Irish customer searching, I want to see the price, availability and category path right in the search result, so I click the most relevant Helloprint listing.</em>
+<strong>What "done" looks like (commercial):</strong>
+- Product pages qualify for rich results — price, availability and breadcrumb appear in the Irish SERP.
+- The breadcrumb in the data matches the one on the page.
+<strong>Benefit:</strong> rich results lift click-through against competitors. Missing fields = plain blue link = fewer clicks.</p>
+<details><summary>Technical detail & tickets</summary>
+
+- One `Product` with name/category/description/image/brand/sku/inLanguage/dateModified/returns/shipping + `offers` (price=pre-set, currency, validUntil); missing required → build fails. `BreadcrumbList` inside Product mirrors visible. **No product star rating at V1** (reviews block is V2 — build the emitter inert). Only visibly-rendered fields (spam guardrail).
+- **Tickets:** ✅ **HEL-305** Product JSON-LD generator *Done*; validator **HEL-284** *Done*; breadcrumb walker **HEL-291** *Done* — verify on en-IE.
+- **Owner:** ENG. **Source:** B14 rows, g-schema.
+</details>
+
+<h3>A6 · Our company rating shows in Google 🔴</h3>
+<p><strong>User story.</strong> <em>As a first-time Irish customer, I want to see Helloprint's star rating in search, so I trust an unfamiliar brand enough to click.</em>
+<strong>What "done" looks like (commercial):</strong> the company-level Trustpilot stars + review count appear as a rich result.
+<strong>Benefit:</strong> trust + higher CTR for a brand new to the Irish market.</p>
+<details><summary>Technical detail & tickets</summary>
+
+- `AggregateRating` in `Organization` (ratingValue/bestRating 5/worstRating 1/reviewCount); missing fields → build fails; company-level only.
+- **Tickets:** ✅ **HEL-283** Trustpilot SSR + schema *Done*; **HEL-290** USP bar *Done*.
+- **Owner:** ENG. **Source:** `usp-6`, g-schema sitewide.
+</details>
+
+<h3>A7 · Irish customers are shown the Irish page (hreflang) 🔴</h3>
+<p><strong>User story.</strong> <em>As an Irish searcher, I want Google to show me /en-ie/ (not the UK page), so I get Irish pricing/delivery — and as the business we don't cannibalise our own UK rankings.</em>
+<strong>What "done" looks like (commercial):</strong> each language/country version correctly references the others; Irish users land on the Irish page.
+<strong>Benefit:</strong> right page to right market = better conversion and no self-competition between IE and GB.</p>
+<details><summary>Technical detail & tickets</summary>
+
+- hreflang in `<head>`, `lang-CC` format, self-referencing; locale included only if URL authored AND `index,follow`; reciprocity asymmetry fails the build; **x-default → en-gb (live, kept for V1).**
+- **Tickets:** ✅ emission **HEL-288** *Done*; verify the reciprocity build gate is wired (HEL-285/322 suite).
+- **Owner:** ENG. **Source:** g-tech-seo §3.4b, g-meta.
+</details>
+
+<h3>A8 · Every page declares it's mobile-friendly 🔴</h3>
+<p><strong>User story.</strong> <em>As Google (mobile-first index), I want the standard viewport tag on every page, so I render it at phone width and rank it as mobile-friendly.</em>
+<strong>What "done" looks like (commercial):</strong> every en-IE page carries the correct viewport tag; the build fails if it's missing/wrong.
+<strong>Benefit:</strong> protects mobile rankings where most Irish traffic is.</p>
+<details><summary>Technical detail & tickets</summary>
+
+- Exact `<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">`; no `user-scalable=no`; build fails on drift.
+- **Tickets:** ✅ **HEL-307** viewport contract + drift check *Done*.
+- **Owner:** Frontend. **Source:** `mob-40`, g-mobile.
+</details>
+
+<hr />
+<h2>§B — Required for launch (V1) — in place on staging; not a hard gate</h2>
+<h3>B1 · We control which pages Google indexes, per language 🟢</h3>
+<p><strong>User story.</strong> <em>As the SEO team, I want to switch each page's index on/off per language, so we index pages that earn traffic and hide thin or duplicate ones.</em>
+<strong>What "done" looks like (commercial):</strong> every en-IE page has an explicit index/no-index setting; nothing is indexed by accident; key commercial pages stay indexed.
+<strong>Benefit:</strong> protects overall site quality and lets a page be live in IE but hidden where it'd cannibalise.</p>
+<details><summary>Technical detail & tickets</summary>
+
+- Per-locale meta-robots field; default `noindex,follow`; publish rejects empty en-IE value; PDPs in first 12 of a PLP stay index; non-crucial PDP → noindex only if <20/mo AND not first-12 AND <€10k/6mo; high-impact flips review-gated.
+- **Tickets:** ✅ field + emission **HEL-288** *Done*. ⛔ indexation engine + daily review **HEL-319** *Blocked* (matches plan: manual flips for launch, automation = action 3.3).
+- **Owner:** ENG (field) + SEO (values). **Source:** `meta-20`, g-url §3.3 INDEX-1.
+</details>
+
+<h3>B2 · URLs stay clean and stable 🟢</h3>
+<p><strong>User story.</strong> <em>As the business, I want clean, consistent web addresses that don't change at launch, so we keep the ranking equity our existing URLs already hold.</em>
+<strong>What "done" looks like (commercial):</strong> en-IE URLs are clean, lowercase, with the country/language prefix; existing addresses are reused; any change is redirected.
+<strong>Benefit:</strong> avoids the traffic loss that comes from messy or shifting URLs.</p>
+<details><summary>Technical detail & tickets</summary>
+
+- `/{lang}-{country}/{slug}` flat kebab-case ≤75 chars; one shared normaliser, validated at publish; changes → single-hop 301; no commercial URLs change at launch.
+- **Tickets:** ✅ PDP routing/slug/redirect map **HEL-287** *Done*. ⛔ PLP URL rules **HEL-319** *Blocked*.
+- **Owner:** ENG. **Source:** g-url, `url-11`.
+</details>
+
+<h3>B3 · Google has an up-to-date map of all our good pages 🟢</h3>
+<p><strong>User story.</strong> <em>As a search engine, I want a sitemap of every page worth indexing, so I discover the ~6,754 new IE pages fast and start ranking them.</em>
+<strong>What "done" looks like (commercial):</strong> a daily-refreshed sitemap lists only the pages we want in Google, submitted to Google + Bing.
+<strong>Benefit:</strong> without it, new pages can take weeks to get indexed and start earning.</p>
+<details><summary>Technical detail & tickets</summary>
+
+- Master → per-locale → type sitemaps, declared in robots.txt; clean indexable URLs only; `lastmod` (no changefreq/priority); daily 03:00 + event regen; en-IE ships only with ≥1 index URL.
+- **Tickets:** ✅ **Live check:** the sitemap structure is already on en-IE staging (master → per-locale → product/collection/pages/blog/help type-files). 🔧 **HEL-320** *Todo* — outstanding parts are `lastmod`, regen cadence, the post-regen crawler + drop-off alerts (not the index structure).
+- **Owner:** ENG. **Source:** g-tech-seo §3.4a.
+</details>
+
+<h3>B4 · Old URLs redirect the moment they change 🟢</h3>
+<p><strong>User story.</strong> <em>As the SEO team, I want every changed URL to 301 to its new home at the same moment, so we carry the ranking equity over and never strand a customer.</em>
+<strong>What "done" looks like (commercial):</strong> the full redirect list is defined up front; redirects go live with the move; none point to a hidden page.
+<strong>Benefit:</strong> preserves rankings and avoids dead ends during migration.</p>
+<details><summary>Technical detail & tickets</summary>
+
+- Sheet→Cloudflare sync (manual gate); 301 single-hop; never to a noindex page (build blocks the sync); strip tracking params; sibling hreflang + sitemap update.
+- **Tickets:** ✅ redirect-map mechanism **HEL-287** *Done*; 🔧 never-to-noindex validation + chains ride **HEL-320/322**. Redirect list = plan action 4.2.
+- **Owner:** ENG + SEO. **Source:** g-tech-seo §3.6.
+</details>
+
+<h3>B5 · Removed products redirect — never a dead end 🟢</h3>
+<p><strong>User story.</strong> <em>As a customer who clicks an old link to a discontinued product, I want to land on the closest live page, so I can still buy — and we keep that page's SEO value.</em>
+<strong>What "done" looks like (commercial):</strong> discontinued/out-of-stock-long-term products redirect to the nearest parent; empty categories stay hidden from Google until filled.
+<strong>Benefit:</strong> keeps the customer shopping and stops us losing ranking equity to 404s.</p>
+<details><summary>Technical detail & tickets</summary>
+
+- Temp OOS → 200/indexed; long-term/discontinued → 301 to replacement or parent + noindex + sitemap drop; empty category noindex until filled; true 404 only for invalid URLs.
+- **Tickets:** 🆕 no dedicated ticket — create one / fold into HEL-320 governance.
+- **Owner:** ENG + SEO. **Source:** g-tech-seo §3.6 OOS tree, FLP F4 empty-state.
+</details>
+
+<h3>B6 · Every internal link goes to a live page 🟢</h3>
+<p><strong>User story.</strong> <em>As a customer and as Google, I want every link on the site to lead to a working page, so I don't hit dead ends and crawl budget isn't wasted; and as the business we make sure AI search bots get the same pages.</em>
+<strong>What "done" looks like (commercial):</strong> no link anywhere (menu, footer, grid) leads to a 404; AI crawlers see the same pages as Google.
+<strong>Benefit:</strong> protects crawl budget, stops pages being stranded with no inbound links, and keeps us visible in AI answers.</p>
+<details><summary>Technical detail & tickets</summary>
+
+- Every internal link resolves 200; clean slugs only; AI bots never GEO-redirected. (Auto chain-detection not required for launch.)
+- **Tickets:** 🔧 **HEL-45** exclude search + AI bots from GEO redirect *Todo*. ⚠️ open en-IE 404s: **HEL-1139** (grid → /magazines) *Backlog*, HEL-1136 (/all) *Done*. De-orphaning HTML sitemap **HEL-1072** *Backlog*.
+- **Owner:** ENG. **Source:** g-tech-seo edge/bot access.
+</details>
+
+<h3>B7 · A correct robots.txt that lets everyone crawl us 🟢 (define)</h3>
+<p><strong>User story.</strong> <em>As the business, I want a robots.txt that points to the sitemap and lets all search + AI bots crawl us, so we're fully discoverable (and never accidentally block ourselves).</em>
+<strong>What "done" looks like (commercial):</strong> robots.txt names the sitemap and allows all search + AI/LLM bots; nothing important is blocked.
+<strong>Benefit:</strong> a wrong robots.txt can block the whole site from Google — catastrophic at launch; allowing AI bots positions us for AI-search visibility.</p>
+<details><summary>Technical detail & tickets</summary>
+
+- Declares the master sitemap; allows all search + AI/LLM bots; parameter URLs not disallowed; SEO-reviewed.
+- **Tickets:** ✅ **Live check:** robots.txt is already correct on en-IE staging — `Allow: /` for all bots, disallows only cart/checkout/account/login/auth, declares the sitemap. Just confirm the allow-all (incl. AI bots) is intentional and the prod sitemap URL is right. Bot-by-IP verification = **HEL-45** (see D3).
+- **Owner:** ENG + SEO. **Source:** g-tech-seo (gap — define separately).
+</details>
+
+<h3>B8 · Category pages show their product list &amp; breadcrumb in Google 🟢</h3>
+<p><strong>User story.</strong> <em>As an Irish customer searching a category term, I want Helloprint's category page to appear with its breadcrumb and product context, so I click through to the right range.</em>
+<strong>What "done" looks like (commercial):</strong> category pages send their product list + breadcrumb to Google (no category star rating); they rank for the big category head terms.
+<strong>Benefit:</strong> category head terms are the biggest IE demand pool — this is where a lot of the organic revenue sits.</p>
+<details><summary>Technical detail & tickets</summary>
+
+- PLP root `WebPage` (**not** CollectionPage); `ItemList` only on canonical+indexable URLs; `BreadcrumbList` mirrors visible; FAQPage when present; no category rating; no `Product` root.
+- **Tickets:** 🔧/⚠️ **HEL-321** *Todo* — **re-scope off "CollectionPage + category rating" first** (see top flag).
+- **Owner:** Frontend (Sebastiaan/Frederico) + ENG. **Source:** g-schema (master).
+</details>
+
+<h3>B9 · The main image loads first, the rest as you scroll 🟢</h3>
+<p><strong>User story.</strong> <em>As a customer, I want the main product image to appear instantly, so the page feels fast and I engage — and the page passes the speed metric Google ranks on.</em>
+<strong>What "done" looks like (commercial):</strong> hero/first image loads immediately; the rest load on scroll.
+<strong>Benefit:</strong> faster first impression = better conversion + Core Web Vitals rank.</p>
+<details><summary>Technical detail & tickets</summary>
+
+- LCP image eager + `fetchpriority=high` + AVIF preload; rest `lazy`+`async`; PLP row-1 eager.
+- **Tickets:** ✅ image pipeline **HEL-281** + hero gallery **HEL-293** *Done* (PDP). 🔧 PLP grid image **HEL-329** *Todo*.
+- **Owner:** Frontend. **Source:** `mob-17/b3-2`, g-mobile.
+</details>
+
+<h3>B10 · Nothing jumps around while the page loads 🟢</h3>
+<p><strong>User story.</strong> <em>As a customer, I want the layout to stay still as it loads, so I don't mis-tap — and the page keeps a good "layout stability" score.</em>
+<strong>What "done" looks like (commercial):</strong> images and the price area hold their space; nothing shifts as content loads.
+<strong>Benefit:</strong> fewer mis-taps (lost sales) and a better CLS metric Google ranks on.</p>
+<details><summary>Technical detail & tickets</summary>
+
+- width/height (or aspect-ratio) on every image; reserved min-height on price/delivery/summary/Trustpilot; CLS ≤0.05.
+- **Tickets:** ✅ CLS locks **HEL-297** + image dims **HEL-281/293** *Done* (PDP).
+- **Owner:** Frontend. **Source:** `b5-38/b3-19`, g-mobile.
+</details>
+
+<h3>B11 · Only load the JavaScript the first screen needs 🟢</h3>
+<p><strong>User story.</strong> <em>As a customer, I want the page usable fast, with chat/reviews/extras loading after, so I'm not waiting on things I don't need yet.</em>
+<strong>What "done" looks like (commercial):</strong> the first load is light; non-essential features load once the page is usable.
+<strong>Benefit:</strong> faster pages = better rank and conversion.</p>
+<details><summary>Technical detail & tickets</summary>
+
+- Initial JS ≤250KB gz (chat/reviews/extras after LCP via dynamic import); critical CSS inlined ≤14KB; fonts `font-display:swap` + preloaded + self-hosted; no task >50ms.
+- **Tickets:** 🔧 enforced via the **HEL-286** perf budget (Done); specific implementation has no standalone ticket — verify against budget.
+- **Owner:** Frontend + ENG. **Source:** `mob-22/23/44/37`.
+</details>
+
+<h3>B12 · The Trustpilot rating shows instantly 🟢</h3>
+<p><strong>User story.</strong> <em>As a customer, I want to see the rating the moment the page loads, so the trust signal lands at the point I'm deciding.</em>
+<strong>What "done" looks like (commercial):</strong> the rating shows on load (last saved score); it hides cleanly if unavailable — never blank or zero stars.
+<strong>Benefit:</strong> fixes today's "blank widget on load" problem at the exact conversion moment.</p>
+<details><summary>Technical detail & tickets</summary>
+
+- SSR last-cached score (≤24h) on first paint; hydrate after LCP; hide if unavailable.
+- **Tickets:** ✅ **HEL-283** *Done*.
+- **Owner:** ENG. **Source:** `usp-1/7`.
+</details>
+
+<hr />
+<h1>Part 2 · V2 — after launch</h1>
+<p><em>Not required for 3 July. Per the decisions, </em><em>head tags (C16) and company-rating sequencing moved to V1</em><em>; everything below is V2 or out-of-scope. Each item keeps its user-story + benefit + ticket flags.</em></p>
+<h3>C1 · One page version for mobile &amp; desktop ⚪ (V2)</h3>
+<p><em>As Google, I want one page that reflows for mobile, so there's no separate mobile site to index.</em> <strong>Benefit:</strong> avoids duplicate-site SEO + maintenance cost. <strong>Tickets:</strong> parity enforced by HEL-285; no AMP/m. (see C2).</p>
+<h3>C2 · Not building AMP / PWA / dark mode ⚪</h3>
+<p><em>As the business, I want to skip features that add cost without return.</em> <strong>Benefit:</strong> SSR + speed deliver the same SEO. <strong>Tickets:</strong> AMP/m. ban verified in HEL-285/HEL-307; confirm PWA intentionally out.</p>
+<h3>C3 · The right things fit on the first phone screen ⚪ (mobile deferred)</h3>
+<p><em>As a mobile customer, I want the key info above the fold, so I act without scrolling.</em> <strong>Benefit:</strong> stronger mobile first impression → conversion. <strong>Tickets:</strong> viewport units done (HEL-307); per-block contract ties to PLP blocks (Todo).</p>
+<h3>C4 · Phones download one lighter image per product ⚪ (mobile deferred)</h3>
+<p><em>As a mobile customer on data, I want light images, so pages load fast.</em> <strong>Benefit:</strong> halves mobile image weight → speed → rank/conversion. <strong>Tickets:</strong> PLP mobile single-image <strong>HEL-329</strong> <em>Todo</em>.</p>
+<h3>C5 · Buttons &amp; form text sized for phones ⚪ (mobile deferred)</h3>
+<p><em>As a mobile customer, I want easy-to-tap buttons and no zoom-jank, so checkout is smooth.</em> <strong>Benefit:</strong> fewer mis-taps, smoother mobile checkout. <strong>Tickets:</strong> partial in a11y/SSR validators; no standalone en-IE ticket.</p>
+<h3>C6 · Respect "reduce motion" settings ⚪ (mobile deferred)</h3>
+<p><em>As a motion-sensitive user, I want animations off when I ask, so the site is comfortable.</em> <strong>Benefit:</strong> accessibility + avoids drop-off; low effort. <strong>Tickets:</strong> covered by mobile a11y rows; deferred.</p>
+<h3>C7 · One high-quality image source, auto-resized ⚪ (same images for now)</h3>
+<p><em>As the business, I want one master image auto-served in the right format/size, so images are fast and Shopping-eligible.</em> <strong>Benefit:</strong> consistent, fast, eligible images. <strong>Tickets:</strong> ✅ pipeline <strong>HEL-281</strong> <em>Done</em> — already exists, just not changing images for launch.</p>
+<h3>C8 · Product images are square 🟡</h3>
+<p><em>As a customer, I want a tidy uniform grid, so the page looks trustworthy.</em> <strong>Benefit:</strong> uniform look + no layout shift. <strong>Tickets:</strong> ✅ 1:1 gallery <strong>HEL-293</strong> <em>Done</em> (PDP).</p>
+<h3>C9 · 360° spins, video &amp; video rich-results ⚪ (launch products only / V2)</h3>
+<p><em>As a customer on a hero product, I want richer media, so I'm more confident to buy.</em> <strong>Benefit:</strong> lifts conversion on flagship products. <strong>Tickets:</strong> ✅ 360 GIF <strong>HEL-293</strong> <em>Done</em>; self-hosted video + VideoObject = V2.</p>
+<h3>C10 · Only proven filter pages get their own URL ⚪ (FLP, out of v1)</h3>
+<p><em>As the SEO team, I want only filter pages with real demand to be indexable, so we don't dilute authority.</em> <strong>Benefit:</strong> captures real filter demand without thin pages. <strong>Tickets:</strong> FLP engine <strong>HEL-1141</strong> <em>Backlog</em> (gated on Merchant-Catalogue API).</p>
+<h3>C11 · Filter pages show products without JavaScript ⚪ (FLP, out of v1)</h3>
+<p><em>As Google, I want filter pages rendered server-side, so I can index them.</em> <strong>Benefit:</strong> makes filter pages rankable (today they're client-side/invisible). <strong>Tickets:</strong> <strong>HEL-1141</strong> <em>Backlog</em>.</p>
+<h3>C12 · Pagination "Load more" with a crawlable graph ⚪ (FLP, out of v1)</h3>
+<p><em>As Google, I want to discover deep products without indexing thin page-2+ URLs.</em> <strong>Benefit:</strong> full discovery, no thin-page dilution. <strong>Tickets:</strong> part of <strong>HEL-1141</strong> <em>Backlog</em>.</p>
+<h3>C13 · Daily health-check crawl 🟡 (crawler V1; hreflang automation V2)</h3>
+<p><em>As the SEO team, I want a daily crawl flagging broken/dropped pages, so we catch traffic risks early.</em> <strong>Benefit:</strong> early warning protects traffic. <strong>Tickets:</strong> 🔧 part of <strong>HEL-320</strong> <em>Todo</em>.</p>
+<h3>C14 · Prices on the page stay fresh ⚪ (current speed fine)</h3>
+<p><em>As a customer, I want accurate prices, so there are no nasty surprises (and no Google Merchant mismatch).</em> <strong>Benefit:</strong> trust + avoids feed penalties. <strong>Tickets:</strong> V1 = frozen pre-set price + last-good fallback (<strong>HEL-297</strong> Done); TTL matrix V2.</p>
+<h3>C15 · Edge-caching for filter pages ⚪ (FLP, out of v1)</h3>
+<p><em>As a customer, I want filter pages fast at scale.</em> <strong>Benefit:</strong> speed at catalogue scale. <strong>Tickets:</strong> FLP-specific; PLP price-fragment cache in <strong>HEL-328</strong> <em>Todo</em>.</p>
+<h3>C16 · Standard behind-the-scenes head tags ✅ → <strong>now V1 (already live)</strong></h3>
+<p><em>As someone sharing a page on WhatsApp/social, I want a proper title + preview image, so the link looks credible.</em> <strong>Benefit:</strong> better share CTR; correct charset/language. <strong>Decision:</strong> classed <strong>V1</strong>. <strong>Tickets:</strong> ✅ <strong>Live check:</strong> charset (UTF-8), <code>&lt;html lang=en-IE&gt;</code>, and Open Graph + Twitter tags are all present on en-IE staging — gap closed; just verify the OG image/title per page.</p>
+<h3>C17 · Product/category-specific Trustpilot rating ⚪ (V2)</h3>
+<p><em>As a customer, I want star ratings specific to this product or category, so I can judge the exact thing I'm buying — not just the company overall.</em> <strong>Benefit:</strong> product-level social proof lifts conversion on the page itself. <strong>Decision:</strong> <strong>V2</strong> — V1 ships <strong>company-level rating only</strong>; product/category Trustpilot ratings ride the product reviews block, which needs product-specific review data. <strong>Tickets:</strong> product reviews block (PDP B9) is V2; HEL-330 (category rating) was cancelled under the old CollectionPage model — re-create at V2 under the new <code>WebPage</code>/<code>ItemList</code> schema.</p>
+<hr />
+<h1>§D — Newly surfaced by the deep research (weren't on the original checklist)</h1>
+<p>These came out of the gap-analysis + Linear + the live check. They're mostly infrastructure that quietly protects the launch — flagged here so we consciously decide each in or out, rather than discover them later.</p>
+<h3>D1 · No two pages can claim the same address 🟢</h3>
+<p><em>As the SEO team, I want the system to refuse to publish a page whose URL clashes with another (and to rebuild routes write-then-swap), so a page never goes live in a broken or unindexable state.</em> <strong>Benefit:</strong> prevents silent indexation failures. <strong>Linear:</strong> HEL-893 open.</p>
+<h3>D2 · One consistent way of writing locale codes 🟢</h3>
+<p><em>As the business, I want locale codes written one way everywhere (lowercase <code>en-ie</code>), with uppercase variants redirected, so we don't create duplicate or broken locale URLs.</em> <strong>Benefit:</strong> directly affects en-IE — casing slip-ups create duplicate pages.</p>
+<h3>D3 · AI search bots can crawl us 🟢</h3>
+<p><em>As the business, I want verified Google and AI bots (GPTBot, ClaudeBot, PerplexityBot, Google-Extended…) to never be geo-redirected away, so we stay visible in Google and in AI answers.</em> <strong>Benefit:</strong> AI-search visibility + clean indexing. <strong>Linear:</strong> HEL-45 Todo (verify by IP/reverse-DNS).</p>
+<h3>D4 · Exactly one H1 per page, checked at build 🟢</h3>
+<p><em>As the SEO team, I want a build check that every page has exactly one non-empty H1, so we never ship a missing or duplicate headline.</em> <strong>Benefit:</strong> would have caught the <strong>duplicate H1 found live on the booklets product page</strong> (and the earlier homepage H1 regression). <strong>Linear:</strong> relates to GMOB-012 / HEL-851.</p>
+<h3>D5 · The company rating survives on product pages 🟢</h3>
+<p><em>As a customer, I want the trust rating to keep showing on product pages, so I still see it after the old USP bar is removed.</em> <strong>Benefit:</strong> don't lose the only brand-level rating signal. <strong>Linear:</strong> verify HEL-858 before HEL-859 removes the old bar; kill the hardcoded "4.4" fallback (HEL-932). <em>(Ties to the live "product emits a rating" finding — decide product vs company scope.)</em></p>
+<h3>D6 · Empty category pages stay hidden until filled 🟢 (if IE launches sparse hubs)</h3>
+<p><em>As the SEO team, I want category/cluster pages with no products/articles to stay out of Google until populated, so we don't publish thin "soft-404" pages.</em> <strong>Benefit:</strong> protects site quality.</p>
+<h3>D7 · Template tokens never leak into live pages 🟢</h3>
+<p><em>As a customer, I don't want to see <code>{{shop_name}}</code> placeholders, and Google shouldn't index them.</em> <strong>Benefit:</strong> fixes the live leak (HEL-1168) and prevents repeats — define the tokens + validate they're resolved at publish.</p>
+<h3>D8 · Caching that's fast and never serves a broken fragment ⚪ (infra — confirm scope)</h3>
+<p><em>As a customer, I want fast pages that always show correct, fresh content.</em> <strong>Benefit:</strong> speed at scale without stale/blank fragments. <strong>Linear:</strong> event-driven purge + stale-tier largely unticketed (GCACHE).</p>
+<h3>D9 · Company/standard pages have a proper home ⚪ (if they ship for IE)</h3>
+<p><em>As a visitor, I want /our-promises, contact, etc. to work and be findable.</em> <strong>Benefit:</strong> these pages currently have no content type or sitemap home — needed only if IE launches them.</p>
+<hr />
+<h2>What to do for en-IE (3 July) — at a glance</h2>
+<ul>
+<li><strong>Verify on staging (already built — don't rebuild):</strong> A1, A2, A3 (PDP), A5, A6, A7, A8, B1, B2, B9, B10, B12, C7, C8 → tickets HEL-285/286/297/305/284/291/283/290/307/288/287/281/293.</li>
+<li><strong>Finish / unblock for launch:</strong> A4 canonical validator (<strong>HEL-322</strong> ⛔), B3 sitemap (<strong>HEL-320</strong> 🔧), B6 internal links + bot access (<strong>HEL-45</strong> 🔧 + <strong>HEL-1139</strong>), B8 category schema (<strong>HEL-321</strong> 🔧 — re-scope first), and the PLP build (<strong>HEL-318</strong> children).</li>
+<li><strong>Create tickets (gaps):</strong> B5 removed-product redirects, B7 robots.txt policy, C16 head tags.</li>
+<li><strong>Fix open en-IE defects:</strong> HEL-1168 (token leak), HEL-1139 (grid 404), HEL-1145 (filter price).</li>
+<li><strong>Decisions — resolved (applied above):</strong> robots.txt allow-all ✓ V1 · company rating V1 / <strong>product+category Trustpilot V2</strong> ✓ · <strong>mobile essentials V1, optimisation V2</strong> ✓ · <strong>product pages = company rating only at launch</strong> ✓ · <strong>head tags V1</strong> ✓ · <strong>earned filters / FLP out of scope</strong> ✓ · meta-robots default <code>noindex,follow</code> V1 ✓ · HEL-321/326 re-scoped V1 ✓.</li>
+<li><strong>x-default</strong> — ✅ resolved: en-gb is live and working, kept for V1.</li>
+<li><strong>Quick live fixes (V1):</strong> duplicate H1 on the booklets PDP; category pages still on old <code>CollectionPage</code> schema (HEL-321 re-scope); open defects HEL-1168 / HEL-1139 / HEL-1145.</li>
+</ul>
+</body></html>

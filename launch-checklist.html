@@ -25,6 +25,14 @@ h1{font-size:22px;font-weight:800;letter-spacing:-.02em}
 .card.ok{border-left:4px solid var(--ok);background:var(--g50)}
 .card.iss{border-left:4px solid var(--rd);background:var(--rdbg)}
 .card h3{font-size:15px;font-weight:700}
+.vb{font-size:10.5px;font-weight:700;padding:2px 7px;border-radius:20px;vertical-align:middle;white-space:nowrap;text-transform:uppercase;letter-spacing:.03em}
+.vb.pass{background:#dff5e6;color:#006B2D}
+.vb.issue{background:#fde8e8;color:#b4232a}
+.vb.manual{background:#eef0f2;color:#5a6470}
+.vn{font-size:12px;margin:2px 0 7px;padding:6px 9px;border-radius:7px;line-height:1.45}
+.vn.pass{background:#f2fbf5;color:#2c6b45}
+.vn.issue{background:#fdf3f3;color:#8f2b31}
+.vn.manual{background:#f5f6f7;color:#586069}
 .how{font-size:12.5px;color:var(--ink3);margin:4px 0 9px}
 .how b{color:var(--ink2)}
 .stat{display:flex;gap:6px;flex-wrap:wrap}
@@ -82,6 +90,33 @@ const C=[
 ["p1","Speed","Product-page speed — Core Web Vitals","<b>Very important.</b> Run PageSpeed / Lighthouse (mobile) on a product + a category page: LCP, CLS, INP green (LCP ≤2.0s · CLS ≤0.05 · INP ≤150ms). Target — ship if close."],
 ["p2","Speed","Main image first, nothing jumps","Hero / first image loads immediately; the layout doesn't shift as it loads."]
 ];
+// Shared verified status (checked live on staging as Googlebot, 30 Jun). v: pass|issue|manual
+const VER={
+ m1:{v:'manual',n:'Do before cutover — snapshot rankings/GSC/indexed count'},
+ m2:{v:'manual',n:'Needs the old-URL list to audit coverage'},
+ m3:{v:'issue',n:'Uppercase→301 works; parameter/hyphen→base-URL redirect not in place yet'},
+ m4:{v:'manual',n:'Check the new Blog/Helpcenter URLs + old-path 301s'},
+ m5:{v:'manual',n:'Needs old stack to confirm old URLs no longer serve 200'},
+ m6:{v:'manual',n:'A non-existent URL returns a real 404 ✓; full 404 list still to check'},
+ m7:{v:'manual',n:'Needs old vs new comparison on top pages'},
+ m8:{v:'manual',n:'Post-launch monitoring'},
+ s1:{v:'issue',n:'Trustpilot, filter-page products, images, FAQ are in server HTML ✓ — but the category-grid PRICE is NOT server-rendered; configurator SSR unverified'},
+ s2:{v:'issue',n:'Links are real anchors (111 on category, 161 on filter) ✓ — but a known dead tile exists (grid → /magazines 404)'},
+ s3:{v:'pass',n:'Allow-all + sitemap declared ✓ — query-parameter handling still open'},
+ s4:{v:'issue',n:'{{product_name}} / {{shop_name}} leaking in the /printed-pens HTML'},
+ s5:{v:'issue',n:'Category page = 1 H1 ✓, but the product page has TWO H1s'},
+ i1:{v:'pass',n:'Self-canonical + normalised on PDP and PLP ✓'},
+ i2:{v:'pass',n:'en-ie + en-gb/nl-nl/de-de/fr-fr + x-default→en-gb ✓'},
+ i3:{v:'pass',n:'Live pages index,follow; not globally blocked ✓'},
+ i4:{v:'pass',n:'Multi-tier sitemap live incl. type files ✓ — verify lastmod + regeneration; control layer = V2'},
+ d1:{v:'pass',n:'Product + Offer (price EUR) + Breadcrumb ✓'},
+ d2:{v:'issue',n:'Still CollectionPage — no WebPage/ItemList root'},
+ d5:{v:'issue',n:'Breadcrumb trail wrong on category: shows "Home > Booklets" on a brochure+booklet page'},
+ d3:{v:'issue',n:'Product AggregateRating still present — to remove'},
+ d4:{v:'pass',n:'Company Trustpilot rating in Organization schema ✓'},
+ p1:{v:'manual',n:'Run PageSpeed — the product page was slow to fetch fully (possible TTFB flag)'},
+ p2:{v:'pass',n:'Hero eager + preloaded; reserved space ✓'}
+};
 const SECS=["Migration & redirects","Crawlability & SSR","Indexing signals","Structured data","Speed"];
 const DECS=["Ship anyway (acceptable)","Fix before go-live","Fix right after launch"];
 const KEY="hp-enie-launch-checklist-v2";
@@ -104,7 +139,10 @@ function render(){
    const id=c[0];const st=S[id]||{};
    const card=document.createElement('div');card.className='card'+(st.status==='ok'?' ok':st.status==='iss'?' iss':'');
    const opts=DECS.map(d=>`<option${st.decision===d?' selected':''}>${d}</option>`).join('');
-   card.innerHTML=`<h3>${c[2]}</h3><div class="how"><b>How:</b> ${c[3]}</div>
+   const v=VER[id];
+   const vbadge=v?`<span class="vb ${v.v}">${v.v==='pass'?'✓ Verified — works':v.v==='issue'?'⚠ Verified — issue':'○ Needs manual check'}</span>`:'';
+   const vnote=v&&v.n?`<div class="vn ${v.v}">Live check (30 Jun): ${v.n}</div>`:'';
+   card.innerHTML=`<h3>${c[2]} ${vbadge}</h3>${vnote}<div class="how"><b>How:</b> ${c[3]}</div>
      <div class="stat">
        <button class="sbtn ok${st.status==='ok'?' on':''}" data-id="${id}" data-s="ok">✓ OK</button>
        <button class="sbtn iss${st.status==='iss'?' on':''}" data-id="${id}" data-s="iss">⚠ Issue</button>

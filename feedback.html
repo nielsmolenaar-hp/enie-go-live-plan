@@ -1,0 +1,115 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="robots" content="noindex,nofollow">
+<title>en-IE Go-Live — Website Content Feedback</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+:root{--g:#008539;--gd:#006B2D;--ink:#191919;--ink2:#3a3a3a;--ink3:#666;--bd:#e5e5e5;--bg:#fff;--bg2:#f7f9f8;--g50:#ecfdf3;--amb:#b4232a;--ambg:#fdf3f3}
+*{box-sizing:border-box}
+body{font-family:"Inter",system-ui,sans-serif;color:var(--ink);max-width:820px;margin:0 auto;padding:22px 20px 80px;line-height:1.5;font-size:15px;background:var(--bg)}
+h1{font-size:23px;font-weight:800;letter-spacing:-.02em;margin:.1em 0 .3em}
+.sub{color:var(--ink3);font-size:13.5px;margin:0 0 16px}
+.topbar{background:var(--ink);color:#fff;margin:-22px -20px 18px;padding:12px 20px;font-weight:700;display:flex;gap:10px;align-items:center;font-size:14px}
+.topbar a{color:#9fe6b6;font-size:13px;margin-left:auto;font-weight:600}
+.count{background:var(--g50);border:1px solid #cde4d6;color:var(--gd);border-radius:20px;padding:2px 10px;font-size:12px;font-weight:700}
+/* form */
+.form{border:1px solid var(--bd);border-radius:12px;padding:14px 15px;background:var(--bg2);margin:0 0 22px}
+.form h2{font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--g);margin:0 0 10px}
+.form label{display:block;font-size:12px;font-weight:700;color:var(--ink2);margin:8px 0 3px}
+.form input,.form textarea{width:100%;font-family:inherit;font-size:14px;padding:8px 10px;border:1px solid var(--bd);border-radius:8px;background:#fff;color:var(--ink)}
+.form textarea{min-height:70px;resize:vertical}
+.more{margin:10px 0 0}
+.more summary{cursor:pointer;font-size:12px;font-weight:700;color:var(--g);list-style:none}
+.more summary::-webkit-details-marker{display:none}
+.more summary:before{content:"▸ Add more context"}
+.more[open] summary:before{content:"▾ More context"}
+.btns{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+button.act{font-family:inherit;font-size:13px;font-weight:700;padding:9px 14px;border-radius:8px;border:1px solid var(--g);background:var(--g);color:#fff;cursor:pointer}
+button.act.sec{background:#fff;color:var(--gd)}
+a.act{font-family:inherit;font-size:13px;font-weight:700;padding:9px 14px;border-radius:8px;border:1px solid var(--bd);background:#fff;color:var(--gd);cursor:pointer;text-decoration:none;display:inline-block}
+.hint{font-size:11.5px;color:var(--ink3);margin-top:8px;line-height:1.45}
+.snip{margin-top:10px;font-family:ui-monospace,Menlo,monospace;font-size:11.5px;white-space:pre-wrap;background:#0f1a14;color:#c9f0d6;border-radius:8px;padding:10px 11px;display:none}
+/* cards */
+.card{border:1px solid var(--bd);border-left:4px solid var(--g);border-radius:10px;padding:12px 14px;margin:0 0 11px;background:#fff}
+.card h3{font-size:15px;font-weight:700;margin:0 0 4px;color:var(--ink)}
+.card .d{font-size:13.5px;color:var(--ink2);margin:0 0 7px;line-height:1.5}
+.card .lnk{font-size:12.5px}
+.card .lnk a{color:var(--gd);font-weight:600;word-break:break-all}
+.card details{margin-top:8px}
+.card details summary{cursor:pointer;font-size:12px;font-weight:700;color:var(--g);list-style:none}
+.card details summary::-webkit-details-marker{display:none}
+.card details summary:before{content:"▸ More context"}
+.card details[open] summary:before{content:"▾ More context"}
+.card .ctx{font-size:13px;color:var(--ink3);margin-top:6px;padding:8px 10px;background:var(--bg2);border-radius:7px;line-height:1.5}
+.meta{font-size:11px;color:var(--ink3);margin-top:6px}
+.empty{color:var(--ink3);font-size:13.5px;padding:20px;text-align:center;border:1px dashed var(--bd);border-radius:10px}
+</style></head><body>
+<div class="topbar"><span>Helloprint — en-IE Go-Live</span><a href="./index.html">Back to the go-live plan</a></div>
+<h1>Website Content Feedback</h1>
+<p class="sub">Spotted something wrong on the new site — a content block, copy, layout, missing/extra element? Log it here. <span id="cnt" class="count">0 items</span></p>
+
+<div class="form">
+ <h2>Add feedback</h2>
+ <label>Title — short summary of what's wrong</label>
+ <input id="f_title" placeholder="e.g. Extra block appears above the content on this page">
+ <label>Description — what you see and why it looks wrong</label>
+ <textarea id="f_desc" placeholder="Describe the issue…"></textarea>
+ <label>Link — the page/URL where it goes wrong (optional)</label>
+ <input id="f_link" placeholder="https://v4.staging.helloprint.dev/en-ie/…">
+ <details class="more"><summary></summary>
+   <label>More context — steps, screenshots notes, expected vs actual, who to ask…</label>
+   <textarea id="f_ctx" placeholder="Anything extra that helps whoever picks this up…"></textarea>
+ </details>
+ <div class="btns">
+   <button class="act" id="gen">Generate entry to submit</button>
+   <a class="act" id="edit" href="https://github.com/nielsmolenaar-hp/enie-go-live-plan/edit/main/feedback.html" target="_blank">Open feedback.html on GitHub ↗</a>
+ </div>
+ <p class="hint">This is a shared page. To make your feedback visible to everyone: click <b>Generate entry</b>, copy the snippet, then <b>Open feedback.html on GitHub</b>, paste it inside the <code>FB = [</code> list at the top, and commit. (You've been invited as a collaborator.)</p>
+ <div class="snip" id="snip"></div>
+</div>
+
+<div id="list"></div>
+
+<script>
+// ===== FEEDBACK LIST — add new items at the top of this array and commit =====
+const FB = [
+ {
+   title: "Filter-page block ‘AZ’ appears on /en-gb/printed-pens above the normal content blocks",
+   desc: "https://v4.staging.helloprint.dev/en-gb/printed-pens has a block AZ integrated above the usual content blocks, which is not happening on the current live website because this is not a filter page. Where is this coming from?",
+   link: "https://v4.staging.helloprint.dev/en-gb/printed-pens",
+   ctx: "",
+   by: "Niels"
+ }
+];
+// ============================================================================
+
+const esc=s=>(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function render(){
+ const l=document.getElementById('list');l.innerHTML='';
+ document.getElementById('cnt').textContent=FB.length+(FB.length===1?' item':' items');
+ if(!FB.length){l.innerHTML='<div class="empty">No feedback logged yet — be the first.</div>';return;}
+ FB.forEach(f=>{
+  const c=document.createElement('div');c.className='card';
+  c.innerHTML=`<h3>${esc(f.title)}</h3>`+
+    (f.desc?`<div class="d">${esc(f.desc)}</div>`:'')+
+    (f.link?`<div class="lnk">🔗 <a href="${esc(f.link)}" target="_blank">${esc(f.link)}</a></div>`:'')+
+    (f.ctx?`<details><summary></summary><div class="ctx">${esc(f.ctx)}</div></details>`:'')+
+    (f.by?`<div class="meta">— ${esc(f.by)}</div>`:'');
+  l.appendChild(c);
+ });
+}
+document.getElementById('gen').onclick=()=>{
+ const t=document.getElementById('f_title').value.trim();
+ const d=document.getElementById('f_desc').value.trim();
+ const k=document.getElementById('f_link').value.trim();
+ const x=document.getElementById('f_ctx').value.trim();
+ if(!t){alert('Add a title first.');return;}
+ const q=s=>JSON.stringify(s||'');
+ const entry=` {\n   title: ${q(t)},\n   desc: ${q(d)},\n   link: ${q(k)},\n   ctx: ${q(x)},\n   by: ${q('')}\n },`;
+ const snip=document.getElementById('snip');
+ snip.textContent=entry;snip.style.display='block';
+ if(navigator.clipboard){navigator.clipboard.writeText(entry).then(()=>{
+   const b=document.getElementById('gen');b.textContent='Copied — now paste it on GitHub ↗';setTimeout(()=>b.textContent='Generate entry to submit',2500);
+ });}
+};
+render();
+</script>
+</body></html>

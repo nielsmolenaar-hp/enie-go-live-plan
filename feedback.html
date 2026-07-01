@@ -72,6 +72,13 @@ a.act{font-family:inherit;font-size:13px;font-weight:700;padding:9px 14px;border
 // ===== FEEDBACK LIST — add new items at the top of this array and commit =====
 const FB = [
 {
+title: "Mega-menu drill-down — subcategory links go to the parent category or a single product instead of the subcategory PLP",
+desc: "In the header menu drill-down, subcategory links resolve to the wrong destination. Example: All products → Gifts & Giveaways → Office Supplies → Notebooks lands on /en-ie/corporate-gifts (the parent category) instead of the Notebooks PLP. Same for Notepads. Under Pens the links also go wrong — either to a specific product (e.g. a highlighter pen) or to the main Pens PLP for 'Luxury Pens' and 'Eco Pens' instead of their own subcategory pages.",
+link: "https://v4.staging.helloprint.dev/en-ie/all-products",
+ctx: "Same root cause as the homepage Bundle Item issue: the menu entry holds both a 'product' link and a 'page' link and resolves to the wrong one — landing on the parent category (/corporate-gifts) or a single product rather than the correct subcategory PLP. Confirmed the correct PLPs exist and resolve fine when opened directly: /en-ie/notebook-printing (Custom Notebooks) and /en-ie/notepad-printing — so only the menu link target is wrong. In the open menu, the 'Gifts' node points to /en-ie/corporate-gifts and its tiles point to individual products (e.g. spectruma5hardcovernotebook, notepadswireo). Fix: point each subcategory menu item at its own PLP (use the 'page' link; fall back to 'product' only when no page is set), and don't collapse Luxury/Eco Pens onto the parent Pens PLP. Verified 30 Jun on staging.",
+by: "Niels"
+},
+{
 title: "Homepage bottom section — category tiles link to a single product instead of the category page",
 desc: "In the section at the bottom of the homepage that links to categories and important product pages, several category tiles point to an individual product URL instead of the category page. Verified on staging: 'Drinkware' links to /en-ie/siriusgrsrpetwaterbottle650ml (a product) and 'Reusable Cups' links to /en-ie/ecoplasticcups (a product), while 'Water Bottles' correctly links to /en-ie/printed-water-bottles (a page). Product tiles work because the product link resolves; category tiles land on a single product.",
 link: "https://v4.staging.helloprint.dev/en-ie",

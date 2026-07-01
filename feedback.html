@@ -47,23 +47,23 @@ a.act{font-family:inherit;font-size:13px;font-weight:700;padding:9px 14px;border
 <p class="sub">Spotted something wrong on the new site — a content block, copy, layout, missing/extra element? Log it here. <span id="cnt" class="count">0 items</span></p>
 
 <div class="form">
- <h2>Add feedback</h2>
- <label>Title — short summary of what's wrong</label>
- <input id="f_title" placeholder="e.g. Extra block appears above the content on this page">
- <label>Description — what you see and why it looks wrong</label>
- <textarea id="f_desc" placeholder="Describe the issue…"></textarea>
- <label>Link — the page/URL where it goes wrong (optional)</label>
- <input id="f_link" placeholder="https://v4.staging.helloprint.dev/en-ie/…">
- <details class="more"><summary></summary>
-   <label>More context — steps, screenshots notes, expected vs actual, who to ask…</label>
-   <textarea id="f_ctx" placeholder="Anything extra that helps whoever picks this up…"></textarea>
- </details>
- <div class="btns">
-   <button class="act" id="gen">Generate entry to submit</button>
-   <a class="act" id="edit" href="https://github.com/nielsmolenaar-hp/enie-go-live-plan/edit/main/feedback.html" target="_blank">Open feedback.html on GitHub ↗</a>
- </div>
- <p class="hint">This is a shared page. To make your feedback visible to everyone: click <b>Generate entry</b>, copy the snippet, then <b>Open feedback.html on GitHub</b>, paste it inside the <code>FB = [</code> list at the top, and commit. (You've been invited as a collaborator.)</p>
- <div class="snip" id="snip"></div>
+<h2>Add feedback</h2>
+<label>Title — short summary of what's wrong</label>
+<input id="f_title" placeholder="e.g. Extra block appears above the content on this page">
+<label>Description — what you see and why it looks wrong</label>
+<textarea id="f_desc" placeholder="Describe the issue…"></textarea>
+<label>Link — the page/URL where it goes wrong (optional)</label>
+<input id="f_link" placeholder="https://v4.staging.helloprint.dev/en-ie/…">
+<details class="more"><summary></summary>
+<label>More context — steps, screenshots notes, expected vs actual, who to ask…</label>
+<textarea id="f_ctx" placeholder="Anything extra that helps whoever picks this up…"></textarea>
+</details>
+<div class="btns">
+<button class="act" id="gen">Generate entry to submit</button>
+<a class="act" id="edit" href="https://github.com/nielsmolenaar-hp/enie-go-live-plan/edit/main/feedback.html" target="_blank">Open feedback.html on GitHub ↗</a>
+</div>
+<p class="hint">This is a shared page. To make your feedback visible to everyone: click <b>Generate entry</b>, copy the snippet, then <b>Open feedback.html on GitHub</b>, paste it inside the <code>FB = [</code> list at the top, and commit. (You've been invited as a collaborator.)</p>
+<div class="snip" id="snip"></div>
 </div>
 
 <div id="list"></div>
@@ -71,44 +71,51 @@ a.act{font-family:inherit;font-size:13px;font-weight:700;padding:9px 14px;border
 <script>
 // ===== FEEDBACK LIST — add new items at the top of this array and commit =====
 const FB = [
- {
-   title: "Filter-page block ‘AZ’ appears on /en-gb/printed-pens above the normal content blocks",
-   desc: "https://v4.staging.helloprint.dev/en-gb/printed-pens has a block AZ integrated above the usual content blocks, which is not happening on the current live website because this is not a filter page. Where is this coming from?",
-   link: "https://v4.staging.helloprint.dev/en-gb/printed-pens",
-   ctx: "",
-   by: "Niels"
- }
+{
+title: "Homepage bottom section — category tiles link to a single product instead of the category page",
+desc: "In the section at the bottom of the homepage that links to categories and important product pages, several category tiles point to an individual product URL instead of the category page. Verified on staging: 'Drinkware' links to /en-ie/siriusgrsrpetwaterbottle650ml (a product) and 'Reusable Cups' links to /en-ie/ecoplasticcups (a product), while 'Water Bottles' correctly links to /en-ie/printed-water-bottles (a page). Product tiles work because the product link resolves; category tiles land on a single product.",
+link: "https://v4.staging.helloprint.dev/en-ie",
+ctx: "This is defined in the Bundle Item, which has both a 'product' link and a 'page' link. The render appears to always take the 'product' link — so for category tiles (which should use the 'page' link) it falls through to the product. Fix: use the 'page' link when set, and only fall back to 'product' when no page is defined. Verified 30 Jun on staging: Drinkware → /en-ie/siriusgrsrpetwaterbottle650ml; Reusable Cups → /en-ie/ecoplasticcups.",
+by: "Niels"
+},
+{
+title: "Filter-page block ‘AZ’ appears on /en-gb/printed-pens above the normal content blocks",
+desc: "https://v4.staging.helloprint.dev/en-gb/printed-pens has a block AZ integrated above the usual content blocks, which is not happening on the current live website because this is not a filter page. Where is this coming from?",
+link: "https://v4.staging.helloprint.dev/en-gb/printed-pens",
+ctx: "",
+by: "Niels"
+}
 ];
 // ============================================================================
 
 const esc=s=>(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 function render(){
- const l=document.getElementById('list');l.innerHTML='';
- document.getElementById('cnt').textContent=FB.length+(FB.length===1?' item':' items');
- if(!FB.length){l.innerHTML='<div class="empty">No feedback logged yet — be the first.</div>';return;}
- FB.forEach(f=>{
-  const c=document.createElement('div');c.className='card';
-  c.innerHTML=`<h3>${esc(f.title)}</h3>`+
-    (f.desc?`<div class="d">${esc(f.desc)}</div>`:'')+
-    (f.link?`<div class="lnk">🔗 <a href="${esc(f.link)}" target="_blank">${esc(f.link)}</a></div>`:'')+
-    (f.ctx?`<details><summary></summary><div class="ctx">${esc(f.ctx)}</div></details>`:'')+
-    (f.by?`<div class="meta">— ${esc(f.by)}</div>`:'');
-  l.appendChild(c);
- });
+const l=document.getElementById('list');l.innerHTML='';
+document.getElementById('cnt').textContent=FB.length+(FB.length===1?' item':' items');
+if(!FB.length){l.innerHTML='<div class="empty">No feedback logged yet — be the first.</div>';return;}
+FB.forEach(f=>{
+const c=document.createElement('div');c.className='card';
+c.innerHTML=`<h3>${esc(f.title)}</h3>`+
+(f.desc?`<div class="d">${esc(f.desc)}</div>`:'')+
+(f.link?`<div class="lnk">🔗 <a href="${esc(f.link)}" target="_blank">${esc(f.link)}</a></div>`:'')+
+(f.ctx?`<details><summary></summary><div class="ctx">${esc(f.ctx)}</div></details>`:'')+
+(f.by?`<div class="meta">— ${esc(f.by)}</div>`:'');
+l.appendChild(c);
+});
 }
 document.getElementById('gen').onclick=()=>{
- const t=document.getElementById('f_title').value.trim();
- const d=document.getElementById('f_desc').value.trim();
- const k=document.getElementById('f_link').value.trim();
- const x=document.getElementById('f_ctx').value.trim();
- if(!t){alert('Add a title first.');return;}
- const q=s=>JSON.stringify(s||'');
- const entry=` {\n   title: ${q(t)},\n   desc: ${q(d)},\n   link: ${q(k)},\n   ctx: ${q(x)},\n   by: ${q('')}\n },`;
- const snip=document.getElementById('snip');
- snip.textContent=entry;snip.style.display='block';
- if(navigator.clipboard){navigator.clipboard.writeText(entry).then(()=>{
-   const b=document.getElementById('gen');b.textContent='Copied — now paste it on GitHub ↗';setTimeout(()=>b.textContent='Generate entry to submit',2500);
- });}
+const t=document.getElementById('f_title').value.trim();
+const d=document.getElementById('f_desc').value.trim();
+const k=document.getElementById('f_link').value.trim();
+const x=document.getElementById('f_ctx').value.trim();
+if(!t){alert('Add a title first.');return;}
+const q=s=>JSON.stringify(s||'');
+const entry=` {\n title: ${q(t)},\n desc: ${q(d)},\n link: ${q(k)},\n ctx: ${q(x)},\n by: ${q('')}\n },`;
+const snip=document.getElementById('snip');
+snip.textContent=entry;snip.style.display='block';
+if(navigator.clipboard){navigator.clipboard.writeText(entry).then(()=>{
+const b=document.getElementById('gen');b.textContent='Copied — now paste it on GitHub ↗';setTimeout(()=>b.textContent='Generate entry to submit',2500);
+});}
 };
 render();
 </script>

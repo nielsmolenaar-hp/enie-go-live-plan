@@ -60,7 +60,7 @@ footer{background:var(--ink);color:#fff;padding:14px 0;margin-top:16px;font-size
 const C=[
 ["m1","Migration & redirects","Baseline captured BEFORE cutover","Snapshot en-IE rankings, GSC clicks/impressions and indexed-URL count <b>now</b> (GSC + Ahrefs separately). Can't be done after go-live."],
 ["m2","Migration & redirects","Redirect coverage complete + sheet verified","Every old URL (old sitemap + GSC top pages + backlinks) 301s single-hop to a live 200. The current redirect sheet works — verify it against the old URL set."],
-["m3","Migration & redirects","Parameter & hyphen URLs → base URL","Parameter and hyphen-suffix variant URLs must 301 to their base URL (not index as separate pages). <b>Open — not fully in place yet.</b>"],
+["m3","Migration & redirects","Parameter & hyphen URLs → base URL","Parameter and hyphen-suffix variant URLs stay live (200) with <b>canonical to base URL</b> (not 301). Only earned hyphen-suffix variants get their own indexed URL. <b>Open — not fully in place yet.</b>"],
 ["m4","Migration & redirects","New URL structures redirected (Blog, Helpcenter)","After migration, the new Blog + Helpcenter URL structures resolve and their old paths 301 correctly."],
 ["m5","Migration & redirects","Old stack is dark — no split-brain","Old en-IE URLs redirect and must NOT still serve a live 200 (no duplicate competing pages)."],
 ["m6","Migration & redirects","Full 404 list checked","Pull the full list of identified 404s and check each — redirect where a target exists; real 404 only for genuinely dead URLs."],
@@ -77,7 +77,7 @@ const C=[
 ["i1","Indexing signals","Canonical — deeper check vs requirements","Self-canonical, normalised (https, no-www, lowercase, no tracking params), never cross-locale; parameter URLs canonical correctly. <b>Verified self-canonical on PDP + PLP; deeper check of param handling.</b>"],
 ["i2","Indexing signals","Hreflang / x-default — deeper check","Reciprocal hreflang incl. en-ie; x-default → en-gb. <b>Verified en-ie + siblings + x-default→en-gb present.</b>"],
 ["i3","Indexing signals","Not accidentally blocked from Google","Key pages index,follow; site not globally noindex/blocked. <b>Verified live pages index,follow.</b> (Per-page index review integrated later.)"],
-["i4","Indexing signals","Sitemap — new logic, checked vs old","Built on the new logic (V1); the control/monitoring mechanism via the content engine is <b>V2</b>. Check: all URLs present vs the old sitemap, <b>lastmod included</b>, and <b>regeneration working</b>. <b>Verified structure live.</b>"],
+["i4","Indexing signals","Sitemap — new logic, checked vs old","Built on the new logic (V1); the control/monitoring mechanism via the content engine is <b>V2</b>. Check: all URLs present vs the old sitemap, <b>lastmod included</b>, and <b>regeneration working</b>. <b>Verified structure live.</b>"],["i5","Indexing signals","Query parameters are correctly set up","Junk params (printrun/view/source) stay blocked in robots.txt; SEO and configurator params are NOT blocked - kept live (200) with <b>canonical to clean base URL</b> (never 301). Verify: canonical to base, param URLs <b>not internally linked</b> as crawlable anchors, and <b>not in the sitemap</b>."],
 
 ["d1","Structured data","Product schema — deeper check","PDP emits Product + Offer + Breadcrumb. <b>Verified present; deeper check of all fields against the schema requirements.</b>"],
 ["d2","Structured data","Category schema","Category page sends a product list + breadcrumb. <b>Known: still old CollectionPage — fix right after.</b>"],

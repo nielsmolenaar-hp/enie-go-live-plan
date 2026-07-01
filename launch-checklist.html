@@ -75,6 +75,7 @@ const C=[
 
 ["d1","Structured data","Product schema — deeper check","PDP emits Product + Offer + Breadcrumb. <b>Deeper check of all fields against the schema requirements.</b>"],
 ["d2","Structured data","Category schema","Category page sends a product list + breadcrumb. <b>Known: still old CollectionPage — fix right after.</b>"],
+["d5","Structured data","Breadcrumb structure","Breadcrumb present + correct (visible trail + BreadcrumbList schema, matching the page). <b>Known: not working for category pages — fix.</b>"],
 ["d3","Structured data","Remove product + category star ratings","AggregateRating on product AND category pages must be <b>removed</b> as part of the schema improvements (no product-specific reviews)."],
 ["d4","Structured data","Company Trustpilot rating shows","Company-level rating renders (not blank) and is in the Organization schema."],
 
@@ -91,6 +92,7 @@ if(!S.__seed){
  S.d3={status:'iss',decision:'Fix right after launch',note:'Remove product + category aggregateRating (no product reviews)'};
  S.s5={status:'iss',decision:'Fix right after launch',note:'Two H1s in the code (mobile + desktop) — verify current setup'};
  S.m3={status:'iss',decision:'Fix right after launch',note:'Parameter/hyphen → base-URL redirect not fully in place'};
+ S.d5={status:'iss',decision:'Fix right after launch',note:'Breadcrumb not working on category pages'};
  S.__seed=1;save();
 }
 function render(){

@@ -4,7 +4,7 @@
 <title>en-IE Go-Live — Launch-Day Checklist</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-:root{--g:#008539;--gd:#006B2D;--ink:#191919;--ink2:#3a3a3a;--ink3:#666;--bd:#e5e5e5;--bg:#fff;--bg2:#f7f9f8;--g50:#ecfdf3;--ok:#008539;--amb:#f59e0b;--ambg:#fff7ea;--rd:#d32f2f;--rdbg:#fdecec}
+:root{--g:#008539;--gd:#006B2D;--ink:#191919;--ink2:#3a3a3a;--ink3:#666;--bd:#e5e5e5;--bg:#fff;--bg2:#f7f9f8;--g50:#ecfdf3;--ok:#008539;--amb:#f59e0b;--ambg:#fff7ea;--ambd:#f3d39a;--rd:#d32f2f;--rdbg:#fdecec}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:"Inter",system-ui,sans-serif;color:var(--ink);background:var(--bg2);font-size:15px;line-height:1.45}
 .wrap{max-width:820px;margin:0 auto;padding:0 18px}
@@ -35,14 +35,14 @@ h1{font-size:22px;font-weight:800;letter-spacing:-.02em}
 .dec{margin-top:10px;display:none}.dec.show{display:block}
 .dec label{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:var(--ink3);display:block;margin-bottom:4px}
 .dec select{font:inherit;font-size:13px;padding:6px 9px;border:1px solid var(--rd);border-radius:8px;background:#fff;width:100%;max-width:360px}
-.dec textarea{margin-top:7px;width:100%;border:1px solid var(--ambd,#f3d39a);border-radius:8px;padding:7px 10px;font:inherit;font-size:13px;resize:vertical;min-height:38px;background:#fffdf8}
+.dec textarea{margin-top:7px;width:100%;border:1px solid var(--ambd);border-radius:8px;padding:7px 10px;font:inherit;font-size:13px;resize:vertical;min-height:38px;background:#fffdf8}
 footer{background:var(--ink);color:#fff;padding:14px 0;margin-top:16px;font-size:12px}
 </style></head>
 <body>
 <div class="top"><div class="wrap"><b>Helloprint · en-IE Go-Live</b><a href="./index.html">← Go-live plan</a></div></div>
 <div class="hero"><div class="wrap">
 <h1>Launch-day checklist</h1>
-<p>Run through these on a live en-IE page before/at go-live. Mark each <b>OK</b> or <b>Issue</b>. For an issue, pick what we do about it (ship / fix now / fix after) and add a note. Hit <b>Copy status</b> for the go/no-go summary.</p>
+<p>Run these on a live en-IE page at go-live. Mark <b>OK</b> or <b>Issue</b>; for an issue, pick what we do (ship / fix now / fix after) + a note. <b>Copy status</b> gives the go/no-go summary. Items tagged <b>Open</b> or <b>Deeper check</b> still need verifying against the requirements.</p>
 </div></div>
 <div class="bar"><div class="wrap">
 <span class="pill ok" id="pOk">0 OK</span><span class="pill iss" id="pIss">0 issues</span><span class="pill un" id="pUn">0 to check</span>
@@ -53,38 +53,46 @@ footer{background:var(--ink);color:#fff;padding:14px 0;margin-top:16px;font-size
 <footer><div class="wrap">en-IE launch-day checklist · your marks are saved in this browser</div></footer>
 <script>
 const C=[
-["m1","Migration (cutover)","Baseline captured BEFORE cutover","Snapshot en-IE rankings, GSC clicks/impressions and indexed-URL count <b>now</b> — so any post-launch loss is measurable (§12 '>20% loss' flag). Capture GSC + Ahrefs separately. <b>Can't be done after go-live.</b>"],
-["m2","Migration (cutover)","Redirect coverage is complete","Every old URL (old sitemap + GSC top pages + top backlink targets) 301s single-hop to a live 200 page — none 404, none land on a noindex or another redirect. (Beyond the spot-check in Redirects.)"],
-["m3","Migration (cutover)","Old stack is dark — no split-brain","Old en-IE URLs redirect and must NOT still serve a live 200 on the old site — two live copies = duplicate competing pages."],
-["m4","Migration (cutover)","en-IE stands on its own","Pages that used to fall back to en-GB now self-canonical to their own en-IE URL with reciprocal hreflang — never canonical to en-GB (or they fold into en-GB and stop ranking)."],
-["m5","Migration (cutover)","Top pages equivalent-or-better","Spot-check the ~50 highest-traffic en-IE pages old-vs-new: title, H1, content and structured data are at least as strong as the old ranking page (a good 301 to a thinner page still drops rankings)."],
-["m6","Migration (cutover)","404-spike watch (first weeks)","After cutover, watch inbound 404s + GSC Coverage daily for the 4–8 week window — missed redirects surface here first."],
-["g1","Any page (global)","Content loads with the page","Open a product & a category page → right-click <b>View source</b> (or DevTools with JS off): the title, description and price text are in the HTML."],
-["g2","Any page (global)","robots.txt is correct","Open <b>/robots.txt</b>: <b>Allow: /</b>, sitemap listed, only cart/checkout/account/login blocked."],
-["g3","Any page (global)","Sitemap is live","Open <b>/sitemap.xml</b> → <b>/en-ie/sitemap.xml</b>: lists products / collections / pages."],
-["g4","Any page (global)","Canonical is correct","In View source: one <code>&lt;link rel=canonical&gt;</code> pointing to the clean page URL (self)."],
-["g5","Any page (global)","Language links (hreflang) correct","In source: hreflang for <b>en-ie</b> + siblings + <b>x-default → en-gb</b>."],
-["g6","Any page (global)","Head & share tags","Language = en-IE, charset UTF-8, and a WhatsApp/social share shows a proper title + image."],
-["g7","Any page (global)","Not accidentally blocked from Google","Spot-check the robots tag: key pages are <b>index,follow</b> and the site isn't globally noindex or blocked. (Per-page index review is being integrated later.)"],
-["g8","Any page (global)","No placeholder text","No <code>{{…}}</code> text visible on the page or in source (e.g. {{shop_name}})."],
-["g9","Any page (global)","One headline per page","Each page has exactly one main H1."],
-["p1","Product page (PDP)","Fast & stable","Loads quickly on mobile; nothing jumps as it loads; main image appears immediately."],
-["pspeed","Product page (PDP)","Web speed — Core Web Vitals","Run PageSpeed Insights / Lighthouse (mobile) on a product + a category page: LCP, CLS, INP in the green (targets LCP ≤2.0s · CLS ≤0.05 · INP ≤150ms). <b>Target — ship if close</b>, not a hard blocker."],
-["p2","Product page (PDP)","Price, delivery & breadcrumb in Google","They show on the page and pass Google's Rich Results test (Product + Offer + Breadcrumb)."],
-["p3","Product page (PDP)","Ratings correct","Company Trustpilot rating shows (not blank). <b>Known:</b> a product-level star rating is currently showing — decision: <b>ship as-is, remove right after</b>."],
-["p4","Product page (PDP)","Configurator readable","All options visible on load; price + delivery update correctly."],
-["l1","Category page (PLP)","Grid works, no dead tiles","Product tiles render and every tile links to a live page (no 404)."],
-["l2","Category page (PLP)","Category data to Google","Sends a product list + breadcrumb. <b>Known:</b> still on the old schema — decision: <b>ship as-is, fix right after</b>."],
-["l3","Category page (PLP)","Mobile is usable","Fits the phone screen, buttons tappable, layout not broken."],
-["r1","Redirects & links","Redirects are live","Spot-check a few old URLs from the redirect list → 301 to the new page (no 404, single hop)."],
-["r2","Redirects & links","No dead links","Click the main menu + a category grid; nothing 404s."]
+["m1","Migration & redirects","Baseline captured BEFORE cutover","Snapshot en-IE rankings, GSC clicks/impressions and indexed-URL count <b>now</b> (GSC + Ahrefs separately). Can't be done after go-live."],
+["m2","Migration & redirects","Redirect coverage complete + sheet verified","Every old URL (old sitemap + GSC top pages + backlinks) 301s single-hop to a live 200. The current redirect sheet works — verify it against the old URL set."],
+["m3","Migration & redirects","Parameter & hyphen URLs → base URL","Parameter and hyphen-suffix variant URLs must 301 to their base URL (not index as separate pages). <b>Open — not fully in place yet.</b>"],
+["m4","Migration & redirects","New URL structures redirected (Blog, Helpcenter)","After migration, the new Blog + Helpcenter URL structures resolve and their old paths 301 correctly."],
+["m5","Migration & redirects","Old stack is dark — no split-brain","Old en-IE URLs redirect and must NOT still serve a live 200 (no duplicate competing pages)."],
+["m6","Migration & redirects","Full 404 list checked","Pull the full list of identified 404s and check each — redirect where a target exists; real 404 only for genuinely dead URLs."],
+["m7","Migration & redirects","Top pages equivalent-or-better","Top ~50 en-IE pages old-vs-new: title, H1, content and schema at least as strong as the old ranking page."],
+["m8","Migration & redirects","404-spike watch (first weeks)","After cutover, watch inbound 404s + GSC Coverage daily for the 4–8 week window."],
+
+["s1","Crawlability & SSR","Essential blocks are server-side rendered","In the raw HTML (no JS) these are all present: <b>Trustpilot</b>, <b>pricing on landing pages</b>, <b>product items on filter pages</b>, <b>images</b>, <b>FAQs</b>, and <b>funnel (configurator) attributes & values</b>."],
+["s2","Crawlability & SSR","Internal linking works","Menu, breadcrumb, product grids and related links are real anchors and resolve to live pages."],
+["s3","Crawlability & SSR","robots.txt correct (root domain)","On the root domain: allows all search + AI bots, blocks only cart/checkout/account, declares the sitemap. <b>Open: query-parameter handling not fixed yet.</b>"],
+["s4","Crawlability & SSR","No placeholder text","No <code>{{shop_name}}</code> / <code>{{…}}</code> tokens on any page, in source, or in the JSON-LD. <b>Needs checking across pages.</b>"],
+["s5","Crawlability & SSR","Clean heading structure","One clean H1 per page per the requirements — and read that way in the code. <b>Open: currently TWO H1s in the source (mobile + desktop copies) — check the current setup.</b>"],
+
+["i1","Indexing signals","Canonical — deeper check vs requirements","Self-canonical, normalised (https, no-www, lowercase, no tracking params), never cross-locale; parameter URLs canonical correctly. <b>Deeper check against the canonical requirements.</b>"],
+["i2","Indexing signals","Hreflang / x-default — deeper check","Reciprocal hreflang incl. en-ie; x-default → en-gb. <b>Deeper check of the full set against requirements.</b>"],
+["i3","Indexing signals","Not accidentally blocked from Google","Key pages index,follow; site not globally noindex/blocked. (Per-page index review integrated later.)"],
+["i4","Indexing signals","Sitemap — new logic, checked vs old","Built on the new logic (V1); the control/monitoring mechanism via the content engine is <b>V2</b>. Check: all URLs present vs the old sitemap, <b>lastmod included</b>, and <b>regeneration working</b>."],
+
+["d1","Structured data","Product schema — deeper check","PDP emits Product + Offer + Breadcrumb. <b>Deeper check of all fields against the schema requirements.</b>"],
+["d2","Structured data","Category schema","Category page sends a product list + breadcrumb. <b>Known: still old CollectionPage — fix right after.</b>"],
+["d3","Structured data","Remove product + category star ratings","AggregateRating on product AND category pages must be <b>removed</b> as part of the schema improvements (no product-specific reviews)."],
+["d4","Structured data","Company Trustpilot rating shows","Company-level rating renders (not blank) and is in the Organization schema."],
+
+["p1","Speed","Product-page speed — Core Web Vitals","<b>Very important.</b> Run PageSpeed / Lighthouse (mobile) on a product + a category page: LCP, CLS, INP green (LCP ≤2.0s · CLS ≤0.05 · INP ≤150ms). Target — ship if close."],
+["p2","Speed","Main image first, nothing jumps","Hero / first image loads immediately; the layout doesn't shift as it loads."]
 ];
-const SECS=["Migration (cutover)","Any page (global)","Product page (PDP)","Category page (PLP)","Redirects & links"];
+const SECS=["Migration & redirects","Crawlability & SSR","Indexing signals","Structured data","Speed"];
 const DECS=["Ship anyway (acceptable)","Fix before go-live","Fix right after launch"];
-const KEY="hp-enie-launch-checklist-v1";
+const KEY="hp-enie-launch-checklist-v2";
 let S=JSON.parse(localStorage.getItem(KEY)||"{}");
 const save=()=>localStorage.setItem(KEY,JSON.stringify(S));
-if(!S.__seed1){S.l2={status:'iss',decision:'Fix right after launch',note:'Category pages still on old schema (known)'};S.p3={status:'iss',decision:'Fix right after launch',note:'Product star rating showing — remove after launch'};S.__seed1=1;save();}
+if(!S.__seed){
+ S.d2={status:'iss',decision:'Fix right after launch',note:'Still old CollectionPage schema'};
+ S.d3={status:'iss',decision:'Fix right after launch',note:'Remove product + category aggregateRating (no product reviews)'};
+ S.s5={status:'iss',decision:'Fix right after launch',note:'Two H1s in the code (mobile + desktop) — verify current setup'};
+ S.m3={status:'iss',decision:'Fix right after launch',note:'Parameter/hyphen → base-URL redirect not fully in place'};
+ S.__seed=1;save();
+}
 function render(){
  const root=document.getElementById('list');root.innerHTML='';
  SECS.forEach(sec=>{

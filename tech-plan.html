@@ -25,87 +25,91 @@ hr{border:none;border-top:2px solid var(--g);margin:1.4em 0}
 </style></head><body>
 <div class="topbar"><span>Helloprint - en-IE Go-Live</span><a href="./index.html">Back to the go-live plan</a></div>
 <h1>en-IE Go-Live — Technical Plan</h1>
-<p>What we need in place so Irish customers <strong>find us</strong>, <strong>click us</strong>, and we <strong>keep our rankings</strong>. Split into <strong>V1 (for the 3 July launch)</strong> and <strong>V2 (after launch)</strong>. Tap <strong>Technical details</strong> under any item for the engineering specifics.</p>
-<p>Tags: ✅ already live on staging · 🔧 still to build.</p>
+<p>What we need in place so Irish customers <strong>find us</strong>, <strong>click us</strong>, and we <strong>keep our rankings</strong>. Split into <strong>V1 (for the 3 July launch)</strong> and <strong>V2 (after launch)</strong>. Tap <strong>Technical details</strong> under any item for the specifics.</p>
+<p>Tags: ✅ live on staging · 🔧 to build / fix · ⚠️ open — verify against requirements.</p>
 <hr />
 <h2>V1 — for the launch</h2>
 <h3>Found by Google</h3>
 <p><strong>Google can read every page on load</strong> · ✅
-So pages can be indexed and rank — earning organic traffic. A page Google can't read earns nothing.</p>
-<details><summary>Technical details</summary>All SEO content is server-side rendered; a build check blocks any page missing content. No indexable content loaded only by JavaScript.</details>
+Full content in the first response, so pages can rank. A page Google can't read earns nothing.</p>
+<details><summary>Technical details</summary>Server-side rendered. <b>Essential blocks that must be in the raw HTML:</b> Trustpilot, pricing on landing pages, product items on filter pages, images, FAQs, and funnel (configurator) attributes & values. No indexable content loaded only by JavaScript.</details>
 
-<p><strong>Menus, configurator and prices are visible to Google</strong> · ✅
-Our core commercial content is readable, not hidden behind a click.</p>
-<details><summary>Technical details</summary>Nav links are real anchors; the configurator renders all options on load; live price + delivery are server-rendered with a last-known-good fallback.</details>
+<p><strong>Internal linking works</strong> · 🔧
+Google (and customers) can move through the site; no stranded pages or dead ends.</p>
+<details><summary>Technical details</summary>Menu, breadcrumb, product grids and related links are real anchors that resolve to live pages.</details>
 
-<p><strong>Each page is its own "original"</strong> · ✅ (build-check 🔧)
-Stops Google treating tracking/filter versions as duplicates, which would split our ranking.</p>
-<details><summary>Technical details</summary>Self-referencing canonical, normalised (https, no-www, lowercase, no tracking params). A build check confirms each canonical loads (200) and is in the sitemap.</details>
+<p><strong>Clean heading structure</strong> · ⚠️ open
+One clear headline per page so Google understands the topic.</p>
+<details><summary>Technical details</summary>Exactly one H1 per page, per the requirements, and read that way in the code. <b>Open:</b> currently two H1s in the source (mobile + desktop copies) — verify the current setup.</details>
 
-<p><strong>We choose what Google indexes — nothing by accident</strong> · 🔧
-We index pages that earn traffic and hide thin/duplicate ones; per language.</p>
-<details><summary>Technical details</summary>Per-locale index setting per page; default is hidden (noindex,follow) until reviewed; key commercial pages stay indexed.</details>
+<p><strong>No placeholder text</strong> · 🔧
+Customers never see <code>{{shop_name}}</code> and Google never indexes it.</p>
+<details><summary>Technical details</summary>No `{{…}}` tokens on any page, in source, or in the JSON-LD. Needs checking across pages.</details>
 
-<p><strong>Clean, stable URLs</strong> · ✅
-Keeps the ranking value our current URLs already hold.</p>
-<details><summary>Technical details</summary>Flat lowercase URLs with the country/language prefix; existing addresses reused; any change redirected.</details>
+<p><strong>Each page is its own "original" (canonical)</strong> · ⚠️ deeper check
+Stops tracking/filter versions being treated as duplicates and splitting our ranking.</p>
+<details><summary>Technical details</summary>Self-canonical, normalised (https, no-www, lowercase, no tracking params), never cross-locale; parameter URLs canonical correctly. <b>Deeper check against the canonical requirements.</b></details>
 
-<p><strong>Old URLs redirect, and no link is a dead end</strong> · 🔧
-Carries ranking value across the migration and never strands a customer or Google.</p>
-<details><summary>Technical details</summary>Same-moment 301s (list already defined); removed/discontinued products redirect to the nearest page, never 404; every internal link resolves to a live page; AI bots get the same pages, not a geo-redirect.</details>
+<p><strong>Language links correct (hreflang / x-default)</strong> · ⚠️ deeper check
+Irish searchers get the Irish page; no cannibalising en-GB.</p>
+<details><summary>Technical details</summary>Reciprocal hreflang incl. en-ie; x-default → en-gb (kept). <b>Deeper check of the full set against requirements.</b></details>
 
-<p><strong>Sitemap + robots.txt</strong> · ✅
-Google discovers all ~6,754 pages fast, and all search + AI bots are welcome.</p>
-<details><summary>Technical details</summary>Multi-tier sitemap (live on staging) + correct robots.txt allowing all bots. Outstanding: daily refresh + health-check crawl.</details>
+<p><strong>We choose what Google indexes</strong> · 🔧
+Index pages that earn traffic; keep thin/duplicate pages out.</p>
+<details><summary>Technical details</summary>Per-locale index setting; site not globally blocked. Per-page review is being integrated later.</details>
 
-<p><strong>One clean headline, no leftover placeholders, consistent locale codes</strong> · 🔧
-Avoids missing/duplicate headlines and <code>{{placeholder}}</code> text leaking to customers or Google.</p>
-<details><summary>Technical details</summary>Build check: exactly one H1 per page; template tokens validated as resolved; locale codes lowercase everywhere with uppercase variants redirected; no two pages can publish to the same URL.</details>
+<p><strong>Clean URLs + redirects</strong> · 🔧
+Keep existing ranking value; no dead ends across the migration.</p>
+<details><summary>Technical details</summary>Clean lowercase URLs with the country/language prefix. <b>Redirects:</b> the current redirect sheet works — verify it; <b>parameter & hyphen URLs must 301 to their base URL</b> (open — not fully in place); <b>new Blog + Helpcenter URL structures</b> checked after migration; removed products → 301, never 404; <b>full list of identified 404s checked</b>; no dead links.</details>
+
+<p><strong>Sitemap + robots.txt</strong> · ✅ / 🔧
+Google discovers all ~6,754 pages; all bots welcome.</p>
+<details><summary>Technical details</summary><b>Sitemap</b> built on the new logic (live); the control/monitoring mechanism via the content engine is <b>V2</b>. Check: all URLs present vs the old sitemap, <b>lastmod included</b>, and <b>regeneration working</b>. <b>robots.txt</b> on the root domain: allows all search + AI bots, blocks only cart/checkout/account, declares the sitemap — <b>open: query-parameter handling not fixed yet</b>.</details>
 
 <h3>Fast &amp; mobile-ready</h3>
-<p><strong>Product pages pass Google's speed score</strong> · ✅
-Fast pages rank better and convert better; a slow page can't ship.</p>
-<details><summary>Technical details</summary>Deploy-blocking budgets on product pages (LCP ≤2.0s, CLS ≤0.05, INP ≤150ms, JS ≤250KB). Category pages monitored.</details>
+<p><strong>Product-page speed (Core Web Vitals)</strong> · ⚠️ very important
+Fast pages rank and convert better.</p>
+<details><summary>Technical details</summary><b>Very important to check.</b> PageSpeed / Lighthouse (mobile) on a product + category page: LCP ≤2.0s · CLS ≤0.05 · INP ≤150ms. Target — ship if close (product-page gate blocks badly slow pages).</details>
 
-<p><strong>Main image loads first, nothing jumps, light first load</strong> · ✅
-The page feels instant and stable, lifting conversion.</p>
-<details><summary>Technical details</summary>Hero image eager + preloaded, rest lazy; reserved space prevents layout shift; only first-screen JavaScript loads up front.</details>
+<p><strong>Main image first, nothing jumps, light first load</strong> · ✅
+Page feels instant and stable, lifting conversion.</p>
+<details><summary>Technical details</summary>Hero/first image eager + preloaded; rest lazy; reserved space prevents layout shift; only first-screen JS loads up front.</details>
 
 <p><strong>Mobile essentials</strong> · ✅
-Protects mobile rankings (where most Irish traffic is) and looks right on a phone.</p>
-<details><summary>Technical details</summary>Viewport tag, one responsive page (no separate mobile site / AMP), and share-preview/head tags (charset, language, Open Graph) — all live.</details>
+Protects mobile rankings and looks right on a phone.</p>
+<details><summary>Technical details</summary>Viewport tag, one responsive page (no separate mobile site / AMP), head + share tags (charset, language, Open Graph) — all live. Full mobile optimisation is V2.</details>
 
 <h3>Trust &amp; rich results</h3>
-<p><strong>Product pages show price, stock &amp; breadcrumb in Google</strong> · ✅
-Rich results lift click-through against competitors in the Irish results.</p>
-<details><summary>Technical details</summary>Product + Offer + Breadcrumb structured data, build-checked. No product star rating at launch (company rating only).</details>
+<p><strong>Product pages show price, stock &amp; breadcrumb in Google</strong> · ⚠️ deeper check
+Rich results lift click-through in the Irish results.</p>
+<details><summary>Technical details</summary>Product + Offer + Breadcrumb structured data. <b>Deeper check of all fields against the schema requirements.</b></details>
+
+<p><strong>Remove product + category star ratings</strong> · 🔧
+We have no product-specific reviews, so a star rating would be misleading/non-compliant.</p>
+<details><summary>Technical details</summary>AggregateRating must be <b>removed</b> from product AND category pages as part of the schema improvements. Company-level rating stays.</details>
 
 <p><strong>Category pages show their product list &amp; breadcrumb</strong> · 🔧
 Helps category terms rank — the biggest Irish demand pool.</p>
-<details><summary>Technical details</summary>Category pages send a product-list + breadcrumb (modern schema). Currently still on the old format on staging — needs the rewrite.</details>
+<details><summary>Technical details</summary>Category page sends a product list + breadcrumb (modern schema). Known: still on the old CollectionPage format — fix right after.</details>
 
-<p><strong>Company rating shows in Google and on the page instantly</strong> · ✅
-Trust for a brand new to Irish customers; no blank widget at the deciding moment.</p>
-<details><summary>Technical details</summary>Company-level Trustpilot rating in structured data + server-rendered on first paint; hides cleanly if unavailable.</details>
+<p><strong>Company Trustpilot rating shows in Google and on the page</strong> · ✅
+Trust for a brand new to Irish customers.</p>
+<details><summary>Technical details</summary>Company-level rating in structured data + server-rendered on first paint; hides cleanly if unavailable.</details>
 
 <hr />
 <h2>V2 — after launch</h2>
+<p><strong>Sitemap control &amp; monitoring via the content engine</strong>
+The rules-driven control layer + daily health crawl on top of the working sitemap.</p>
+<p><strong>Product- and category-specific Trustpilot ratings + reviews</strong>
+Star ratings for the exact product/category once we have product review data.</p>
 <p><strong>Full mobile optimisation</strong>
-Best-in-class mobile beyond the essentials.</p>
-<details><summary>Technical details</summary>First-screen fit on small phones, one lighter image per product on mobile, larger tap targets + 16px inputs, respect "reduce motion".</details>
-
-<p><strong>Product- and category-specific Trustpilot ratings</strong>
-Star ratings for the exact product/category, not just the company — more on-page social proof.</p>
-<details><summary>Technical details</summary>Needs product-specific review data + the reviews block; ride the new category schema.</details>
-
+Beyond the essentials: first-screen fit, lighter mobile images, larger tap targets, reduce-motion.</p>
 <p><strong>Earned filter pages (filter listings)</strong>
-Capture real filter demand (e.g. "aluminium water bottles") without diluting the main pages.</p>
-<details><summary>Technical details</summary>Server-rendered filters, crawlable pagination, edge caching. Currently out of scope.</details>
-
+Server-rendered filters, crawlable pagination, edge caching. Out of scope for now.</p>
 <p><strong>360° spins, video &amp; video rich results</strong>
-Richer media on hero products lifts confidence to buy.</p>
-<p><strong>Automated indexing engine + daily site health crawl</strong>
-The system switches pages on/off in Google by rules and flags broken/dropped pages early.</p>
+Richer media on hero products.</p>
+<p><strong>Automated indexing engine</strong>
+Switches pages on/off in Google by rules, with the daily review report.</p>
 <p><strong>Caching at scale + remaining company pages</strong>
-Fast pages at full catalogue scale; proper homes for /our-promises, contact, etc.</p>
+Fast at full catalogue scale; proper homes for /our-promises, contact, etc.</p>
 </body></html>

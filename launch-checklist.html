@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="robots" content="noindex,nofollow">
+<title>en-IE Go-Live — Launch-Day Checklist</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+:root{--g:#008539;--gd:#006B2D;--ink:#191919;--ink2:#3a3a3a;--ink3:#666;--bd:#e5e5e5;--bg:#fff;--bg2:#f7f9f8;--g50:#ecfdf3;--ok:#008539;--amb:#f59e0b;--ambg:#fff7ea;--rd:#d32f2f;--rdbg:#fdecec}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Inter",system-ui,sans-serif;color:var(--ink);background:var(--bg2);font-size:15px;line-height:1.45}
+.wrap{max-width:820px;margin:0 auto;padding:0 18px}
+.top{background:var(--ink);color:#fff}.top .wrap{padding:14px 18px;display:flex;gap:10px;align-items:center}
+.top b{font-size:16px}.top a{color:#9fe6b6;margin-left:auto;font-size:12px;font-weight:600;text-decoration:none}
+.hero{background:var(--bg);border-bottom:1px solid var(--bd)}.hero .wrap{padding:16px 18px}
+h1{font-size:22px;font-weight:800;letter-spacing:-.02em}
+.hero p{color:var(--ink3);font-size:13px;margin-top:4px}
+.bar{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--bd);box-shadow:0 1px 2px rgb(0 0 0/.05)}
+.bar .wrap{display:flex;gap:8px;align-items:center;padding:9px 18px;font-size:13px;flex-wrap:wrap}
+.pill{font-weight:700;border-radius:9999px;padding:3px 10px;font-size:12px}
+.pill.ok{background:var(--g50);color:var(--gd)}.pill.iss{background:var(--rdbg);color:var(--rd)}.pill.un{background:var(--bg2);color:var(--ink3);border:1px solid var(--bd)}
+.spacer{flex:1}
+.btn{border:1px solid var(--bd);background:var(--bg);border-radius:9999px;padding:5px 12px;font:inherit;font-size:12px;font-weight:700;color:var(--ink2);cursor:pointer}
+.btn.p{border-color:var(--g);color:var(--gd)}
+.sec{margin:20px 0 8px}.sec h2{font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--g)}
+.card{background:var(--bg);border:1px solid var(--bd);border-radius:14px;box-shadow:0 1px 2px rgb(0 0 0/.05);padding:13px 15px;margin-bottom:10px}
+.card.ok{border-left:4px solid var(--ok);background:var(--g50)}
+.card.iss{border-left:4px solid var(--rd);background:var(--rdbg)}
+.card h3{font-size:15px;font-weight:700}
+.how{font-size:12.5px;color:var(--ink3);margin:4px 0 9px}
+.how b{color:var(--ink2)}
+.stat{display:flex;gap:6px;flex-wrap:wrap}
+.sbtn{border:1px solid var(--bd);background:var(--bg);border-radius:9999px;padding:5px 13px;font:inherit;font-size:12.5px;font-weight:700;color:var(--ink3);cursor:pointer}
+.sbtn.on.ok{background:var(--ok);border-color:var(--ok);color:#fff}
+.sbtn.on.iss{background:var(--rd);border-color:var(--rd);color:#fff}
+.sbtn.on.na{background:var(--ink3);border-color:var(--ink3);color:#fff}
+.dec{margin-top:10px;display:none}.dec.show{display:block}
+.dec label{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:var(--ink3);display:block;margin-bottom:4px}
+.dec select{font:inherit;font-size:13px;padding:6px 9px;border:1px solid var(--rd);border-radius:8px;background:#fff;width:100%;max-width:360px}
+.dec textarea{margin-top:7px;width:100%;border:1px solid var(--ambd,#f3d39a);border-radius:8px;padding:7px 10px;font:inherit;font-size:13px;resize:vertical;min-height:38px;background:#fffdf8}
+footer{background:var(--ink);color:#fff;padding:14px 0;margin-top:16px;font-size:12px}
+</style></head>
+<body>
+<div class="top"><div class="wrap"><b>Helloprint · en-IE Go-Live</b><a href="./index.html">← Go-live plan</a></div></div>
+<div class="hero"><div class="wrap">
+<h1>Launch-day checklist</h1>
+<p>Run through these on a live en-IE page before/at go-live. Mark each <b>OK</b> or <b>Issue</b>. For an issue, pick what we do about it (ship / fix now / fix after) and add a note. Hit <b>Copy status</b> for the go/no-go summary.</p>
+</div></div>
+<div class="bar"><div class="wrap">
+<span class="pill ok" id="pOk">0 OK</span><span class="pill iss" id="pIss">0 issues</span><span class="pill un" id="pUn">0 to check</span>
+<span class="spacer"></span>
+<button class="btn p" id="copy">Copy status</button><button class="btn" id="reset">Reset</button>
+</div></div>
+<div class="wrap"><div id="list"></div></div>
+<footer><div class="wrap">en-IE launch-day checklist · your marks are saved in this browser</div></footer>
+<script>
+const C=[
+["g1","Any page (global)","Content loads with the page","Open a product & a category page → right-click <b>View source</b> (or DevTools with JS off): the title, description and price text are in the HTML."],
+["g2","Any page (global)","robots.txt is correct","Open <b>/robots.txt</b>: <b>Allow: /</b>, sitemap listed, only cart/checkout/account/login blocked."],
+["g3","Any page (global)","Sitemap is live","Open <b>/sitemap.xml</b> → <b>/en-ie/sitemap.xml</b>: lists products / collections / pages."],
+["g4","Any page (global)","Canonical is correct","In View source: one <code>&lt;link rel=canonical&gt;</code> pointing to the clean page URL (self)."],
+["g5","Any page (global)","Language links (hreflang) correct","In source: hreflang for <b>en-ie</b> + siblings + <b>x-default → en-gb</b>."],
+["g6","Any page (global)","Head & share tags","Language = en-IE, charset UTF-8, and a WhatsApp/social share shows a proper title + image."],
+["g7","Any page (global)","Index settings right","Pages we want found = <b>index,follow</b>; thin/unreviewed = <b>noindex</b>. Spot-check the robots tag on a few."],
+["g8","Any page (global)","No placeholder text","No <code>{{…}}</code> text visible on the page or in source (e.g. {{shop_name}})."],
+["g9","Any page (global)","One headline per page","Each page has exactly one main H1."],
+["p1","Product page (PDP)","Fast & stable","Loads quickly on mobile; nothing jumps as it loads; main image appears immediately."],
+["p2","Product page (PDP)","Price, delivery & breadcrumb in Google","They show on the page and pass Google's Rich Results test (Product + Offer + Breadcrumb)."],
+["p3","Product page (PDP)","Ratings correct","Company Trustpilot rating shows (not blank); <b>no product-level star rating</b> for launch."],
+["p4","Product page (PDP)","Configurator readable","All options visible on load; price + delivery update correctly."],
+["l1","Category page (PLP)","Grid works, no dead tiles","Product tiles render and every tile links to a live page (no 404)."],
+["l2","Category page (PLP)","Category data to Google","Sends a product list + breadcrumb (note: may still be the old schema — known issue)."],
+["l3","Category page (PLP)","Mobile is usable","Fits the phone screen, buttons tappable, layout not broken."],
+["r1","Redirects & links","Redirects are live","Spot-check a few old URLs from the redirect list → 301 to the new page (no 404, single hop)."],
+["r2","Redirects & links","No dead links","Click the main menu + a category grid; nothing 404s."]
+];
+const SECS=["Any page (global)","Product page (PDP)","Category page (PLP)","Redirects & links"];
+const DECS=["Ship anyway (acceptable)","Fix before go-live","Fix right after launch"];
+const KEY="hp-enie-launch-checklist-v1";
+let S=JSON.parse(localStorage.getItem(KEY)||"{}");
+const save=()=>localStorage.setItem(KEY,JSON.stringify(S));
+function render(){
+ const root=document.getElementById('list');root.innerHTML='';
+ SECS.forEach(sec=>{
+  const items=C.filter(c=>c[1]===sec);
+  const h=document.createElement('div');h.className='sec';h.innerHTML=`<h2>${sec}</h2>`;root.appendChild(h);
+  items.forEach(c=>{
+   const id=c[0];const st=S[id]||{};
+   const card=document.createElement('div');card.className='card'+(st.status==='ok'?' ok':st.status==='iss'?' iss':'');
+   const opts=DECS.map(d=>`<option${st.decision===d?' selected':''}>${d}</option>`).join('');
+   card.innerHTML=`<h3>${c[2]}</h3><div class="how"><b>How:</b> ${c[3]}</div>
+     <div class="stat">
+       <button class="sbtn ok${st.status==='ok'?' on':''}" data-id="${id}" data-s="ok">✓ OK</button>
+       <button class="sbtn iss${st.status==='iss'?' on':''}" data-id="${id}" data-s="iss">⚠ Issue</button>
+       <button class="sbtn na${st.status==='na'?' on':''}" data-id="${id}" data-s="na">— N/A</button>
+     </div>
+     <div class="dec${st.status==='iss'?' show':''}">
+       <label>If it doesn't work — what do we do?</label>
+       <select data-id="${id}"><option value="">Choose…</option>${opts}</select>
+       <textarea data-id="${id}" placeholder="Note: what's wrong / the decision…">${st.note||''}</textarea>
+     </div>`;
+   root.appendChild(card);
+  });
+ });
+ document.querySelectorAll('.sbtn').forEach(b=>b.onclick=()=>{const id=b.dataset.id;S[id]=S[id]||{};S[id].status=(S[id].status===b.dataset.s?'':b.dataset.s);save();render();});
+ document.querySelectorAll('.dec select').forEach(s=>s.onchange=()=>{const id=s.dataset.id;S[id]=S[id]||{};S[id].decision=s.value;save();upd();});
+ document.querySelectorAll('.dec textarea').forEach(t=>t.oninput=()=>{const id=t.dataset.id;S[id]=S[id]||{};S[id].note=t.value;save();upd();});
+ upd();
+}
+function upd(){
+ const ok=C.filter(c=>(S[c[0]]||{}).status==='ok').length;
+ const iss=C.filter(c=>(S[c[0]]||{}).status==='iss').length;
+ const un=C.filter(c=>!(S[c[0]]||{}).status).length;
+ document.getElementById('pOk').textContent=ok+' OK';
+ document.getElementById('pIss').textContent=iss+' issues';
+ document.getElementById('pUn').textContent=un+' to check';
+}
+document.getElementById('reset').onclick=()=>{if(confirm('Clear all marks?')){S={};save();render();}};
+document.getElementById('copy').onclick=()=>{
+ let o='en-IE Go-Live — launch check\n\n';
+ const ok=C.filter(c=>(S[c[0]]||{}).status==='ok').length;
+ const iss=C.filter(c=>(S[c[0]]||{}).status==='iss');
+ const un=C.filter(c=>!(S[c[0]]||{}).status);
+ o+=`${ok} OK · ${iss.length} issues · ${un.length} not checked\n`;
+ if(iss.length){o+='\nISSUES + DECISIONS:\n';iss.forEach(c=>{const s=S[c[0]];o+=`• ${c[2]} — ${s.decision||'(no decision)'}${s.note?': '+s.note:''}\n`;});}
+ if(un.length){o+='\nNOT CHECKED:\n';un.forEach(c=>o+=`• ${c[2]}\n`);}
+ navigator.clipboard.writeText(o).then(()=>{const b=document.getElementById('copy');b.textContent='Copied ✓';setTimeout(()=>b.textContent='Copy status',1500);});
+};
+render();
+</script>
+</body></html>

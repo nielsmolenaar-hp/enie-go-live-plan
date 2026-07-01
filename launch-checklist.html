@@ -53,6 +53,12 @@ footer{background:var(--ink);color:#fff;padding:14px 0;margin-top:16px;font-size
 <footer><div class="wrap">en-IE launch-day checklist · your marks are saved in this browser</div></footer>
 <script>
 const C=[
+["m1","Migration (cutover)","Baseline captured BEFORE cutover","Snapshot en-IE rankings, GSC clicks/impressions and indexed-URL count <b>now</b> — so any post-launch loss is measurable (§12 '>20% loss' flag). Capture GSC + Ahrefs separately. <b>Can't be done after go-live.</b>"],
+["m2","Migration (cutover)","Redirect coverage is complete","Every old URL (old sitemap + GSC top pages + top backlink targets) 301s single-hop to a live 200 page — none 404, none land on a noindex or another redirect. (Beyond the spot-check in Redirects.)"],
+["m3","Migration (cutover)","Old stack is dark — no split-brain","Old en-IE URLs redirect and must NOT still serve a live 200 on the old site — two live copies = duplicate competing pages."],
+["m4","Migration (cutover)","en-IE stands on its own","Pages that used to fall back to en-GB now self-canonical to their own en-IE URL with reciprocal hreflang — never canonical to en-GB (or they fold into en-GB and stop ranking)."],
+["m5","Migration (cutover)","Top pages equivalent-or-better","Spot-check the ~50 highest-traffic en-IE pages old-vs-new: title, H1, content and structured data are at least as strong as the old ranking page (a good 301 to a thinner page still drops rankings)."],
+["m6","Migration (cutover)","404-spike watch (first weeks)","After cutover, watch inbound 404s + GSC Coverage daily for the 4–8 week window — missed redirects surface here first."],
 ["g1","Any page (global)","Content loads with the page","Open a product & a category page → right-click <b>View source</b> (or DevTools with JS off): the title, description and price text are in the HTML."],
 ["g2","Any page (global)","robots.txt is correct","Open <b>/robots.txt</b>: <b>Allow: /</b>, sitemap listed, only cart/checkout/account/login blocked."],
 ["g3","Any page (global)","Sitemap is live","Open <b>/sitemap.xml</b> → <b>/en-ie/sitemap.xml</b>: lists products / collections / pages."],
@@ -73,7 +79,7 @@ const C=[
 ["r1","Redirects & links","Redirects are live","Spot-check a few old URLs from the redirect list → 301 to the new page (no 404, single hop)."],
 ["r2","Redirects & links","No dead links","Click the main menu + a category grid; nothing 404s."]
 ];
-const SECS=["Any page (global)","Product page (PDP)","Category page (PLP)","Redirects & links"];
+const SECS=["Migration (cutover)","Any page (global)","Product page (PDP)","Category page (PLP)","Redirects & links"];
 const DECS=["Ship anyway (acceptable)","Fix before go-live","Fix right after launch"];
 const KEY="hp-enie-launch-checklist-v1";
 let S=JSON.parse(localStorage.getItem(KEY)||"{}");

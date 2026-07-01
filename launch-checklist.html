@@ -59,15 +59,16 @@ const C=[
 ["g4","Any page (global)","Canonical is correct","In View source: one <code>&lt;link rel=canonical&gt;</code> pointing to the clean page URL (self)."],
 ["g5","Any page (global)","Language links (hreflang) correct","In source: hreflang for <b>en-ie</b> + siblings + <b>x-default → en-gb</b>."],
 ["g6","Any page (global)","Head & share tags","Language = en-IE, charset UTF-8, and a WhatsApp/social share shows a proper title + image."],
-["g7","Any page (global)","Index settings right","Pages we want found = <b>index,follow</b>; thin/unreviewed = <b>noindex</b>. Spot-check the robots tag on a few."],
+["g7","Any page (global)","Not accidentally blocked from Google","Spot-check the robots tag: key pages are <b>index,follow</b> and the site isn't globally noindex or blocked. (Per-page index review is being integrated later.)"],
 ["g8","Any page (global)","No placeholder text","No <code>{{…}}</code> text visible on the page or in source (e.g. {{shop_name}})."],
 ["g9","Any page (global)","One headline per page","Each page has exactly one main H1."],
 ["p1","Product page (PDP)","Fast & stable","Loads quickly on mobile; nothing jumps as it loads; main image appears immediately."],
+["pspeed","Product page (PDP)","Web speed — Core Web Vitals","Run PageSpeed Insights / Lighthouse (mobile) on a product + a category page: LCP, CLS, INP in the green (targets LCP ≤2.0s · CLS ≤0.05 · INP ≤150ms). <b>Target — ship if close</b>, not a hard blocker."],
 ["p2","Product page (PDP)","Price, delivery & breadcrumb in Google","They show on the page and pass Google's Rich Results test (Product + Offer + Breadcrumb)."],
-["p3","Product page (PDP)","Ratings correct","Company Trustpilot rating shows (not blank); <b>no product-level star rating</b> for launch."],
+["p3","Product page (PDP)","Ratings correct","Company Trustpilot rating shows (not blank). <b>Known:</b> a product-level star rating is currently showing — decision: <b>ship as-is, remove right after</b>."],
 ["p4","Product page (PDP)","Configurator readable","All options visible on load; price + delivery update correctly."],
 ["l1","Category page (PLP)","Grid works, no dead tiles","Product tiles render and every tile links to a live page (no 404)."],
-["l2","Category page (PLP)","Category data to Google","Sends a product list + breadcrumb (note: may still be the old schema — known issue)."],
+["l2","Category page (PLP)","Category data to Google","Sends a product list + breadcrumb. <b>Known:</b> still on the old schema — decision: <b>ship as-is, fix right after</b>."],
 ["l3","Category page (PLP)","Mobile is usable","Fits the phone screen, buttons tappable, layout not broken."],
 ["r1","Redirects & links","Redirects are live","Spot-check a few old URLs from the redirect list → 301 to the new page (no 404, single hop)."],
 ["r2","Redirects & links","No dead links","Click the main menu + a category grid; nothing 404s."]
@@ -77,6 +78,7 @@ const DECS=["Ship anyway (acceptable)","Fix before go-live","Fix right after lau
 const KEY="hp-enie-launch-checklist-v1";
 let S=JSON.parse(localStorage.getItem(KEY)||"{}");
 const save=()=>localStorage.setItem(KEY,JSON.stringify(S));
+if(!S.__seed1){S.l2={status:'iss',decision:'Fix right after launch',note:'Category pages still on old schema (known)'};S.p3={status:'iss',decision:'Fix right after launch',note:'Product star rating showing — remove after launch'};S.__seed1=1;save();}
 function render(){
  const root=document.getElementById('list');root.innerHTML='';
  SECS.forEach(sec=>{

@@ -60,47 +60,60 @@ footer{background:var(--ink);color:#fff;padding:14px 0;margin-top:16px;font-size
 const C=[
 ["m1","Migration & redirects","Baseline captured BEFORE cutover","Snapshot en-IE rankings, GSC clicks/impressions and indexed-URL count <b>now</b> (GSC + Ahrefs separately). Can't be done after go-live."],
 ["m2","Migration & redirects","Redirect coverage complete + sheet verified","Every old URL (old sitemap + GSC top pages + backlinks) 301s single-hop to a live 200. The current redirect sheet works — verify it against the old URL set."],
-["m3","Migration & redirects","Parameter & hyphen URLs → base URL","Parameter and hyphen-suffix variant URLs stay live (200) with <b>canonical to base URL</b> (not 301). Only earned hyphen-suffix variants get their own indexed URL. <b>Open — not fully in place yet.</b>"],
+["m3","Migration & redirects","Parameter & hyphen URLs → base URL","Parameter and hyphen-suffix variant URLs stay live (200) with <b>canonical to base URL</b> (not 301). Only earned hyphen-suffix variants get their own indexed URL. <b>Working, but currently very slow — flagged to Frederico.</b>"],
 ["m4","Migration & redirects","New URL structures redirected (Blog, Helpcenter)","After migration, the new Blog + Helpcenter URL structures resolve and their old paths 301 correctly."],
 ["m5","Migration & redirects","Old stack is dark — no split-brain","Old en-IE URLs redirect and must NOT still serve a live 200 (no duplicate competing pages)."],
 ["m6","Migration & redirects","Full 404 list checked","Pull the full list of identified 404s and check each — redirect where a target exists; real 404 only for genuinely dead URLs."],
 ["m7","Migration & redirects","Top pages equivalent-or-better","Top ~50 en-IE pages old-vs-new: title, H1, content and schema at least as strong as the old ranking page."],
 ["m8","Migration & redirects","404-spike watch (first weeks)","After cutover, watch inbound 404s + GSC Coverage daily for the 4–8 week window."],
 
-["s1","Crawlability & SSR","Essential blocks are server-side rendered","In the raw HTML (no JS) these are all present: <b>Trustpilot</b>, <b>pricing on landing pages</b>, <b>product items on filter pages</b>, <b>images</b>, <b>FAQs</b>, and <b>funnel (configurator) attributes & values</b>."],
+["s1","Crawlability & SSR","Essential blocks are server-side rendered","In the raw HTML (no JS) these are all present: <b>Trustpilot</b>, <b>pricing on landing pages</b>, <b>product items on filter pages</b>, <b>images</b>, <b>FAQs</b>, and <b>funnel (configurator) attributes & values</b>. <b>Status: prices are client-side on the OLD category template + homepage tiles (the new listing template + PDPs already SSR them) — price SSR + ItemList backport scoped/in progress.</b>"],
 ["s2","Crawlability & SSR","Internal linking works","Menu, breadcrumb, product grids and related links are real anchors and resolve to live pages. <b>Known: some dead tiles (a grid tile → /magazines 404, a 'show all' → /all) — sweep + fix.</b>"],
-["s3","Crawlability & SSR","robots.txt correct (root domain)","On the root domain: allows all search + AI bots, blocks only cart/checkout/account, declares the sitemap. <b>Verified live. Open: query-parameter handling not finalised.</b>"],
-["s4","Crawlability & SSR","No placeholder text","No <code>{{shop_name}}</code> / <code>{{…}}</code> tokens on any page, in source, or in the JSON-LD. <b>Needs checking across pages.</b>"],
+["s3","Crawlability & SSR","robots.txt correct (root domain)","On the root domain: allows all search + AI bots, blocks only cart/checkout/account, declares the sitemap. <b>Verified live (AI crawlers explicitly allowed; only cart/checkout/account blocked). Open: robots <code>Sitemap:</code> points to <code>www.helloprint.com/sitemap.xml</code> (wrong domain — fix for the launch domain); query-parameter handling to finalise; full scrape of the new site still needed.</b>"],
+["s4","Crawlability & SSR","No placeholder text","No <code>{{shop_name}}</code> / <code>{{…}}</code> tokens on any page, in source, or in the JSON-LD. <b>Leak found on the ballpoint-pens ItemList template (visible body + JSON-LD) — fix token substitution + site-wide scan. In progress.</b>"],
 ["s5","Crawlability & SSR","Clean heading structure","<b>Prerequisite for go-live.</b> Exactly ONE H1 = the real customer/keyword heading; logical nesting (no H1→H3 skips); NO empty headings; the search box and footer must not use heading tags. <b>Fixes (verified 30 Jun):</b> ① remove the search-box <code>&lt;h3&gt;</code>s — the 8 before the H1 plus the trailing Share/cookies ones; ② footer columns (Who We Are, Our Products, Work Together, Resources &amp; Support, Social Media) must NOT be <code>&lt;h2&gt;</code>; ③ remove the empty <code>&lt;h2&gt;</code>s on the category page; ④ the PDP has TWO H1s and the H1 + <code>&lt;title&gt;</code> read <b>&quot;booklets5&quot;</b> (the raw product key) — it must be the real product heading, and it currently skips H1→H3. An H1/title of &quot;booklets5&quot; signals the build isn&#39;t reliably working everywhere.",1],
 ["s6","Crawlability & SSR","Mega-menu — no crawlable links to undefined products","The mega-menu / All-products nav must NOT expose crawlable <code>&lt;a href&gt;</code> links to products or categories that aren't live/defined for en-IE — those become indexable links to empty or non-existent pages (thin/404, wasted crawl, broken internal links). Undefined entries should be hidden, non-anchor, or excluded — not rendered as real links. <b>Checked 30 Jun:</b> no literal <code>/undefined</code> or <code>/null</code> hrefs on the all-products page; several category links have no anchor text (icon-only — verify they resolve). <b>Still to confirm:</b> every product/category the menu links to has a live en-IE page (nothing linking to undefined products)."],
 
-["i1","Indexing signals","Canonical — deeper check vs requirements","Self-canonical, normalised (https, no-www, lowercase, no tracking params), never cross-locale; parameter URLs canonical correctly. <b>Verified self-canonical on PDP + PLP; deeper check of param handling.</b>"],
-["i2","Indexing signals","Hreflang / x-default — deeper check","Reciprocal hreflang incl. en-ie; x-default → en-gb. <b>Verified en-ie + siblings + x-default→en-gb present.</b>"],
+["i1","Indexing signals","Canonical — deeper check vs requirements","Self-canonical, normalised (https, no-www, lowercase, no tracking params), never cross-locale; parameter URLs canonical correctly. <b>Verified clean on staging (sitemap URLs lowercase / no-www / no-params; params→base). Re-confirm on the production domain.</b>"],
+["i2","Indexing signals","Hreflang / x-default — deeper check","Reciprocal hreflang incl. en-ie; x-default → en-gb. <b>Tags present; reciprocity being finalised on staging.</b>"],
 ["i3","Indexing signals","Not accidentally blocked from Google","Key pages index,follow; site not globally noindex/blocked. <b>Verified live pages index,follow.</b> (Per-page index review integrated later.)"],
-["i4","Indexing signals","Sitemap — new logic, checked vs old","Built on the new logic (V1); the control/monitoring mechanism via the content engine is <b>V2</b>. Check: all URLs present vs the old sitemap, <b>lastmod included</b>, and <b>regeneration working</b>. <b>Verified structure live.</b>"],["i5","Indexing signals","Query parameters are correctly set up","Junk params (printrun/view/source) stay blocked in robots.txt; SEO and configurator params are NOT blocked - kept live (200) with <b>canonical to clean base URL</b> (never 301). Verify: canonical to base, param URLs <b>not internally linked</b> as crawlable anchors, and <b>not in the sitemap</b>."],
+["i4","Indexing signals","Sitemap — new logic, checked vs old","Built on the new logic (V1); the control/monitoring mechanism via the content engine is <b>V2</b>. Check: all URLs present vs the old sitemap, <b>lastmod included</b>, and <b>regeneration working</b>. <b>Structure verified (index → per-locale → per-type; clean URLs, no params). Open: NO <code>&lt;lastmod&gt;</code> in the index or child sitemaps (plan requires it); products_1 listed only 11 URLs — verify product coverage.</b>"],["i5","Indexing signals","Query parameters are correctly set up","Junk params (printrun/view/source) stay blocked in robots.txt; SEO and configurator params are NOT blocked - kept live (200) with <b>canonical to clean base URL</b> (never 301). Verify: canonical to base, param URLs <b>not internally linked</b> as crawlable anchors, and <b>not in the sitemap</b>."],
 
-["d1","Structured data","Product schema — deeper check","PDP emits Product + Offer + Breadcrumb. <b>Verified present; deeper check of all fields against the schema requirements.</b>"],
-["d2","Structured data","Category schema","Category page sends a product list + breadcrumb. <b>Known: still old CollectionPage — fix right after.</b>"],
-["d5","Structured data","Breadcrumb structure","Breadcrumb present + correct (visible trail + BreadcrumbList schema, matching the page). <b>Known: not working for category pages — fix.</b>"],
-["d3","Structured data","Remove product + category star ratings","AggregateRating on product AND category pages must be <b>removed</b> as part of the schema improvements (no product-specific reviews). <b>Known: product page currently emits one.</b>"],
-["d4","Structured data","Company Trustpilot rating shows","Company-level rating renders (not blank) and is in the Organization schema."],
+["d1","Structured data","Product schema — deeper check","PDP emits Product + Offer + Breadcrumb. <b>Types present + server-rendered; still needs full field validation via Rich Results Test (zero errors): Product name/image/brand, Offer price/priceCurrency EUR/availability, Breadcrumb positions, ItemList item/position/url.</b>"],
+["d2","Structured data","Category schema","Category page sends a product list + breadcrumb. <b>CollectionPage removed — confirmed. New listing template emits ItemList; old category template still lacks it (covered by the SSR price backport).</b>"],
+["d5","Structured data","Breadcrumb structure","Breadcrumb present + correct (visible trail + BreadcrumbList schema, matching the page). <b>Category-page breadcrumb: scoped / in progress — prioritise now.</b>"],
+["d3","Structured data","Remove product + category star ratings","AggregateRating on product AND category pages must be <b>removed</b> as part of the schema improvements (no product-specific reviews). <b>AggregateRating removed on product + category — confirmed.</b>"],
+["d4","Structured data","Company Trustpilot rating shows","Company-level rating renders (not blank) and is in the Organization schema. <b>Approach: render company Trustpilot on first paint + add to Organization schema. To do.</b>"],
 
-["p1","Speed","Product-page speed — Core Web Vitals","<b>Very important.</b> Run PageSpeed / Lighthouse (mobile) on a product + a category page: LCP, CLS, INP green (LCP ≤2.0s · CLS ≤0.05 · INP ≤150ms). Target — ship if close. <b>Watch:</b> product-page HTML was slow to fetch — check TTFB/size."],
-["p2","Speed","Main image first, nothing jumps","Hero / first image loads immediately; the layout doesn't shift as it loads."]
+["p1","Speed","Product-page speed — Core Web Vitals","<b>Very important.</b> Run PageSpeed / Lighthouse (mobile) on a product + a category page: LCP, CLS, INP green (LCP ≤2.0s · CLS ≤0.05 · INP ≤150ms). Target — ship if close. <b>Watch:</b> product-page HTML was slow to fetch — check TTFB/size. <b>Measured this morning — re-run per product + category page (Lighthouse/PSI).</b>"],
+["p2","Speed","Main image first, nothing jumps","Hero / first image loads immediately; the layout doesn't shift as it loads."],
+["s7","Crawlability & SSR","Listing pages — full first product page in the HTML","On listing / filter pages only the first ~15 products are server-rendered; the rest load via client-side <b>Show more</b>. Decide the server-rendered first-page size (is 15 a cap or the page size?) and confirm the deeper products are reachable via crawlable internal links elsewhere."],
+["o1","On-page & metadata","Title &amp; meta = Contentful verbatim (no truncation)","Every page's <code>&lt;title&gt;</code> and <code>og:title</code> is hard-capped ~60 chars with an ellipsis and a re-appended <code>| HelloPrint</code>, giving broken mid-word titles (e.g. <b>&quot;…Free Delivery With He… | HelloPrint&quot;</b>, <b>&quot;…140gsm | HelloPrin… | HelloPrint&quot;</b>). Render the Contentful metaTitle / metaDescription <b>verbatim</b>, remove the cap / ellipsis / brand-append, and define behaviour when the Contentful value is empty. Scoped / in progress."],
+["o2","On-page & metadata","Meta description — Ireland-localised","en-IE meta descriptions are authored, Ireland-appropriate and complete (no &quot;across Europe&quot; filler). <b>Done.</b>"],
+["p3","Speed","Responsive images (srcset / sizes)","Product-tile, hero and gallery images ship <b>no <code>srcset</code> / <code>sizes</code></b> today (0/58 and 0/84 on the category pages checked) — phones download desktop-sized images, hurting mobile LCP. Add width variants + <code>sizes</code> + WebP/AVIF via the shared image component; keep the eager preloaded hero + lazy rest. Scoped / in progress."]
 ];
-const SECS=["Migration & redirects","Crawlability & SSR","Indexing signals","Structured data","Speed"];
+const SECS=["Migration & redirects","Crawlability & SSR","Indexing signals","Structured data","On-page & metadata","Speed"];
 const DECS=["Ship anyway (acceptable)","Fix before go-live","Fix right after launch"];
-const KEY="hp-enie-launch-checklist-v2";
+const KEY="hp-enie-launch-checklist-v3";
 let S=JSON.parse(localStorage.getItem(KEY)||"{}");
 const save=()=>localStorage.setItem(KEY,JSON.stringify(S));
-if(!S.__seed3){
- S.d2={status:'iss',decision:'Fix right after launch',note:'Still old CollectionPage schema'};
- S.d3={status:'iss',decision:'Fix right after launch',note:'Remove product + category aggregateRating (no product reviews)'};
- S.d5={status:'iss',decision:'Fix right after launch',note:'Breadcrumb not working on category pages'};
- S.m3={status:'iss',decision:'Fix right after launch',note:'Parameter/hyphen → base-URL redirect not fully in place'};
+if(!S.__seed4){
+ S.s1={status:'iss',decision:'Fix before go-live',note:'Prices client-side on old category template + homepage; backport SSR price + ItemList'};
+ S.s4={status:'iss',decision:'Fix before go-live',note:'Placeholder tokens leak on ballpoint-pens (body + JSON-LD) — fix + site-wide scan'};
+ S.s5={status:'iss',decision:'Fix before go-live',note:'Remove search-box H3s + footer-column H2s + empty H2s; PDP H1/title must be the real product heading; fix H1 to H3 skip'};
+ S.s7={status:'iss',decision:'Fix before go-live',note:'Only first ~15 products server-rendered; decide first-page size + confirm deep products internally linked'};
+ S.o1={status:'iss',decision:'Fix before go-live',note:'Title/og:title truncated with ellipsis + duplicated brand — render Contentful verbatim, remove cap'};
+ S.o2={status:'ok',note:'Meta descriptions Ireland-localised'};
+ S.d1={status:'iss',decision:'Fix right after launch',note:'Validate all schema fields via Rich Results Test (zero errors)'};
+ S.d2={status:'ok',note:'CollectionPage removed; ItemList on new template, missing on old (via SSR backport)'};
+ S.d3={status:'ok',note:'AggregateRating removed on product + category'};
+ S.d4={status:'iss',decision:'Fix before go-live',note:'Render company Trustpilot on first paint + Organization schema'};
+ S.d5={status:'iss',decision:'Fix before go-live',note:'Category-page breadcrumb — prioritise now'};
+ S.m3={status:'iss',decision:'Fix right after launch',note:'Param/hyphen to base works but very slow — flag to Frederico'};
  S.s2={status:'iss',decision:'Fix right after launch',note:'Dead tiles (magazines / all) — link sweep'};
- S.s5={status:'iss',decision:'Fix before go-live',note:'Prerequisite: remove search-box H3s + footer-column H2s + empty H2s; PDP H1/title "booklets5" → real product heading; fix H1→H3 skip'};
- S.__seed3=1;save();
+ S.i4={status:'iss',decision:'Fix right after launch',note:'No lastmod in sitemaps (plan requires); products_1 only 11 URLs — verify coverage'};
+ S.p3={status:'iss',decision:'Fix right after launch',note:'Add srcset/sizes + WebP/AVIF for mobile LCP'};
+ S.__seed4=1;save();
 }
 function render(){
  const root=document.getElementById('list');root.innerHTML='';
@@ -112,7 +125,7 @@ function render(){
    let cls='card';if(st.status==='ok')cls+=' ok';else if(st.status==='iss')cls+=' iss';if(blk)cls+=' blk';
    const card=document.createElement('div');card.className=cls;
    const opts=DECS.map(d=>`<option${st.decision===d?' selected':''}>${d}</option>`).join('');
-   card.innerHTML=`<h3><span style="font-size:11px;font-weight:800;margin-right:6px;opacity:.85;color:#008539">${({m1:'⛔ Not needed',m2:'⬜ Prod check',m3:'✅ Fixed',m4:'⬜ Frederico',m5:'⬜ Prod check',m6:'⬜ To set up',m7:'🕒 Ongoing',m8:'🕒 Ongoing',s1:'⬜ Check deeper',s2:'⬜ Sweep',s3:'✅ Fixed',s4:'✅ Fixed',s6:'✅ Fixed',i1:'⬜ Deeper check',i2:'✅ Fixed',i3:'⬜ At go-live',i4:'⬜ Check output',i5:'✅ Fixed',d1:'⬜ To check',d2:'✅ Fixed',d3:'✅ Fixed',d4:'⬜ To do',d5:'🔧 To fix',p1:'🕒 Ongoing',p2:'⬜ To check'})[c[0]]||''}</span>${c[2]}${blk?'<span class="blkTag">BLOCKER</span>':''}</h3>
+   card.innerHTML=`<h3><span style="font-size:11px;font-weight:800;margin-right:6px;opacity:.85;color:#008539">${({m1:'⛔ Not needed',m2:'⬜ Prod check',m3:'🐢 Slow · Frederico',m4:'⬜ Frederico',m5:'⬜ Prod check',m6:'⬜ To set up',m7:'🕒 Ongoing',m8:'🕒 Ongoing',s1:'🟡 In progress',s2:'⬜ Sweep',s3:'🟡 Verify',s4:'🟡 In progress',s6:'✅ Fixed',s7:'⬜ Decision',i1:'🟢 Prod-confirm',i2:'🟡 On staging',i3:'⬜ At go-live',i4:'🟡 lastmod',i5:'✅ Fixed',d1:'⬜ Validate',d2:'🟡 Partly',d3:'✅ Done',d4:'🔴 To do',d5:'🟡 Prioritise',p1:'🟡 Measure',p2:'⬜ To check',p3:'🟡 Scoped',o1:'🟡 In progress',o2:'✅ Done'})[c[0]]||''}</span>${c[2]}${blk?'<span class="blkTag">BLOCKER</span>':''}</h3>
      <button class="ctxToggle" data-id="${id}">▸ Criteria &amp; context</button>
      <div class="how" id="how-${id}"><b>Criteria:</b> ${c[3]}</div>
      <div class="stat">

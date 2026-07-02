@@ -71,8 +71,8 @@ const C=[
 ["s5","Crawlability & SSR","Clean heading structure","<b>Prerequisite for go-live.</b> Exactly ONE H1 = the real customer/keyword heading; logical nesting (no H1→H3 skips); NO empty headings; the search box and footer must not use heading tags. <b>Fixes (verified 30 Jun):</b> ① remove the search-box <code>&lt;h3&gt;</code>s — the 8 before the H1 plus the trailing Share/cookies ones; ② footer columns (Who We Are, Our Products, Work Together, Resources &amp; Support, Social Media) must NOT be <code>&lt;h2&gt;</code>; ③ remove the empty <code>&lt;h2&gt;</code>s on the category page; ④ the PDP has TWO H1s and the H1 + <code>&lt;title&gt;</code> read <b>&quot;booklets5&quot;</b> (the raw product key) — it must be the real product heading, and it currently skips H1→H3. An H1/title of &quot;booklets5&quot; signals the build isn&#39;t reliably working everywhere. <b>Successfully deployed.</b>",1],
 ["s6","Crawlability & SSR","Mega-menu — no crawlable links to undefined products","The mega-menu / All-products nav must NOT expose crawlable <code>&lt;a href&gt;</code> links to products or categories that aren't live/defined for en-IE — those become indexable links to empty or non-existent pages (thin/404, wasted crawl, broken internal links). Undefined entries should be hidden, non-anchor, or excluded — not rendered as real links. <b>Checked 30 Jun:</b> no literal <code>/undefined</code> or <code>/null</code> hrefs on the all-products page; several category links have no anchor text (icon-only — verify they resolve). <b>Still to confirm:</b> every product/category the menu links to has a live en-IE page (nothing linking to undefined products). <b>Successfully deployed.</b>"],
 
-["i1","Indexing signals","Canonical — deeper check vs requirements","Self-canonical, normalised (https, no-www, lowercase, no tracking params), never cross-locale; parameter URLs canonical correctly. <b>Verified clean on staging (sitemap URLs lowercase / no-www / no-params; params→base). Re-confirm on the production domain.</b>"],
-["i2","Indexing signals","Hreflang / x-default — deeper check","Reciprocal hreflang incl. en-ie; x-default → en-gb. <b>Tags present; reciprocity being finalised on staging.</b>"],
+["i1","Indexing signals","Canonical — deeper check vs requirements","Self-canonical, normalised (https, no-www, lowercase, no tracking params), never cross-locale; parameter URLs canonical correctly. <b>Processed on staging — canonical self-referential + normalised (https, no-www, lowercase) and parameter URLs canonicalise to base, verified across PLP / PDP / homepage. Needs to be checked on production when pushed live.</b>"],
+["i2","Indexing signals","Hreflang / x-default — deeper check","Reciprocal hreflang incl. en-ie; x-default → en-gb. <b>Processed on staging — reciprocal en-ie↔en-gb cluster, self-referencing, x-default→en-gb, param-free absolute alternates, verified across PLP / PDP / homepage. Needs to be checked on production when pushed live (nl/de/fr resolve once those locales are deployed).</b>"],
 ["i3","Indexing signals","Not accidentally blocked from Google","Key pages index,follow; site not globally noindex/blocked. <b>Verified live pages index,follow.</b> (Per-page index review integrated later.)"],
 ["i4","Indexing signals","Sitemap — new logic, checked vs old","Built on the new logic (V1); the control/monitoring mechanism via the content engine is <b>V2</b>. Check: all URLs present vs the old sitemap, <b>lastmod included</b>, and <b>regeneration working</b>. <b>Structure verified (index → per-locale → per-type; clean URLs, no params). Successfully deployed and matching. (Confirm <code>&lt;lastmod&gt;</code> present.)</b>"],["i5","Indexing signals","Query parameters are correctly set up","Junk params (printrun/view/source) stay blocked in robots.txt; SEO and configurator params are NOT blocked - kept live (200) with <b>canonical to clean base URL</b> (never 301). Verify: canonical to base, param URLs <b>not internally linked</b> as crawlable anchors, and <b>not in the sitemap</b>. <b>Done.</b>"],
 
@@ -95,7 +95,7 @@ const DECS=["Ship anyway (acceptable)","Fix before go-live","Fix right after lau
 const KEY="hp-enie-launch-checklist-v4";
 let S=JSON.parse(localStorage.getItem(KEY)||"{}");
 const save=()=>localStorage.setItem(KEY,JSON.stringify(S));
-if(!S.__seed5){
+if(!S.__seed6){
  S.s1={status:'iss',decision:'Fix before go-live',note:'Prices SSR in progress (most important); other blocks not must-haves'};
  S.s4={status:'iss',decision:'Fix before go-live',note:'Placeholder fix should be live after clearing cache'};
  S.s5={status:'ok',note:'Heading structure fixes deployed'};
@@ -120,7 +120,9 @@ if(!S.__seed5){
  S.d5={status:'iss',decision:'Fix before go-live',note:'Category breadcrumb not done — very critical'};
  S.p1={status:'iss',decision:'Fix right after launch',note:'Re-measure CWV after prices are server-side rendered'};
  S.p3={status:'iss',decision:'Fix right after launch',note:'Responsive images srcset — too complex to automate, likely V2'};
- S.__seed5=1;save();
+ S.i1={status:'ok',note:'Canonical processed on staging; re-check on production when live'};
+ S.i2={status:'ok',note:'Hreflang processed on staging; re-check on production when live'};
+ S.__seed6=1;save();
 }
 function render(){
  const root=document.getElementById('list');root.innerHTML='';
@@ -132,7 +134,7 @@ function render(){
    let cls='card';if(st.status==='ok')cls+=' ok';else if(st.status==='iss')cls+=' iss';if(blk)cls+=' blk';
    const card=document.createElement('div');card.className=cls;
    const opts=DECS.map(d=>`<option${st.decision===d?' selected':''}>${d}</option>`).join('');
-   card.innerHTML=`<h3><span style="font-size:11px;font-weight:800;margin-right:6px;opacity:.85;color:#008539">${({m2:'⏳ After live',m3:'🐢 Slow · Frederico',m4:'🟡 Frederico',m6:'✅ Done · SF',c1:'🟡 In progress',s1:'🟡 Prices',s2:'✅ Works',s3:'✅ On prod',s4:'🟡 After cache',s5:'✅ Deployed',s6:'✅ Deployed',s7:'🟠 SSR needed',s8:'⬜ Dan',i1:'🟢 Prod-confirm',i2:'🟡 On staging',i3:'⬜ At go-live',i4:'✅ Deployed',i5:'✅ Done',d1:'⬜ Validate',d2:'🟡 Partly',d5:'🔴 Critical',d3:'✅ Done',d4:'🔵 V2',o1:'✅ Deployed',o2:'✅ Done',p1:'🟡 Re-measure',p2:'⬜ To check',p3:'🔵 V2'})[c[0]]||''}</span>${c[2]}${blk?'<span class="blkTag">BLOCKER</span>':''}</h3>
+   card.innerHTML=`<h3><span style="font-size:11px;font-weight:800;margin-right:6px;opacity:.85;color:#008539">${({m2:'⏳ After live',m3:'🐢 Slow · Frederico',m4:'🟡 Frederico',m6:'✅ Done · SF',c1:'🟡 In progress',s1:'🟡 Prices',s2:'✅ Works',s3:'✅ On prod',s4:'🟡 After cache',s5:'✅ Deployed',s6:'✅ Deployed',s7:'🟠 SSR needed',s8:'⬜ Dan',i1:'🟢 Staging OK → prod',i2:'🟢 Staging OK → prod',i3:'⬜ At go-live',i4:'✅ Deployed',i5:'✅ Done',d1:'⬜ Validate',d2:'🟡 Partly',d5:'🔴 Critical',d3:'✅ Done',d4:'🔵 V2',o1:'✅ Deployed',o2:'✅ Done',p1:'🟡 Re-measure',p2:'⬜ To check',p3:'🔵 V2'})[c[0]]||''}</span>${c[2]}${blk?'<span class="blkTag">BLOCKER</span>':''}</h3>
      <button class="ctxToggle" data-id="${id}">▸ Criteria &amp; context</button>
      <div class="how" id="how-${id}"><b>Criteria:</b> ${c[3]}</div>
      <div class="stat">

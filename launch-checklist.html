@@ -112,7 +112,7 @@ function render(){
    let cls='card';if(st.status==='ok')cls+=' ok';else if(st.status==='iss')cls+=' iss';if(blk)cls+=' blk';
    const card=document.createElement('div');card.className=cls;
    const opts=DECS.map(d=>`<option${st.decision===d?' selected':''}>${d}</option>`).join('');
-   card.innerHTML=`<h3>${c[2]}${blk?'<span class="blkTag">BLOCKER</span>':''}</h3>
+   card.innerHTML=`<h3><span style="font-size:11px;font-weight:800;margin-right:6px;opacity:.85;color:#008539">${({m1:'⛔ Not needed',m2:'⬜ Prod check',m3:'✅ Fixed',m4:'⬜ Frederico',m5:'⬜ Prod check',m6:'⬜ To set up',m7:'🕒 Ongoing',m8:'🕒 Ongoing',s1:'⬜ Check deeper',s2:'⬜ Sweep',s3:'✅ Fixed',s4:'✅ Fixed',s6:'✅ Fixed',i1:'⬜ Deeper check',i2:'✅ Fixed',i3:'⬜ At go-live',i4:'⬜ Check output',i5:'✅ Fixed',d1:'⬜ To check',d2:'✅ Fixed',d3:'✅ Fixed',d4:'⬜ To do',d5:'🔧 To fix',p1:'🕒 Ongoing',p2:'⬜ To check'})[c[0]]||''}</span>${c[2]}${blk?'<span class="blkTag">BLOCKER</span>':''}</h3>
      <button class="ctxToggle" data-id="${id}">▸ Criteria &amp; context</button>
      <div class="how" id="how-${id}"><b>Criteria:</b> ${c[3]}</div>
      <div class="stat">

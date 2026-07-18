@@ -302,8 +302,8 @@ const TICKETS = [
 {
   id:"PR #2021", ws:"Web Vitals", title:"Defer desktop-only header scaffold via <template>", pri:"P0", status:"partial",
   prs:[["#2021","https://github.com/Helloprint/HelloPrintV4/pull/2021","MERGED · Jul 5"]],
-  context:"~350 DOM nodes of desktop-only header content moved to inert <template> elements, lazy-mounted on first interaction to cut mobile DOM size.",
-  finding:"Partial: 3 <template> elements present (tpl-desktop-search-dropdown, tpl-desktop-account-panel, tpl-mobile-search-dropdown). Couldn't force a true mobile viewport in the automation to verify the DOM-node reduction claim. Needs a mobile Lighthouse DOM-size check.",
+  context:"~350 DOM nodes of desktop-only header content moved to inert <code>&lt;template&gt;</code> elements, lazy-mounted on first interaction to cut mobile DOM size.",
+  finding:"Partial: 3 <code>&lt;template&gt;</code> elements present (tpl-desktop-search-dropdown, tpl-desktop-account-panel, tpl-mobile-search-dropdown). Couldn't force a true mobile viewport in the automation to verify the DOM-node reduction claim. Needs a mobile Lighthouse DOM-size check.",
   url:"https://www.helloprint.com/en-ie",
   steps:["Mobile viewport (DevTools 375px) → View Source","Search <code>&lt;template</code> → desktop scaffold inside template elements","Lighthouse (Mobile) → confirm reduced DOM size vs pre-fix"]
 },

@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Technical SEO Tickets — Live Tracker | Helloprint</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+:root{
+  --color-primary:#008539;--color-primary-dark:#006B2D;--color-primary-light:#00A651;
+  --color-ink:#191919;--color-ink-muted:#333;--color-ink-faint:#555;
+  --color-surface:#fff;--color-surface-muted:#f8f8f8;--color-border:#e5e5e5;
+  --color-danger:#d32f2f;--color-info:#2196f3;--accent-400:#f59e0b;
+  --radius-card:12px;--radius-card-lg:16px;--radius-pill:9999px;
+  --shadow-card:0 1px 2px 0 rgb(0 0 0/.05);
+  --shadow-card-hover:0 10px 15px -3px rgb(0 0 0/.1),0 4px 6px -4px rgb(0 0 0/.1);
+  --font-sans:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{font-family:var(--font-sans);font-size:16px;line-height:1.6;color:var(--color-ink);background:var(--color-surface-muted);-webkit-font-smoothing:antialiased}
+a{color:var(--color-primary);text-decoration:none}
+a:hover{color:var(--color-primary-dark);text-decoration:underline}
+.header-bar{background:var(--color-ink);color:#fff;padding:20px 0}
+.container{max-width:1180px;margin:0 auto;padding:0 24px}
+.header-bar .container{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.brand{display:flex;align-items:center;gap:12px}
+.hmark{width:34px;height:34px;background:var(--color-primary);border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;font-size:20px;font-style:italic}
+.brand h1{font-size:20px;line-height:1.2;font-weight:700}
+.brand .sub{font-size:12px;color:rgba(255,255,255,.7);font-weight:400}
+.meta-pill{font-size:12px;color:rgba(255,255,255,.75);background:rgba(255,255,255,.08);border-radius:9999px;padding:6px 14px}
+/* summary */
+.summary{padding:28px 0 8px}
+.kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
+.kpi{background:#fff;border:1px solid var(--color-border);border-radius:var(--radius-card);padding:16px 18px;box-shadow:var(--shadow-card)}
+.kpi .n{font-size:30px;font-weight:800;line-height:1}
+.kpi .l{font-size:12px;color:var(--color-ink-faint);margin-top:6px;font-weight:500;text-transform:uppercase;letter-spacing:.03em}
+.kpi.done .n{color:var(--color-primary)}
+.kpi.partial .n{color:var(--accent-400)}
+.kpi.open .n{color:var(--color-danger)}
+.kpi.blocked .n{color:#7c3aed}
+.kpi.total .n{color:var(--color-ink)}
+/* controls */
+.controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center;padding:20px 0 8px;position:sticky;top:0;background:var(--color-surface-muted);z-index:20;border-bottom:1px solid var(--color-border);margin-bottom:8px}
+.filter-btn{border:1px solid var(--color-border);background:#fff;color:var(--color-ink-muted);padding:7px 14px;border-radius:9999px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s}
+.filter-btn:hover{border-color:var(--color-primary)}
+.filter-btn.active{background:var(--color-ink);color:#fff;border-color:var(--color-ink)}
+.filter-btn .c{opacity:.6;margin-left:5px}
+#search{flex:1;min-width:180px;padding:8px 14px;border:1px solid var(--color-border);border-radius:9999px;font-size:14px;font-family:inherit;outline:none}
+#search:focus{border-color:var(--color-primary);box-shadow:0 0 0 1px var(--color-primary)}
+/* group */
+.group-title{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--color-ink-faint);margin:26px 0 12px;padding-bottom:8px;border-bottom:2px solid var(--color-border)}
+/* card */
+.ticket{background:#fff;border:1px solid var(--color-border);border-left-width:4px;border-radius:var(--radius-card);margin-bottom:12px;box-shadow:var(--shadow-card);overflow:hidden;transition:box-shadow .15s}
+.ticket:hover{box-shadow:var(--shadow-card-hover)}
+.ticket[data-status="done"]{border-left-color:var(--color-primary)}
+.ticket[data-status="partial"]{border-left-color:var(--accent-400)}
+.ticket[data-status="open"]{border-left-color:var(--color-danger)}
+.ticket[data-status="blocked"]{border-left-color:#7c3aed}
+.t-head{display:flex;align-items:center;gap:12px;padding:16px 20px;cursor:pointer}
+.t-id{font-size:12px;font-weight:700;color:var(--color-ink-faint);font-variant-numeric:tabular-nums;white-space:nowrap;min-width:76px}
+.t-title{flex:1;font-size:15px;font-weight:600}
+.t-badges{display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.badge{font-size:11px;font-weight:600;padding:4px 9px;border-radius:9999px;white-space:nowrap;line-height:1.3}
+.b-done{background:#e8f5e9;color:var(--color-primary-dark)}
+.b-partial{background:#fef3c7;color:#92400e}
+.b-open{background:#fde8e8;color:#b91c1c}
+.b-blocked{background:#f3e8ff;color:#6b21a8}
+.b-pri{background:#f1f1f1;color:#444}
+.b-review{background:var(--color-primary);color:#fff}
+.chev{transition:transform .2s;color:var(--color-ink-faint);flex-shrink:0}
+.ticket.expanded .chev{transform:rotate(90deg)}
+.t-body{display:none;padding:0 20px 20px;border-top:1px solid var(--color-border);margin-top:-1px}
+.ticket.expanded .t-body{display:block}
+.t-body h4{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--color-ink-faint);margin:18px 0 7px;font-weight:700}
+.t-body p{font-size:14px;color:var(--color-ink-muted);margin-bottom:6px}
+.finding{background:var(--color-surface-muted);border-radius:8px;padding:12px 14px;font-size:14px;margin-top:6px}
+.finding.done{background:#f0f9f2;border:1px solid #cce9d5}
+.finding.partial{background:#fffbeb;border:1px solid #fde68a}
+.finding.open{background:#fef5f5;border:1px solid #f6d5d5}
+.steps{list-style:none;counter-reset:s;margin-top:6px}
+.steps li{position:relative;padding:6px 0 6px 30px;font-size:14px;color:var(--color-ink-muted);border-bottom:1px solid #f2f2f2}
+.steps li:last-child{border-bottom:none}
+.steps li::before{counter-increment:s;content:counter(s);position:absolute;left:0;top:6px;width:20px;height:20px;background:var(--color-ink);color:#fff;border-radius:50%;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.steps li.pass::before{content:"\2713";background:var(--color-primary)}
+code{background:#eef0f1;padding:2px 6px;border-radius:5px;font-size:13px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;word-break:break-word}
+.prlinks{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.prlink{font-size:12px;font-weight:600;background:var(--color-surface-muted);border:1px solid var(--color-border);border-radius:9999px;padding:4px 11px}
+.url-chip{font-size:13px;font-weight:500;background:#eef7f1;border:1px solid #cce9d5;border-radius:6px;padding:5px 10px;display:inline-block;margin:3px 4px 3px 0;font-family:ui-monospace,monospace}
+.foot{text-align:center;padding:40px 0 60px;color:var(--color-ink-faint);font-size:13px}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--color-ink-faint);padding:12px 0}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.dot{width:10px;height:10px;border-radius:50%}
+.hidden{display:none!important}
+@media(max-width:720px){.kpis{grid-template-columns:repeat(2,1fr)}.t-badges{display:none}.container{padding:0 16px}}
+</style>
+</head>
+<body>
+<header class="header-bar">
+  <div class="container">
+    <div class="brand">
+      <div class="hmark">H</div>
+      <div>
+        <h1>Technical SEO — Ticket Tracker</h1>
+        <div class="sub">Helloprint V4 · en-IE production · live verification overview</div>
+      </div>
+    </div>
+    <div class="meta-pill" id="updated">Updated —</div>
+  </div>
+</header>
+
+<div class="container">
+  <section class="summary">
+    <div class="kpis" id="kpis"></div>
+    <div class="legend">
+      <span><span class="dot" style="background:var(--color-primary)"></span> Ticked off — live-verified</span>
+      <span><span class="dot" style="background:var(--accent-400)"></span> Partial — needs one more check</span>
+      <span><span class="dot" style="background:var(--color-danger)"></span> Open — pick up again</span>
+      <span><span class="dot" style="background:#7c3aed"></span> Blocked — clear gate first</span>
+    </div>
+  </section>
+
+  <div class="controls">
+    <button class="filter-btn active" data-filter="all">All <span class="c" id="c-all"></span></button>
+    <button class="filter-btn" data-filter="done">Ticked off <span class="c" id="c-done"></span></button>
+    <button class="filter-btn" data-filter="partial">Partial <span class="c" id="c-partial"></span></button>
+    <button class="filter-btn" data-filter="open">Open <span class="c" id="c-open"></span></button>
+    <button class="filter-btn" data-filter="blocked">Blocked <span class="c" id="c-blocked"></span></button>
+    <input id="search" type="text" placeholder="Search tickets, PRs, URLs…">
+  </div>
+
+  <div id="list"></div>
+
+  <div class="foot">
+    Built from the Technical SEO Pipeline Overview (since 9 July 2026). Verification performed live against
+    <code>www.helloprint.com/en-ie</code>. Edit <code>data.js</code> logic inline to update statuses as tickets progress.
+  </div>
+</div>
+
+<script>
+// ─────────────────────────────────────────────────────────────
+// TICKET DATA — single source of truth for this tracker.
+// status: done | partial | open | blocked
+// Update a ticket's status + finding here as work progresses.
+// ─────────────────────────────────────────────────────────────
+const UPDATED = "18 July 2026";
+const TICKETS = [
+{
+  id:"T15 / S7", ws:"Consultant Audit", title:"Mega-menu SSR crawlability", pri:"P1", status:"done", review:true,
+  prs:[["#1756","https://github.com/Helloprint/HelloPrintV4/pull/1756","MERGED · Jul 1"]],
+  context:"Consultant claimed the mega-menu was fully client-side so Googlebot couldn't see category links. Fix (Option B, two-surface): a visually-hidden, <code>aria-hidden</code> + <code>inert</code> <code>&lt;nav class=\"header-seo-nav\"&gt;</code> renders all top-level + level-2 category links in raw HTML, while the interactive hover panel (<code>data-nav-megamenu-content</code>) stays empty and product links use <code>data-pdp-href</code> (non-crawlable).",
+  finding:"Confirmed live. 82 crawlable links in the SEO nav (12 top-level + ~70 subcategories). All links point to category/PLP pages (e.g. /brochure-and-booklet-printing, /personalised-mugs) — no individual product/SKU URLs. Megamenu content div empty as designed. Reviewed against user-supplied source dump 18 Jul — matches exactly.",
+  url:"https://www.helloprint.com/en-ie",
+  steps:[
+    "Open the URL, View Source (Ctrl+U / Cmd+Opt+U)",
+    "Search <code>header-seo-nav</code> → a &lt;nav&gt; block with nested &lt;ul&gt;&lt;a href&gt; links",
+    ["Confirm links are categories/subcategories only (Booklets, Cards, Signs…), no product SKUs",true],
+    "Search <code>data-nav-megamenu-content</code> → an empty &lt;div&gt; (interactive panel, JS-filled)",
+    ["Whole nav is aria-hidden + inert = invisible to users, present for crawlers",true]
+  ]
+},
+{
+  id:"PR #1913", ws:"Schema", title:"SEO/GEO schema foundation (shipping, returns, offer, sku)", pri:"P1", status:"done",
+  prs:[["#1913","https://github.com/Helloprint/HelloPrintV4/pull/1913","MERGED · Jul 3"]],
+  context:"Product JSON-LD hardening: adds shippingDetails (DefinedRegion + addressCountry), hasMerchantReturnPolicy, priceValidUntil, seller; plain Offer (not fake AggregateOffer) for single-price; subjectOf FAQ pattern; sku = clean slug.",
+  finding:"Confirmed on /standardflyers. Under offers: shippingDetails.shippingDestination.addressCountry = IE; hasMerchantReturnPolicy.merchantReturnDays = 14; @type = Offer; priceValidUntil = 2026-08-14; seller present. Product sku = \"standardflyers\" (clean). subjectOf present (FAQ), mainEntity not used. Note: shipping/return fields live inside offers, not on Product root.",
+  url:"https://www.helloprint.com/en-ie/standardflyers",
+  steps:[
+    "View Source → find script type=application/ld+json with \"@type\":\"Product\"",
+    ["Inside offers: shippingDetails → DefinedRegion + addressCountry:\"IE\"",true],
+    ["hasMerchantReturnPolicy → merchantReturnDays:14",true],
+    ["offers @type is \"Offer\" (NOT AggregateOffer)",true],
+    ["product sku is clean slug \"standardflyers\"; subjectOf present for FAQ",true]
+  ]
+},
+{
+  id:"PR #2016", ws:"QA Sprint", title:"Hreflang from localeUrls, geo-gated (no 404 alternates)", pri:"P0", status:"done",
+  prs:[["#2016","https://github.com/Helloprint/HelloPrintV4/pull/2016","MERGED · Jul 5"]],
+  context:"PDP hreflang alternates previously pointed to locales where the product didn't exist (4–7 × 404 per PDP). Now built from localeUrls map with geo-gated exclusion.",
+  finding:"Confirmed on /standardflyers: 12 alternates (en-ie, en-gb, de-de, es-es, fr-be, it-it, nl-nl, sv-se, en-us, nl-be, fr-fr, x-default). Spot-checked alternates resolve 200.",
+  url:"https://www.helloprint.com/en-ie/standardflyers",
+  steps:[
+    "View Source → search <code>hreflang</code>",
+    ["12 &lt;link rel=alternate hreflang&gt; tags incl. x-default",true],
+    ["Open 2–3 alternate URLs → all return 200, not 404",true]
+  ]
+},
+{
+  id:"PR #2017", ws:"QA Sprint", title:"Locale-aware support phone", pri:"P1", status:"done",
+  prs:[["#2017","https://github.com/Helloprint/HelloPrintV4/pull/2017","MERGED · Jul 5"]],
+  context:"MobileMenu displayed +44 (UK) but tel: linked +353 (IE). Now displays the correct locale number.",
+  finding:"Confirmed: tel:+35319020010 with visible text +353 1 902 0010 on en-IE.",
+  url:"https://www.helloprint.com/en-ie",
+  steps:["View Source → search <code>tel:</code>",["href tel:+35319020010, text +353 1 902 0010 (not +44)",true]]
+},
+{
+  id:"PR #2018", ws:"QA Sprint", title:"SplitContentBlock dedup (no duplicate homepage copy)", pri:"P1", status:"done",
+  prs:[["#2018","https://github.com/Helloprint/HelloPrintV4/pull/2018","MERGED · Jul 5"]],
+  context:"Homepage content appeared twice in crawlable HTML (preview + hidden full). Now a single copy with CSS truncation + noscript override.",
+  finding:"Confirmed: 0 duplicate paragraphs found in homepage raw HTML.",
+  url:"https://www.helloprint.com/en-ie",
+  steps:["View Source → pick a distinctive intro/USP sentence","Search a unique phrase from it",["Exactly 1 match in raw HTML",true]]
+},
+{
+  id:"PR #2019", ws:"QA Sprint", title:"/distribution shell page removed from index", pri:"P1", status:"done",
+  prs:[["#2019","https://github.com/Helloprint/HelloPrintV4/pull/2019","MERGED · Jul 5"]],
+  context:"/distribution served the homepage shell but was indexable. Plan was noindex.",
+  finding:"Confirmed removed from index — but mechanism differs from plan. Live behaviour is a 301 redirect straight to /en-ie/ (homepage), not a noindexed shell. Functionally stronger (fully de-indexes), just flagging the mechanism changed vs the ticket description.",
+  url:"https://www.helloprint.com/en-ie/distribution",
+  steps:["Open the URL in the address bar",["It redirects to /en-ie/ (address bar URL changes)",true],"Mechanism = 301 redirect (plan said noindex shell) — outcome equivalent"]
+},
+{
+  id:"PR #2022", ws:"QA Sprint", title:"BFF resolver builds full cross-locale URL map", pri:"P1", status:"done",
+  prs:[["#2022","https://github.com/Helloprint/HelloPrintV4/pull/2022","MERGED · Jul 5"]],
+  context:"BFF resolver only returned the current locale URL. Now builds the full map from already-fetched Contentful data (zero extra API calls) — feeds hreflang.",
+  finding:"Confirmed: full 12-locale hreflang set present on /standardflyers (same evidence as #2016).",
+  url:"https://www.helloprint.com/en-ie/standardflyers",
+  steps:["View Source → search <code>hreflang</code>",["All 11 active locales + x-default present (12 total)",true]]
+},
+{
+  id:"WV T8 (#2178)", ws:"Web Vitals", title:"lowest_price.webp badge image dimensions", pri:"P3", status:"done",
+  prs:[["#2178","https://github.com/Helloprint/HelloPrintV4/pull/2178","MERGED · Jul 7"]],
+  context:"Badge image had no width/height → CLS. Added explicit dimensions. This was the only actual code change that shipped in the WebVitals PR (T1/T4/T6 were investigation-only).",
+  finding:"Confirmed on /brochure-and-booklet-printing: the lowest_price img has width=\"400\" height=\"400\".",
+  url:"https://www.helloprint.com/en-ie/brochure-and-booklet-printing",
+  steps:["View Source → search <code>lowest_price</code>",["The &lt;img&gt; has width=\"400\" height=\"400\"",true]]
+},
+{
+  id:"WV T5", ws:"Web Vitals", title:"Sentry replay recorder lazy-loaded", pri:"P2", status:"done",
+  prs:[["#2178","https://github.com/Helloprint/HelloPrintV4/pull/2178","context"]],
+  context:"sentry.client.config: replaysSessionSampleRate 0, on-error 10%, Replay integration lazy-loaded from CDN after requestIdleCallback.",
+  finding:"Confirmed via Network: replay.min.js does NOT download on a normal (non-error, non-sampled) visit.",
+  url:"https://www.helloprint.com/en-ie/booklets",
+  steps:["DevTools → Network → filter <code>replay</code>","Reload normally (don't trigger an error)",["replay.min.js does not download",true]]
+},
+{
+  id:"PR #2467", ws:"Schema", title:"De-hardcode shop name in SEO tokens + structured data", pri:"P1", status:"done",
+  prs:[["#2467","https://github.com/Helloprint/HelloPrintV4/pull/2467","MERGED · Jul 10"]],
+  context:"Shop name was hardcoded in SEO tokens and structured data. Now sourced from the shop-config pipeline.",
+  finding:"Confirmed: Organization JSON-LD name = \"Helloprint\", @type [Organization, OnlineStore], sourced from config.",
+  url:"https://www.helloprint.com/en-ie",
+  steps:["View Source → find JSON-LD with \"@type\":[\"Organization\",\"OnlineStore\"]",["name is \"Helloprint\" from config, not a locale-hardcoded string",true]]
+},
+{
+  id:"PR #2422", ws:"Schema", title:"sameAs shop-config pipeline + BreadcrumbList dedup on PDPs", pri:"P1", status:"done",
+  prs:[["#2422","https://github.com/Helloprint/HelloPrintV4/pull/2422","MERGED · Jul 10"]],
+  context:"Organization.sameAs now from shop-config (was hardcoded). PDP duplicate BreadcrumbList removed — the copy nested inside Product JSON-LD was the dupe; Breadcrumb.astro is the sole emitter.",
+  finding:"Confirmed on /standardflyers: exactly one BreadcrumbList. Homepage Organization sameAs lists Facebook, Instagram, LinkedIn, YouTube, X, Wikidata, Trustpilot.",
+  url:"https://www.helloprint.com/en-ie/standardflyers",
+  steps:["View Source → search <code>BreadcrumbList</code>",["Exactly one BreadcrumbList block (not two)",true],["Homepage Organization sameAs is populated from config",true]]
+},
+{
+  id:"PR #2421", ws:"Sitemap", title:"Strip trailing slash from feed slugs in sitemap URLs", pri:"P2", status:"done",
+  prs:[["#2421","https://github.com/Helloprint/HelloPrintV4/pull/2421","MERGED · Jul 10"]],
+  context:"Sitemap feed slugs carried trailing slashes → redirect chains. Stripped.",
+  finding:"Confirmed: sitemap_collections_1.xml has 707 URLs, 0 with a trailing slash. (Note: still contains a 150-URL /industry/ tree — that's the separate T8 sitemap-quality ticket, not this one.)",
+  url:"https://www.helloprint.com/en-ie/sitemap_collections_1.xml",
+  steps:["Open the sitemap XML","Search <code>/&lt;/loc&gt;</code> (slash right before closing tag)",["Zero matches — no trailing slashes",true]]
+},
+{
+  id:"PR #2536", ws:"Hreflang", title:"Hreflang clusters on help centre + contact pages", pri:"P1", status:"done",
+  prs:[["#2536","https://github.com/Helloprint/HelloPrintV4/pull/2536","MERGED · Jul 13"]],
+  context:"Help centre + contact pages had no hreflang. Added locale clusters.",
+  finding:"Confirmed on /helpcenter: full 12-locale alternate set present.",
+  url:"https://www.helloprint.com/en-ie/helpcenter",
+  steps:["View Source → search <code>hreflang</code>",["12-locale alternate set present",true]]
+},
+{
+  id:"PR #2529/#2524", ws:"Hreflang", title:"Blog hreflang repair (Nuxt surfaces)", pri:"P1", status:"done",
+  prs:[["#2529","https://github.com/Helloprint/HelloPrintV4/pull/2529","MERGED · Jul 12"],["#2524","https://github.com/Helloprint/HelloPrintV4/pull/2524","MERGED · Jul 12"]],
+  context:"Blog is a separate Nuxt app. Repaired hreflang on blog homepage, article and category pages.",
+  finding:"Confirmed: 12-locale hreflang on both /blog and an article (/blog/artwork/).",
+  url:"https://www.helloprint.com/en-ie/blog",
+  steps:["View Source on /blog and an article page","Search <code>hreflang</code>",["12-locale alternates on both",true]]
+},
+{
+  id:"PR #2388", ws:"Locale", title:"Locale switcher alphabetical + canonical switch URLs", pri:"P2", status:"done",
+  prs:[["#2388","https://github.com/Helloprint/HelloPrintV4/pull/2388","MERGED · Jul 10"]],
+  context:"Locale switcher was unordered and switch links went through redirects. Now alphabetical, with canonical direct URLs.",
+  finding:"Confirmed: switcher lists 11 markets alphabetically by country name (België…United States). France link goes directly to /fr-fr/ (no redirect chain).",
+  url:"https://www.helloprint.com/en-ie",
+  steps:["Open the country/flag switcher (top-right)",["Alphabetical order by country name",true],["A switch link (e.g. France → /fr-fr/) resolves directly, no chain",true]]
+},
+{
+  id:"PR #2540", ws:"PDP Pricing", title:"SSR uses defaultPresetQuantity → price parity on load", pri:"P0", status:"done",
+  prs:[["#2540","https://github.com/Helloprint/HelloPrintV4/pull/2540","MERGED · Jul 13"]],
+  context:"SSR price didn't match client hydration → €0.00 flashes. SSR now uses defaultPresetQuantity to match. (This is the SEO/UX side of the broader en-IE T2 price ticket.)",
+  finding:"Confirmed on the exact bug URL /cottonbagslonghandles140gm?quantity=100: real total (~€307.99) shows on load, never €0.00. Note: on /standardflyers a hidden Total €0.00 node exists in the DOM but it's a display:none mobile sticky bar (zero size) — the visible price box is correct.",
+  url:"https://www.helloprint.com/en-ie/cottonbagslonghandles140gm?quantity=100",
+  steps:["Open the URL, watch the price on load (don't click)",["Real total shows immediately, never €0.00",true],"Ignore any hidden Total €0.00 node in inspector — that's a display:none sticky bar"]
+},
+{
+  id:"PR #2655", ws:"Breadcrumbs", title:"Breadcrumbs harden with GraphQL fallback + Redis split", pri:"P1", status:"done",
+  prs:[["#2655","https://github.com/Helloprint/HelloPrintV4/pull/2655","MERGED · Jul 15"]],
+  context:"Breadcrumb resolution was fragile (single Redis source). Added Contentful GraphQL fallback + Redis db0/db1 split (routes vs cache).",
+  finding:"Confirmed on /standardflyers: full 4-level trail Home › Promotional Products › Leaflet Printing & Flyers › Flyers.",
+  url:"https://www.helloprint.com/en-ie/standardflyers",
+  steps:["Check the visible breadcrumb (or the BreadcrumbList JSON-LD)",["Full trail Home › Promotional Products › Leaflet Printing & Flyers › Flyers",true]]
+},
+
+/* ── PARTIAL ── */
+{
+  id:"PR #2021", ws:"Web Vitals", title:"Defer desktop-only header scaffold via <template>", pri:"P0", status:"partial",
+  prs:[["#2021","https://github.com/Helloprint/HelloPrintV4/pull/2021","MERGED · Jul 5"]],
+  context:"~350 DOM nodes of desktop-only header content moved to inert <template> elements, lazy-mounted on first interaction to cut mobile DOM size.",
+  finding:"Partial: 3 <template> elements present (tpl-desktop-search-dropdown, tpl-desktop-account-panel, tpl-mobile-search-dropdown). Couldn't force a true mobile viewport in the automation to verify the DOM-node reduction claim. Needs a mobile Lighthouse DOM-size check.",
+  url:"https://www.helloprint.com/en-ie",
+  steps:["Mobile viewport (DevTools 375px) → View Source","Search <code>&lt;template</code> → desktop scaffold inside template elements","Lighthouse (Mobile) → confirm reduced DOM size vs pre-fix"]
+},
+{
+  id:"PR #2024", ws:"Web Vitals", title:"Defer data-initial-pricing + strip data-display", pri:"P0", status:"partial",
+  prs:[["#2024","https://github.com/Helloprint/HelloPrintV4/pull/2024","MERGED · Jul 5"]],
+  context:"~140KB raw JSON removed from PDP critical path — defers 91KB pricing matrix + trims 47KB locale bloat.",
+  finding:"Partial: data-initial-pricing attribute is absent from initial HTML on /standardflyers, consistent with deferral. Didn't trace the deferred fetch or measure the byte delta. Needs a Coverage/Network confirmation.",
+  url:"https://www.helloprint.com/en-ie/standardflyers",
+  steps:["View Source → search <code>data-initial-pricing</code> (should be absent/deferred)","DevTools → Network → confirm pricing matrix loads after critical path"]
+},
+{
+  id:"PR #2528", ws:"Blog i18n", title:"Null untranslated blog article scalar fields", pri:"P1", status:"partial",
+  prs:[["#2528","https://github.com/Helloprint/HelloPrintV4/pull/2528","MERGED · Jul 12"]],
+  context:"Untranslated blog fields (meta description, title) leaked the source locale. Now nulled so the untranslated-content filter prunes them.",
+  finding:"Partial: spot-checked /blog/artwork/ — clean English meta, no leak. Didn't locate a genuinely untranslated en-IE article to stress-test the null path.",
+  url:"https://www.helloprint.com/en-ie/blog/artwork/",
+  steps:["Open an en-IE blog article that lacks an English translation","Check &lt;meta name=description&gt;",["Empty/absent, not showing another locale's text",false]]
+},
+{
+  id:"PR #2628", ws:"Web Vitals", title:"Lazy-fetch PDP configurator matrix + defer Jitsu SDK", pri:"P1", status:"partial",
+  prs:[["#2628","https://github.com/Helloprint/HelloPrintV4/pull/2628","MERGED · Jul 14"]],
+  context:"Mobile perf: lazy-fetch the PDP configurator matrix and defer the Jitsu analytics SDK.",
+  finding:"Partial: not directly measured. Pairs with #2024; needs a mobile Network/Coverage trace to confirm the matrix is lazy and Jitsu deferred.",
+  url:"https://www.helloprint.com/en-ie/standardflyers",
+  steps:["DevTools → Network (mobile) → confirm configurator matrix fetch is deferred","Confirm Jitsu SDK loads after critical path"]
+},
+
+/* ── OPEN (from confirmed-set that couldn't be verified) ── */
+{
+  id:"PR #2020", ws:"QA Sprint", title:"Gate InstallBanner on cookie consent", pri:"P1", status:"open",
+  prs:[["#2020","https://github.com/Helloprint/HelloPrintV4/pull/2020","MERGED · Jul 5"]],
+  context:"Cookie banner + PWA install banner could stack on mobile (intrusive interstitial). Install banner now gated on consent.",
+  finding:"Not verified — the test browser already had cookies/consent set, so the banners don't re-trigger. Needs a clean incognito session on mobile viewport.",
+  url:"https://www.helloprint.com/en-ie",
+  steps:["Fresh incognito, mobile viewport","Cookie banner appears; PWA install banner must NOT stack on top","After accepting cookies, install banner may appear"]
+},
+{
+  id:"WV T3", ws:"Web Vitals", title:"Chat widget lazy-load", pri:"P1", status:"open",
+  prs:[["#2178","https://github.com/Helloprint/HelloPrintV4/pull/2178","context"]],
+  context:"chat-widget-loader defers injection to first pointerdown/keydown/touchstart/scroll, app:open-chat, or requestIdleCallback (4s).",
+  finding:"Not verified cleanly — automated scrolling counts as interaction, so couldn't capture a true no-interaction baseline. chat-widget.core.js was seen loading, but likely via the idle-timeout which is by design. Needs a clean passive-load Network capture.",
+  url:"https://www.helloprint.com/en-ie/booklets",
+  steps:["Network → filter <code>talkjs</code> or <code>chat</code>","Reload, do NOT interact, wait 10s","No chat scripts before interaction (FAB after idle is OK)","Then interact → chat loads"]
+},
+{
+  id:"PR #2465", ws:"Schema", title:"Substitute {{product_name}} token in PDP meta (PCM)", pri:"P0", status:"open",
+  prs:[["#2465","https://github.com/Helloprint/HelloPrintV4/pull/2465","MERGED · Jul 10"]],
+  context:"PCM products showed raw {{product_name}} tokens in title/meta. Now substituted.",
+  finding:"Not verified — need an actual PCM product URL to test. Regular products (e.g. standardflyers) don't exercise this path.",
+  url:"(needs a PCM product PDP URL)",
+  steps:["Open a PCM product PDP","View Source → search <code>{{</code>",["No {{product_name}} / {{...}} tokens in title, meta, or JSON-LD",false]]
+},
+{
+  id:"PR #2667", ws:"Breadcrumbs", title:"Breadcrumb fallback for pcmProductCollection", pri:"P1", status:"open",
+  prs:[["#2667","https://github.com/Helloprint/HelloPrintV4/pull/2667","MERGED · Jul 15"]],
+  context:"Breadcrumb was missing for PCM products because only productCollection was queried. Now also queries pcmProductCollection.",
+  finding:"Not verified — need a PCM product PDP (one in a pcmProductCollection) to confirm the trail is present.",
+  url:"(needs a PCM product PDP URL)",
+  steps:["Open a PCM product PDP","View Source → search <code>BreadcrumbList</code>",["Present with a correct, non-empty trail",false]]
+},
+{
+  id:"PR #2408", ws:"Web Vitals", title:"Cut mobile JS/CSS/image weight for Lighthouse", pri:"P1", status:"open",
+  prs:[["#2408","https://github.com/Helloprint/HelloPrintV4/pull/2408","MERGED · Jul 10"]],
+  context:"Mobile weight reduction pass. Pre-fix baseline (Jul 5): Homepage 74, PLP 75, PDP 56.",
+  finding:"Not verified — the PageSpeed Insights connector timed out on repeated attempts. Needs a Lighthouse/PSI run to compare against the baseline.",
+  url:"https://www.helloprint.com/en-ie",
+  steps:["Lighthouse (Mobile, Performance) on Homepage, PLP, PDP","Compare vs baseline: Home 74 / PLP 75 / PDP 56","Scores should be higher"]
+},
+{
+  id:"PR #2602", ws:"Web Vitals", title:"Concurrent product+meta fetch in cache warm (TTFB)", pri:"P0", status:"open",
+  prs:[["#2602","https://github.com/Helloprint/HelloPrintV4/pull/2602","MERGED · Jul 14"]],
+  context:"Fetch product + meta concurrently in the cache warm to cut TTFB on category/product pages.",
+  finding:"Not verified — needs a TTFB measurement. PSI/field data unavailable this pass (connector timeout).",
+  url:"https://www.helloprint.com/en-ie/brochure-and-booklet-printing",
+  steps:["DevTools → Network → main document → check TTFB","Target < 300ms (baseline was 498–600ms)"]
+}
+];
+
+// ─────────────────────────────────────────────────────────────
+const STATUS_LABEL={done:"Ticked off",partial:"Partial",open:"Open",blocked:"Blocked"};
+const STATUS_BADGE={done:"b-done",partial:"b-partial",open:"b-open",blocked:"b-blocked"};
+const ORDER=["done","partial","open","blocked"];
+document.getElementById("updated").textContent="Updated "+UPDATED;
+
+function counts(){const c={all:TICKETS.length,done:0,partial:0,open:0,blocked:0};TICKETS.forEach(t=>c[t.status]++);return c;}
+function renderKpis(){const c=counts();document.getElementById("kpis").innerHTML=`
+  <div class="kpi total"><div class="n">${c.all}</div><div class="l">Total tracked</div></div>
+  <div class="kpi done"><div class="n">${c.done}</div><div class="l">Ticked off</div></div>
+  <div class="kpi partial"><div class="n">${c.partial}</div><div class="l">Partial</div></div>
+  <div class="kpi open"><div class="n">${c.open}</div><div class="l">Open</div></div>
+  <div class="kpi blocked"><div class="n">${c.blocked}</div><div class="l">Blocked</div></div>`;
+  document.getElementById("c-all").textContent=c.all;
+  ["done","partial","open","blocked"].forEach(k=>document.getElementById("c-"+k).textContent=c[k]);
+}
+function stepHtml(s){if(Array.isArray(s))return `<li class="${s[1]?'pass':''}">${s[0]}</li>`;return `<li>${s}</li>`;}
+function ticketHtml(t){
+  const badges=[`<span class="badge b-pri">${t.pri}</span>`,`<span class="badge ${STATUS_BADGE[t.status]}">${STATUS_LABEL[t.status]}</span>`];
+  if(t.review)badges.unshift(`<span class="badge b-review">Review-ready</span>`);
+  const prs=t.prs.map(p=>`<a class="prlink" href="${p[1]}" target="_blank" rel="noopener">${p[0]} · ${p[2]}</a>`).join("");
+  const urlChip=t.url.startsWith("http")?`<a class="url-chip" href="${t.url}" target="_blank" rel="noopener">${t.url}</a>`:`<span class="url-chip" style="background:#f8f8f8;border-color:#e5e5e5;color:#999">${t.url}</span>`;
+  return `<div class="ticket" data-status="${t.status}" data-search="${(t.id+' '+t.title+' '+t.ws+' '+t.prs.map(p=>p[0]).join(' ')+' '+t.url).toLowerCase()}">
+    <div class="t-head" onclick="this.parentNode.classList.toggle('expanded')">
+      <span class="t-id">${t.id}</span>
+      <span class="t-title">${t.title}</span>
+      <span class="t-badges">${badges.join("")}</span>
+      <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+    </div>
+    <div class="t-body">
+      <h4>Context</h4><p>${t.context}</p>
+      <h4>Verification finding</h4><div class="finding ${t.status}">${t.finding}</div>
+      <h4>Verify it yourself — ${urlChip}</h4>
+      <ol class="steps">${t.steps.map(stepHtml).join("")}</ol>
+      <h4>Pull requests</h4><div class="prlinks">${prs}</div>
+    </div>
+  </div>`;
+}
+function render(filter="all",q=""){
+  const list=document.getElementById("list");q=q.toLowerCase().trim();
+  let html="";
+  ORDER.forEach(st=>{
+    if(filter!=="all"&&filter!==st)return;
+    let items=TICKETS.filter(t=>t.status===st);
+    if(q)items=items.filter(t=>t.dataSearch?t.dataSearch.includes(q):(t.id+t.title+t.ws+t.prs.map(p=>p[0]).join(" ")+t.url).toLowerCase().includes(q));
+    if(!items.length)return;
+    html+=`<div class="group-title">${STATUS_LABEL[st]} · ${items.length}</div>`;
+    html+=items.map(ticketHtml).join("");
+  });
+  list.innerHTML=html||`<div class="foot">No tickets match.</div>`;
+}
+renderKpis();render();
+document.querySelectorAll(".filter-btn").forEach(b=>b.addEventListener("click",()=>{
+  document.querySelectorAll(".filter-btn").forEach(x=>x.classList.remove("active"));
+  b.classList.add("active");render(b.dataset.filter,document.getElementById("search").value);
+}));
+document.getElementById("search").addEventListener("input",e=>{
+  const active=document.querySelector(".filter-btn.active").dataset.filter;render(active,e.target.value);
+});
+</script>
+</body>
+</html>

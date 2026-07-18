@@ -399,16 +399,17 @@ function renderKpis(){const c=counts();document.getElementById("kpis").innerHTML
   document.getElementById("c-all").textContent=c.all;
   ["done","partial","open","blocked"].forEach(k=>document.getElementById("c-"+k).textContent=c[k]);
 }
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function stepHtml(s){if(Array.isArray(s))return `<li class="${s[1]?'pass':''}">${s[0]}</li>`;return `<li>${s}</li>`;}
 function ticketHtml(t){
   const badges=[`<span class="badge b-pri">${t.pri}</span>`,`<span class="badge ${STATUS_BADGE[t.status]}">${STATUS_LABEL[t.status]}</span>`];
   if(t.review)badges.unshift(`<span class="badge b-review">Review-ready</span>`);
   const prs=t.prs.map(p=>`<a class="prlink" href="${p[1]}" target="_blank" rel="noopener">${p[0]} · ${p[2]}</a>`).join("");
   const urlChip=t.url.startsWith("http")?`<a class="url-chip" href="${t.url}" target="_blank" rel="noopener">${t.url}</a>`:`<span class="url-chip" style="background:#f8f8f8;border-color:#e5e5e5;color:#999">${t.url}</span>`;
-  return `<div class="ticket" data-status="${t.status}" data-search="${(t.id+' '+t.title+' '+t.ws+' '+t.prs.map(p=>p[0]).join(' ')+' '+t.url).toLowerCase()}">
+  return `<div class="ticket" data-status="${t.status}" data-search="${esc((t.id+' '+t.title+' '+t.ws+' '+t.prs.map(p=>p[0]).join(' ')+' '+t.url).toLowerCase())}">
     <div class="t-head" onclick="this.parentNode.classList.toggle('expanded')">
-      <span class="t-id">${t.id}</span>
-      <span class="t-title">${t.title}</span>
+      <span class="t-id">${esc(t.id)}</span>
+      <span class="t-title">${esc(t.title)}</span>
       <span class="t-badges">${badges.join("")}</span>
       <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
     </div>

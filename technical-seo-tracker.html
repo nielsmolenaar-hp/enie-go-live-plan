@@ -118,6 +118,7 @@ code{background:#eef0f1;padding:2px 6px;border-radius:5px;font-size:13px;font-fa
       <span><span class="dot" style="background:var(--color-danger)"></span> Open — pick up again</span>
       <span><span class="dot" style="background:#7c3aed"></span> Blocked — clear gate first</span>
     </div>
+    <div id="gates-panel"></div>
   </section>
 
   <div class="controls">
@@ -380,8 +381,192 @@ const TICKETS = [
   finding:"Not verified — needs a TTFB measurement. PSI/field data unavailable this pass (connector timeout).",
   url:"https://www.helloprint.com/en-ie/brochure-and-booklet-printing",
   steps:["DevTools → Network → main document → check TTFB","Target < 300ms (baseline was 498–600ms)"]
+},
+
+/* ── en-IE POST-DEPLOY FIXES (Niels handoff, Jul 5) ── */
+{
+  id:"en-IE T1", ws:"en-IE Post-Deploy", title:"Product page shows internal code instead of name", pri:"P0", status:"open",
+  prs:[["#2035","https://github.com/Helloprint/HelloPrintV4/pull/2035","review doc"],["#2465","https://github.com/Helloprint/HelloPrintV4/pull/2465","related fix"]],
+  context:"Some PDPs resolve to an internal product with no en-IE Contentful content: the raw key ships as <code>&lt;title&gt;</code> (e.g. <code>foldedleafletstrifold5</code>), a stub meta description, and \"Specifications not available yet\" — while staying index,follow. Scale: ~1.3% of catalogue (~40–70 products) code-as-title, ~2.6% (~85–90) missing content. Critical extra risk: the \"Specifications not available yet\" string is user-agent-dependent (present in Chrome, absent for Googlebot) — a potential cloaking signal. Decision from handoff: fix content and keep URLs, no auto-noindex (recommend adding an SLA to avoid indefinite thin-content indexation). PR #2465 fixed the related {{product_name}} token issue for PCM products, but NOT this core issue.",
+  finding:"Open. Blocked from being trusted/closed by gate G0.2 (UA-divergence root cause) — any single-UA measurement of the affected-product counts is suspect until Googlebot and Chrome are confirmed to see the same HTML.",
+  url:"https://www.helloprint.com/en-ie/trifoldleaflets",
+  steps:[
+    "Open the URL in Chrome and look at the browser tab title",
+    "PASS = a real product name (\"Trifold Leaflets | HelloPrint\") · FAIL = a raw key like <code>foldedleafletstrifold5</code>",
+    "View Source → search <code>&lt;title&gt;</code> and the raw key — if the key appears in title or JSON-LD name, still open",
+    "Search \"Specifications not available yet\" — note whether present (this text is UA-dependent, see G0.2)"
+  ]
+},
+{
+  id:"en-IE T2", ws:"en-IE Post-Deploy", title:"Price must always show on load (PDP + PLP/FLP)", pri:"P0", status:"partial",
+  prs:[["#2540","https://github.com/Helloprint/HelloPrintV4/pull/2540","MERGED · Jul 13"]],
+  context:"PDPs with a preset config showed Total €0.00 until a quantity was clicked; some PLPs loaded then fell back to \"Configure and see price\". Product JSON-LD offers.price was correct, so primarily a UX/conversion defect — unless €0.00 leaks into schema on other products. Decision: default config per product in Contentful (closest attribute path to most-sold path); always show it on load; never €0.00 at rest; FLP = \"from €X\", PLP/PDP = configured default price.",
+  finding:"Partial. The PDP side is fixed and verified: PR #2540 (SSR uses defaultPresetQuantity) — the exact bug URL (cotton bags, qty 100) now shows the real total on load. Still to check: PLP/FLP card behaviour (\"Configure and see price\" fallback) and a sweep that €0.00 never leaks into JSON-LD offers.price on other products.",
+  url:"https://www.helloprint.com/en-ie/cottonbagslonghandles140gm?quantity=100",
+  steps:[
+    ["PDP: open the URL, watch price on load — real total shows immediately, never €0.00",true],
+    "PLP: open /en-ie/brochure-and-booklet-printing — product cards should show prices, not \"Configure and see price\"",
+    "Schema: View Source on a few PDPs → search <code>\"price\"</code> in JSON-LD → must be > 0"
+  ]
+},
+{
+  id:"en-IE T3", ws:"en-IE Post-Deploy", title:"Restore missing products on landing pages (mugs)", pri:"P0", status:"open",
+  prs:[["#2035","https://github.com/Helloprint/HelloPrintV4/pull/2035","review doc"]],
+  context:"/en-ie/personalised-mugs exists but all its products are gone. Root cause to investigate: collection emptied, unlinked, or unpublished in Contentful. Content fix needed, not (only) code.",
+  finding:"Open — content fix needed. Not re-verified this pass.",
+  url:"https://www.helloprint.com/en-ie/personalised-mugs",
+  steps:[
+    "Open the URL in Chrome",
+    "PASS = the page shows its full product set with prices · FAIL = page exists but zero products"
+  ]
+},
+{
+  id:"en-IE T4", ws:"en-IE Post-Deploy", title:"Configurator icons (odd/old/wrong) + empty alt texts", pri:"P1", status:"open",
+  prs:[["#2035","https://github.com/Helloprint/HelloPrintV4/pull/2035","review doc"]],
+  context:"Icons do render (Contentful assets present in raw HTML, 12–14 imgs on flagged pages) but some are odd/old/wrong for the attribute they represent. Also 20–24 empty/tiny alt texts per flagged page. Owner: Sebastiaan. Can't be triaged at scale until the T7 tester renders JS (gate G0.3) — visual check is manual until then.",
+  finding:"Open — needs a visual check per page; automated detection waits on T7.",
+  url:"https://www.helloprint.com/en-ie/customsizestickers",
+  steps:[
+    "Open /en-ie/customsizestickers, scroll to the configurator, visually inspect each step's icons",
+    "Look for: missing icons, outdated images, wrong icon for the attribute, or a raw attribute name instead of an icon",
+    "Repeat on /en-ie/wallcalendars",
+    "View Source → search <code>alt=\"\"</code> — count empty alt texts (should be 0)"
+  ]
+},
+{
+  id:"en-IE T5", ws:"en-IE Post-Deploy", title:"Schema localisation on V4 pages", pri:"P1", status:"blocked",
+  prs:[["#2467","https://github.com/Helloprint/HelloPrintV4/pull/2467","related"],["#2422","https://github.com/Helloprint/HelloPrintV4/pull/2422","related"]],
+  context:"Organization availableLanguage lists non-IE languages on en-IE; schema @id/url values point to the bare root domain instead of /en-ie/. Handoff decisions: define Organization + WebSite once (homepage) with stable @id, availableLanguage = en-IE only, every @id/url on en-ie pages /en-ie/-specific. ⚠️ Flagged as the MOST DANGEROUS ticket: blanket @id localisation may fragment the brand entity (if de/fr/nl each define their own Organization @id, Google sees N separate organizations). Needs an entity-graph architecture decision, not a find-replace — a single global Organization @id at root is often correct. Scope: V4 pages only (blog = separate Nuxt app, handed to Frederico).",
+  finding:"Blocked by gate G0.1 (hreflang cluster audit) + the entity-graph decision. Current live state confirmed 18 Jul: availableLanguage still lists 7 languages (English, German, Spanish, French, Italian, Dutch, Swedish) and Organization/WebSite @id still point to the bare root (helloprint.com/#organization) — i.e. not yet changed, as expected while blocked.",
+  url:"https://www.helloprint.com/en-ie",
+  steps:[
+    "View Source → search <code>availableLanguage</code> — currently lists 7 languages; after the fix: en-IE/English only",
+    "Search <code>\"@id\"</code> in JSON-LD — note whether values are root or /en-ie/ (pending the architecture decision)",
+    "Before any merge: complete the hreflang audit (G0.1) and check what de-de/fr-fr/nl-nl actually emit for Organization @id"
+  ]
+},
+{
+  id:"en-IE T6", ws:"en-IE Post-Deploy", title:"Filter-page breadcrumbs", pri:"P1", status:"open",
+  prs:[["#2035","https://github.com/Helloprint/HelloPrintV4/pull/2035","review doc"]],
+  context:"BreadcrumbList is broken on filter pages (category schema otherwise correct). A filter is not a breadcrumb level — the trail should mirror the parent category (Home › Flyers), not include the filter. No evidence URLs were provided in the handoff, so first collect a sample.",
+  finding:"Open — needs an evidence sample first, then the fix.",
+  url:"https://www.helloprint.com/en-ie/flyers?material=170ggloss",
+  steps:[
+    "Open a filter page (example URL) → View Source → search <code>BreadcrumbList</code>",
+    "PASS = one correct BreadcrumbList mirroring the parent trail (Home › Flyers) · FAIL = missing, broken, or filter included as a level",
+    "Optionally confirm with Google's Rich Results Test"
+  ]
+},
+{
+  id:"en-IE T7", ws:"en-IE Post-Deploy", title:"Extend product-tester for continuous detection", pri:"P1", status:"open",
+  prs:[["#2035","https://github.com/Helloprint/HelloPrintV4/pull/2035","review doc"]],
+  context:"The T1–T6 failures recur silently — needs continuous, all-pages detection. Extend Michael's existing product-tester and feed output into the Content Engine. Checks to add: (1) title ≠ internal-key pattern, (2) content/specs present, (3) price resolves + shows, (4) icons present/load, (5) landing/filter page not empty, (6) schema valid + locale-correct. ⚠️ Keystone: if the tester doesn't render JS, checks 3 and 4 are impossible → false-greens, and six tickets (T1,T2,T3,T4,T6,T8) can't close their ACs (gate G0.3). Effectively P0 infrastructure.",
+  finding:"Open — JS rendering still unconfirmed with Michael. This is the single highest-leverage item: 6 tickets depend on it.",
+  url:"(infrastructure — no page URL)",
+  steps:[
+    "Confirm with Michael: does the tester execute JavaScript?",
+    "Validate false-positive/negative rate against a golden set of known-good and known-bad pages",
+    "First run should flag: trifoldleaflets (title), personalised-mugs (empty), brochure-and-booklet-printing (price), customsizestickers + wallcalendars (icons)"
+  ]
+},
+{
+  id:"en-IE T8", ws:"en-IE Post-Deploy", title:"Sitemap quality (non-200 URLs)", pri:"P1", status:"open",
+  prs:[["#2421","https://github.com/Helloprint/HelloPrintV4/pull/2421","trailing-slash part MERGED"]],
+  context:"At review time ~194/576 sitemap URLs (34%) were non-200: ~185 redirects (incl. a 152-URL /industry/* tree) + ~9 hard 404s. ⚠️ Don't just delete: three root causes need different fixes — (1) if /industry/* legitimately moved, the targets belong in the sitemap; (2) if they redirect to a generic/home page it's a soft-404 problem deletion would hide; (3) if it's a locale-routing bug, the same bug likely affects live internal links and canonicals. Gate G0.4: complete the redirect-target sweep (classify every redirect) before deleting anything.",
+  finding:"Open. Checked 18 Jul: the sitemap now lists 707 URLs and still contains 150 /industry/ URLs — the redirect-target sweep and clean-up haven't happened. (Trailing slashes are fixed — that was PR #2421, tracked separately.)",
+  url:"https://www.helloprint.com/en-ie/sitemap_collections_1.xml",
+  steps:[
+    "Open the sitemap XML → search <code>/industry/</code> — these are still present (150 URLs)",
+    "Pick 5 random URLs and open them — each should return 200 (not 301/404)",
+    "Before removing anything: classify where each redirect lands (moved / soft-404 / routing bug)"
+  ]
+},
+
+/* ── WEB VITALS — open investigations ── */
+{
+  id:"WV T1", ws:"Web Vitals", title:"Configurator CLS 0.369 on 77% of PDPs", pri:"P0", status:"open",
+  prs:[["#2178","https://github.com/Helloprint/HelloPrintV4/pull/2178","investigation only"]],
+  context:"CLS 0.369 (poor) on 77% of product pages; identical score across unrelated products = one shared component (the configurator). Root cause (corrected after subagent review): NOT the loading placeholder — it's the JS-populated in-flow containers (<code>data-desktop-summary</code>, <code>data-desktop-delivery-section</code>, <code>data-mobile-accordion</code>) that are empty at SSR and grow taller on hydration, shifting everything below. PR #2178 contains investigation docs only, no code fix.",
+  finding:"Open — investigation done, not fixed. Needs a field-trace re-investigation and then a fix (reserve space for the hydrating containers).",
+  url:"https://www.helloprint.com/en-ie/booklets",
+  steps:[
+    "Chrome DevTools → Lighthouse → Mobile + Performance (Slow 4G, 4× CPU)",
+    "Run and read the CLS metric",
+    "PASS = CLS < 0.1 · FAIL = > 0.1 (needs fix) · 0.1–0.25 = borderline, note it"
+  ]
+},
+{
+  id:"WV T2", ws:"Web Vitals", title:"TTFB on category/product pages (498–600ms)", pri:"P0", status:"open",
+  prs:[["#2602","https://github.com/Helloprint/HelloPrintV4/pull/2602","adjacent perf"],["#2628","https://github.com/Helloprint/HelloPrintV4/pull/2628","adjacent perf"],["#2408","https://github.com/Helloprint/HelloPrintV4/pull/2408","adjacent perf"]],
+  context:"Homepage TTFB is ~204ms (good) but /booklets 498ms and /brochure-and-booklet-printing 600ms. BFF calls already batch via Promise.allSettled — the serial blocking cost is the pricing fetch at <code>[...slug].astro:1043</code>, which is pricing-system territory = off-limits this round. Handed off to the pricing team. Three adjacent perf PRs merged since (concurrent cache warm, lazy matrix, weight cut) which may have moved the number.",
+  finding:"Open — owned by pricing team. Worth re-measuring after the three adjacent PRs to see the current baseline.",
+  url:"https://www.helloprint.com/en-ie/brochure-and-booklet-printing",
+  steps:[
+    "DevTools → Network → reload → click the main document request → TTFB (time to first byte)",
+    "Compare with homepage (~200ms)",
+    "PASS = < 300ms · FAIL = > 600ms"
+  ]
+},
+{
+  id:"WV T4", ws:"Web Vitals", title:"Render-blocking CSS (Button.css 139KB)", pri:"P1", status:"open",
+  prs:[["#2178","https://github.com/Helloprint/HelloPrintV4/pull/2178","attempted + REVERTED"]],
+  context:"139KB decoded Button.css (~23KB transferred) + FooterBottom.css block first render. No critical-CSS / deferral config in astro.config.mjs. A deferral was attempted in PR #2178 and rolled back due to FOUC risk. Follow-up needs a proper critical-CSS approach (astro-critters or vite-plugin-critical) rather than naive deferral.",
+  finding:"Open — the attempted fix was reverted; nothing shipped for this.",
+  url:"https://www.helloprint.com/en-ie/booklets",
+  steps:[
+    "DevTools → Lighthouse → Mobile + Performance → run",
+    "Find the audit \"Eliminate render-blocking resources\"",
+    "FAIL = CSS files listed (still open) · PASS = none listed"
+  ]
+},
+{
+  id:"WV T6", ws:"Web Vitals", title:"Unused JS in analytics.js / page.js chunks", pri:"P2", status:"open",
+  prs:[["#2178","https://github.com/Helloprint/HelloPrintV4/pull/2178","investigation"]],
+  context:"The analytics chunk eagerly imports GA4, Google Ads and Klaviyo plugins that only some routes use — ~55KB unused between analytics.js and page.js. Investigation done, follow-up ticket created for chunk splitting.",
+  finding:"Open — follow-up chunk-splitting ticket exists, not yet shipped.",
+  url:"https://www.helloprint.com/en-ie/booklets",
+  steps:[
+    "DevTools → Cmd/Ctrl+Shift+P → \"Coverage\" → reload",
+    "Read unused bytes for the analytics.js and page.js chunks",
+    "FAIL = > 55KB unused combined · PASS = < 10KB"
+  ]
+},
+
+/* ── PLP / IMAGE TICKETS (reviewed, not implemented) ── */
+{
+  id:"HEL-PL1–PL4", ws:"PLP Crawlability", title:"PLP product-link crawlability, grid count, pagination", pri:"P0", status:"open",
+  prs:[["review Jul 2","https://github.com/Helloprint/HelloPrintV4","critical review done"]],
+  context:"Four linked P0 tickets, reviewed 2 Jul, NOT implemented: PL1 — product cards become real crawlable anchors (<code>data-pdp-href</code> → <code>&lt;a href&gt;</code>); PL2 — grid honours Contentful defaultHitsPerPage (48, not 12); PL3 — crawlable path-based pagination (/page/n) with self-referential canonicals on page 2+; PL4 — verification sweep across PLP + category-hub templates. Review flags to respect: nested-interactive hazard (buttons inside anchors), PL2 alone doesn't reach full-catalogue crawlability (48/95 — needs PL3 too), /page/1 must 301 to base, out-of-range must 404, and the XML-sitemap strategy is absent from the plan.",
+  finding:"Open — none of PL1–PL4 implemented. Current state on PLPs: cards still use data-pdp-href, grid shows 12 not 48, no path-based pagination.",
+  url:"https://www.helloprint.com/en-ie/brochure-and-booklet-printing",
+  steps:[
+    "View Source → search <code>data-pdp-href</code> — present = PL1 not done",
+    "Count product tiles in the grid — 12 (not 48) = PL2 not done",
+    "Search <code>/page/2</code> — no path-based pagination links = PL3 not done"
+  ]
+},
+{
+  id:"HEL-IMG1/IMG2", ws:"Images", title:"Image loading priority + responsive srcset", pri:"P1", status:"open",
+  prs:[["review Jul 2","https://github.com/Helloprint/HelloPrintV4","critical review done"]],
+  context:"IMG1 — loading priority + CLS baseline: <code>fetchpriority=\"high\"</code> on the LCP (hero) image. IMG2 — responsive <code>srcset</code> for product images so mobile doesn't download desktop sizes. Reviewed 2 Jul, not implemented.",
+  finding:"Open — not implemented.",
+  url:"https://www.helloprint.com/en-ie/standardflyers",
+  steps:[
+    "View Source → search <code>fetchpriority</code> — absent on the hero image = IMG1 not done",
+    "Search <code>srcset</code> — absent on product images = IMG2 not done",
+    "Lighthouse audit \"Properly size images\" flagged = IMG2 needed"
+  ]
 }
 ];
+
+// ─── GATES — must clear before dependent tickets can close ───
+const GATES = [
+  ["G0.1","Hreflang cluster audit — complete + reciprocal, all alternates 200","Blocks en-IE T5"],
+  ["G0.2","T1 UA-divergence root cause — why do Googlebot and Chrome see different HTML? (potential cloaking signal)","Blocks trusting en-IE T1/T2 counts"],
+  ["G0.3","Confirm the T7 tester renders JS + validate against a golden set","Blocks closing ACs of en-IE T1, T2, T3, T4, T6, T8"],
+  ["G0.4","T8 redirect-target sweep — classify every redirect (moved / soft-404 / routing bug)","Blocks en-IE T8 deletions"]
+];
+const NOTES = "Scope note: the consultant-audit tracker rows T1–T14 / S1–S6 (Work Stream 1) were never recovered as a document — only T15/S7 exists and is tracked above. PR #2035 (docs-only, closed) holds the en-IE post-deploy critical review that defines the four gates.";
 
 // ─────────────────────────────────────────────────────────────
 const STATUS_LABEL={done:"Ticked off",partial:"Partial",open:"Open",blocked:"Blocked"};
@@ -435,7 +620,19 @@ function render(filter="all",q=""){
   });
   list.innerHTML=html||`<div class="foot">No tickets match.</div>`;
 }
-renderKpis();render();
+function renderGates(){
+  const rows=GATES.map(g=>`<div style="display:flex;gap:12px;padding:9px 0;border-bottom:1px solid #f0e9fb;font-size:13px;align-items:baseline">
+    <span style="font-weight:700;color:#6b21a8;white-space:nowrap">${g[0]}</span>
+    <span style="flex:1;color:var(--color-ink-muted)">${g[1]}</span>
+    <span style="font-weight:600;color:#6b21a8;white-space:nowrap">${g[2]}</span></div>`).join("");
+  document.getElementById("gates-panel").innerHTML=`
+  <div style="background:#faf7ff;border:1px solid #e5d8f7;border-radius:12px;padding:16px 20px;margin-top:14px">
+    <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:#6b21a8;margin-bottom:4px">Critical gates — clear these before dependent tickets can close</div>
+    ${rows}
+    <div style="font-size:12px;color:var(--color-ink-faint);padding-top:10px">${NOTES}</div>
+  </div>`;
+}
+renderKpis();renderGates();render();
 document.querySelectorAll(".filter-btn").forEach(b=>b.addEventListener("click",()=>{
   document.querySelectorAll(".filter-btn").forEach(x=>x.classList.remove("active"));
   b.classList.add("active");render(b.dataset.filter,document.getElementById("search").value);

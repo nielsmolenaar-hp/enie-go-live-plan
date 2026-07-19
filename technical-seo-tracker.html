@@ -179,7 +179,7 @@ const TICKETS = [
 {
   id:"T15 / S7", ws:"Consultant Audit", title:"Mega-menu SSR crawlability", pri:"P1", status:"done", review:true, checkKind:"source",
   prs:[["#1756","https://github.com/Helloprint/HelloPrintV4/pull/1756","MERGED · Jul 1"]],
-  context:"An external consultant claimed Google couldn't see our navigation menu links because the mega-menu only exists after JavaScript runs. The fix uses two surfaces: a hidden-for-humans but visible-for-Google navigation block (<code>header-seo-nav</code>) that lists every category and subcategory as a normal link in the raw page, while the visual hover menu (<code>data-nav-megamenu-content</code>) stays empty in the raw page and is filled by JavaScript. Individual product links are deliberately NOT crawlable (they use <code>data-pdp-href</code> instead of a normal link) — only category pages should receive Google's attention from the menu.",
+  context:"<b>Problem:</b> an external consultant claimed our navigation menu is built entirely by JavaScript, meaning Google's crawler — which primarily reads the raw page — couldn't see any of the category links in it. The menu is the strongest internal-linking surface on the site, so if its links are invisible to Google, every category page loses authority and discoverability. <b>The fix (two-surface architecture):</b> a navigation block (<code>header-seo-nav</code>) that is invisible to human visitors but fully present in the raw page lists every top-level category and subcategory as a normal link; the visual hover mega-menu (<code>data-nav-megamenu-content</code>) stays empty in the raw page and is filled by JavaScript for humans. <b>Deliberate detail:</b> individual product links in the menu and homepage blocks are intentionally NOT crawlable (they use <code>data-pdp-href</code> instead of a real link) — we want Google's attention from the menu to flow to category pages, not to thousands of individual products.",
   finding:"Confirmed live 18 Jul. 82 crawlable links in the SEO nav (12 top-level + ~70 subcategories), all pointing to category pages, none to individual products. The hover-menu container is empty in the raw page, as designed. Also re-confirmed against Niels's own source dump — matches exactly.",
   url:"https://www.helloprint.com/en-ie",
   steps:[
@@ -194,7 +194,7 @@ const TICKETS = [
 {
   id:"PR #1913", ws:"Schema", title:"SEO/GEO schema foundation (shipping, returns, offer, sku)", pri:"P1", status:"done", checkKind:"source",
   prs:[["#1913","https://github.com/Helloprint/HelloPrintV4/pull/1913","MERGED · Jul 3"]],
-  context:"Every product page carries an invisible 'data card' for Google (called JSON-LD / structured data) describing the product. This PR upgraded that card: it now tells Google we ship to Ireland (shippingDetails with country IE), that we accept returns within 14 days (hasMerchantReturnPolicy), how long the price is valid, and who the seller is. It also uses the honest single-price format ('Offer') instead of a fake price-range format, and uses the clean product name as the product code (sku) instead of an internal database key. These details make products eligible for richer Google results (shipping/returns info directly in search).",
+  context:"<b>Background:</b> every product page carries an invisible 'data card' for Google (structured data / JSON-LD) describing the product — Google uses it to show rich results: price, stock, shipping and returns info directly in search listings. <b>Problem:</b> our card was incomplete and partly wrong: no shipping or returns information, a fake price-range format ('AggregateOffer') on single-price products, an internal database key as the product code (sku), the FAQ wired with the wrong property, and even the wrong currency (GBP) leaking onto Euro pages. <b>The fix:</b> the card now declares shipping to Ireland with handling/transit times, a 14-day returns policy, an honest single-price 'Offer', a price-valid-until date, the seller, a clean readable sku, the correct FAQ wiring (subjectOf), and the right currency. <b>Why it matters:</b> complete and truthful cards make products eligible for the richer Google result formats that lift click-through.",
   finding:"Confirmed live 18 Jul on /standardflyers: shipping country IE, 14-day returns, single-price Offer format, price-valid-until date, seller present, sku is the clean slug 'standardflyers'. One useful detail: these fields sit INSIDE the 'offers' part of the data card — search for the field names and you'll land in the right place.",
   url:"https://www.helloprint.com/en-ie/standardflyers",
   steps:[
@@ -210,7 +210,7 @@ const TICKETS = [
 {
   id:"PR #2016", ws:"QA Sprint", title:"Hreflang from localeUrls, geo-gated (no 404 alternates)", pri:"P0", status:"done", checkKind:"source",
   prs:[["#2016","https://github.com/Helloprint/HelloPrintV4/pull/2016","MERGED · Jul 5"]],
-  context:"'Hreflang' tags tell Google which language/country versions of a page exist (e.g. this page in German, in French…). Before the fix, product pages advertised versions that didn't exist — Google followed those links and hit 4–7 'page not found' errors per product, which damages trust in the whole set. Now the list is built from the products' real per-country availability.",
+  context:"<b>Background:</b> 'hreflang' tags are how a page tells Google which language/country versions of itself exist (this page in German, in French, …), so searchers in each country get the right version. <b>Problem:</b> product pages advertised versions that don't exist — a product not sold in, say, Sweden still claimed a Swedish page. Google followed those links and hit 4–7 'page not found' errors per product. When alternates keep 404ing, Google loses trust in the entire country-version network, for all pages. <b>The fix:</b> the list is now built from each product's real per-country availability (the localeUrls map), with unavailable countries excluded. The same PR also fixed empty image descriptions on footer social icons and removed a broken loading menu.",
   finding:"Confirmed live 18 Jul on /standardflyers: exactly 12 language versions listed (11 markets + a default), and spot-checked links open real pages.",
   url:"https://www.helloprint.com/en-ie/standardflyers",
   steps:[
@@ -224,7 +224,7 @@ const TICKETS = [
 {
   id:"PR #2017", ws:"QA Sprint", title:"Locale-aware support phone", pri:"P1", status:"done", checkKind:"source",
   prs:[["#2017","https://github.com/Helloprint/HelloPrintV4/pull/2017","MERGED · Jul 5"]],
-  context:"The mobile menu displayed the UK support number (+44) to Irish visitors, while tapping it actually dialled the Irish number (+353) — confusing and off-brand. Now the correct local number shows for each market.",
+  context:"<b>Problem:</b> the mobile menu displayed the UK support number (+44) to Irish visitors, while tapping it actually dialled the Irish number (+353) — a mismatch that looks careless and confuses customers deciding whether to call. <b>Why it matters:</b> beyond trust and conversion, consistent local contact details are a signal search engines use to understand which market a page serves. <b>The fix:</b> the displayed number now comes from the same per-market configuration as the dialled number, so each country shows its own support line.",
   finding:"Confirmed live 18 Jul: the page contains one phone link — displayed +353 1 902 0010, dialling +35319020010. No +44 anywhere.",
   url:"https://www.helloprint.com/en-ie",
   steps:[
@@ -238,7 +238,7 @@ const TICKETS = [
 {
   id:"PR #2018", ws:"QA Sprint", title:"SplitContentBlock dedup (no duplicate homepage copy)", pri:"P1", status:"done", checkKind:"source",
   prs:[["#2018","https://github.com/Helloprint/HelloPrintV4/pull/2018","MERGED · Jul 5"]],
-  context:"The homepage text block existed twice in the raw page — once as the short preview and once as the hidden full version. Google reads both, sees the same content doubled on one page, which dilutes the page's quality signal. The fix keeps a single copy and shortens it visually with styling only.",
+  context:"<b>Problem:</b> the homepage text block existed twice in the raw page — once as the short visible preview, and once as the hidden 'full' version behind the show-more button. Human visitors saw it once; Google read it twice. <b>Why it matters:</b> the same content doubled on one page dilutes its quality signal and looks like padding to search engines. <b>The fix:</b> exactly one copy remains in the page; the shortened preview is now done purely with styling (the text is clipped visually, not duplicated), with a fallback so the full text still shows if JavaScript is off.",
   finding:"Confirmed live 18 Jul: no duplicated paragraphs anywhere in the homepage raw HTML.",
   url:"https://www.helloprint.com/en-ie",
   steps:[
@@ -252,7 +252,7 @@ const TICKETS = [
 {
   id:"PR #2019", ws:"QA Sprint", title:"/distribution shell page removed from index", pri:"P1", status:"done", checkKind:"redirect",
   prs:[["#2019","https://github.com/Helloprint/HelloPrintV4/pull/2019","MERGED · Jul 5"]],
-  context:"The address /en-ie/distribution showed an empty homepage shell but was still allowed into Google's index — an empty page ranking is bad for quality signals. The plan was to mark it 'noindex' (page exists, Google ignores it). What actually shipped is stronger: the address now redirects straight to the homepage, so there is nothing left to index.",
+  context:"<b>Problem:</b> the address /en-ie/distribution was a leftover route that showed an empty homepage shell — no content of its own — yet was fully open to Google's index. An indexable empty page is 'index bloat': it competes with real pages and drags down the site's quality profile. <b>The plan vs what shipped:</b> the ticket planned to mark it 'noindex' (page stays, Google ignores it). What actually shipped is stronger: the address now redirects straight to the homepage, so there is nothing left to index at all. Outcome equivalent-or-better; flagged only so the ticket text isn't misread later.",
   finding:"Confirmed live 18 Jul: /en-ie/distribution redirects to /en-ie/ (the homepage). Note the mechanism differs from the ticket text (redirect instead of noindex) — outcome is equivalent or better, but worth knowing when reading the original ticket.",
   url:"https://www.helloprint.com/en-ie/distribution",
   steps:[
@@ -264,7 +264,7 @@ const TICKETS = [
 {
   id:"PR #2022", ws:"QA Sprint", title:"BFF resolver builds full cross-locale URL map", pri:"P1", status:"done", checkKind:"source",
   prs:[["#2022","https://github.com/Helloprint/HelloPrintV4/pull/2022","MERGED · Jul 5"]],
-  context:"Behind the scenes, the system that assembles a product page only knew the page's address in the CURRENT country — so it couldn't list the sister versions for other countries (which the hreflang tags from PR #2016 need). This fix makes it assemble the full country map using data it already fetched (no extra load).",
+  context:"<b>Background:</b> behind the scenes, a service (the 'BFF resolver') assembles all the data a product page needs before it is built. <b>Problem:</b> it only knew the page's address in the CURRENT country — so the hreflang country-version tags (see PR #2016) physically could not be completed: the page didn't know its own sister addresses. <b>The fix:</b> the resolver now assembles the full country map using data it had already fetched anyway — zero extra load on the content system. <b>Relationship:</b> #2016 decides WHICH countries belong in the list; this PR supplies the addresses. Verifying one verifies both.",
   finding:"Confirmed live 18 Jul: the full 12-entry country list is present on /standardflyers (same evidence as PR #2016 — the two fixes work as a pair).",
   url:"https://www.helloprint.com/en-ie/standardflyers",
   steps:[
@@ -277,7 +277,7 @@ const TICKETS = [
 {
   id:"WV T8 (#2178)", ws:"Web Vitals", title:"lowest_price.webp badge image dimensions", pri:"P3", status:"done", checkKind:"source",
   prs:[["#2178","https://github.com/Helloprint/HelloPrintV4/pull/2178","MERGED · Jul 7"]],
-  context:"The 'lowest price' badge image had no declared width/height, so the browser didn't reserve space for it — when it loaded, the content below it jumped (that jump is measured by Google as CLS, a ranking-relevant experience metric). Declaring the size fixes the jump. This was the only code change that shipped from the Web Vitals investigation PR; the bigger CLS items are tracked separately (WV T1, WV T4).",
+  context:"<b>Background:</b> CLS ('layout shift') measures how much a page jumps around while loading — Google uses it in ranking, and jumpy pages frustrate users into misclicks. <b>Problem:</b> the 'lowest price' badge image on category pages declared no width/height, so the browser reserved no space for it; when the image arrived, everything below it jumped down. <b>The fix:</b> the image now declares its size (400×400) so the space is reserved from the first moment. <b>Scope note:</b> this was the only code change that shipped from the Web Vitals investigation PR #2178 — the bigger layout-shift and CSS items from that investigation are tracked separately as WV T1 and WV T4.",
   finding:"Confirmed live 18 Jul: the badge image carries width=\"400\" height=\"400\".",
   url:"https://www.helloprint.com/en-ie/brochure-and-booklet-printing",
   steps:[
@@ -290,7 +290,7 @@ const TICKETS = [
 {
   id:"WV T5", ws:"Web Vitals", title:"Sentry replay recorder lazy-loaded", pri:"P2", status:"done", checkKind:"network",
   prs:[["#2178","https://github.com/Helloprint/HelloPrintV4/pull/2178","context"]],
-  context:"Sentry is our error-monitoring tool. Its 'session replay' recorder (a heavy script that records what users do, for debugging) was configured to load for everyone. Now it loads for 0% of normal visits and only activates on the ~10% of sessions where an error actually happens — saving download weight for everyone else.",
+  context:"<b>Background:</b> Sentry is our error-monitoring tool; its 'session replay' feature records what a user did before an error, which helps developers debug. <b>Problem:</b> the replay recorder — a heavy script — was being downloaded by every visitor on every page, even though it's only useful when something breaks. <b>The fix:</b> normal visits download nothing (0% session sampling); the recorder activates only for the ~10% of sessions where an error actually occurs, and even then it loads lazily after the page is done. <b>Why it matters:</b> less JavaScript for every visitor = faster pages, better Web Vitals, no loss of debugging ability.",
   finding:"Confirmed live 18 Jul: on a normal visit, no replay script is downloaded.",
   url:"https://www.helloprint.com/en-ie/booklets",
   steps:[
@@ -304,7 +304,7 @@ const TICKETS = [
 {
   id:"PR #2467", ws:"Schema", title:"De-hardcode shop name in SEO tokens + structured data", pri:"P1", status:"done", checkKind:"source",
   prs:[["#2467","https://github.com/Helloprint/HelloPrintV4/pull/2467","MERGED · Jul 10"]],
-  context:"The shop name was typed directly into the code ('hardcoded') in page titles and in the data card for Google. If the brand name ever changes per market, hardcoding breaks. Now the name flows from the central shop configuration.",
+  context:"<b>Problem:</b> the shop name was typed directly into the code ('hardcoded') in page-title templates and in the Google data card, instead of coming from the central shop configuration. <b>Why it matters:</b> hardcoding breaks silently — if branding differs per market or ever changes, dozens of hidden places keep emitting the old name; and inconsistent naming weakens how confidently Google connects our pages to one brand. <b>The fix:</b> a single configuration source now feeds the shop name everywhere it appears in titles and structured data.",
   finding:"Confirmed live 18 Jul: the Google data card identifies the organisation as 'Helloprint', fed from config.",
   url:"https://www.helloprint.com/en-ie",
   steps:[
@@ -317,7 +317,7 @@ const TICKETS = [
 {
   id:"PR #2422", ws:"Schema", title:"sameAs shop-config pipeline + BreadcrumbList dedup on PDPs", pri:"P1", status:"done", checkKind:"source",
   prs:[["#2422","https://github.com/Helloprint/HelloPrintV4/pull/2422","MERGED · Jul 10"]],
-  context:"Two fixes in one: (1) 'sameAs' is the list of our official profiles (Facebook, Instagram, LinkedIn, Trustpilot…) in the Google data card — it was hardcoded, now from config. (2) Product pages accidentally carried the breadcrumb data TWICE (once standalone, once nested inside the product card) — Google dislikes conflicting duplicates. Now exactly one remains.",
+  context:"<b>Two fixes in one PR.</b> (1) <b>sameAs:</b> the Google data card lists our official profiles (Facebook, Instagram, LinkedIn, YouTube, X, Trustpilot, Wikidata) — this is how Google confirms 'this website and these profiles are the same organisation'. The list was hardcoded; now it flows from shop configuration. (2) <b>Breadcrumb duplicate:</b> product pages accidentally emitted the breadcrumb data TWICE — once standalone and once nested inside the product card. Conflicting duplicates make Google pick one arbitrarily or distrust both. Now a single component is the only emitter, so exactly one breadcrumb block ships per page.",
   finding:"Confirmed live 18 Jul: exactly one BreadcrumbList on /standardflyers; homepage sameAs lists Facebook, Instagram, LinkedIn, YouTube, X, Wikidata, Trustpilot.",
   url:"https://www.helloprint.com/en-ie/standardflyers",
   steps:[
@@ -332,7 +332,7 @@ const TICKETS = [
 {
   id:"PR #2421", ws:"Sitemap", title:"Strip trailing slash from feed slugs in sitemap URLs", pri:"P2", status:"done", checkKind:"source",
   prs:[["#2421","https://github.com/Helloprint/HelloPrintV4/pull/2421","MERGED · Jul 10"]],
-  context:"A sitemap is the list of pages we hand to Google. Some entries ended with a spare '/' (e.g. …/flyers/ instead of …/flyers) — each of those forces Google through a redirect hop, which wastes crawl budget at scale. Fixed at the source. Note: this ticket is ONLY about the slashes — the bigger sitemap clean-up (dead/redirecting entries) is the separate ticket en-IE T8.",
+  context:"<b>Background:</b> the sitemap is the list of page addresses we hand to Google ('these are our pages, come crawl them'). <b>Problem:</b> entries coming from one data feed ended with a spare '/' (…/flyers/ instead of …/flyers). Each such entry forces Google through a redirect hop before reaching the real page — multiplied across hundreds of entries, that wastes crawl budget and adds noise to crawl reports. <b>The fix:</b> the slash is stripped where the sitemap is generated. <b>Scope note:</b> this ticket is ONLY the slashes — the bigger clean-up (entries that redirect elsewhere or are dead) is the separate ticket en-IE T8.",
   finding:"Confirmed live 18 Jul: 707 entries in the sitemap, zero ending with a trailing slash.",
   url:"https://www.helloprint.com/en-ie/sitemap_collections_1.xml",
   steps:[
@@ -345,7 +345,7 @@ const TICKETS = [
 {
   id:"PR #2536", ws:"Hreflang", title:"Hreflang clusters on help centre + contact pages", pri:"P1", status:"done", checkKind:"source",
   prs:[["#2536","https://github.com/Helloprint/HelloPrintV4/pull/2536","MERGED · Jul 13"]],
-  context:"The help centre and contact pages had no country-version tags (hreflang) at all, so Google couldn't connect the Irish help centre to its German/French/etc. siblings — risking the wrong language showing in search results abroad.",
+  context:"<b>Problem:</b> the help centre and contact pages had no hreflang country-version tags at all — Google had no way to connect the Irish help centre to its German, French or Dutch siblings. <b>Why it matters:</b> without the connection, Google can show the wrong country's help centre to searchers (e.g. the English one ranking in Germany), and each version competes against its own siblings instead of reinforcing them. <b>The fix:</b> the full country-version cluster is now emitted on help centre and contact pages, same as on product pages.",
   finding:"Confirmed live 18 Jul: full 12-entry country list on /helpcenter.",
   url:"https://www.helloprint.com/en-ie/helpcenter",
   steps:[
@@ -358,7 +358,7 @@ const TICKETS = [
 {
   id:"PR #2529/#2524", ws:"Hreflang", title:"Blog hreflang repair (blog runs on a separate system)", pri:"P1", status:"done", checkKind:"source",
   prs:[["#2529","https://github.com/Helloprint/HelloPrintV4/pull/2529","MERGED · Jul 12"],["#2524","https://github.com/Helloprint/HelloPrintV4/pull/2524","MERGED · Jul 12"]],
-  context:"The blog runs on a different technical system (Nuxt) than the shop (Astro), so the shop's hreflang fix didn't cover it. These PRs repaired the country-version tags on all three blog surfaces: blog homepage, article pages, and category pages. Note: an automated code scan has since flagged a follow-up (Linear HEL-1794, in the Hermes queue) — some blog alternates are built from a legacy address format and go through an extra redirect hop. Tags are present and correct; the follow-up makes them point directly.",
+  context:"<b>Background:</b> the blog runs on a separate technical system (Nuxt) from the shop (Astro) — so the shop's hreflang fixes never applied to it. <b>Problem:</b> country-version tags were broken or missing on all three blog surfaces: the blog homepage, article pages, and category pages. <b>The fix:</b> these two PRs repaired the clusters on all three surfaces. <b>Known follow-up:</b> an automated code scan later flagged (Linear HEL-1794, queued) that some blog alternates are built from a legacy address format and pass through one extra redirect hop — the tags are present and correct, the follow-up makes them point directly.",
   finding:"Confirmed live 18 Jul: 12-entry country list on both /blog and a category page (/blog/artwork/).",
   url:"https://www.helloprint.com/en-ie/blog",
   steps:[
@@ -372,7 +372,7 @@ const TICKETS = [
 {
   id:"PR #2388", ws:"Locale", title:"Locale switcher alphabetical + canonical switch URLs", pri:"P2", status:"done", checkKind:"visual",
   prs:[["#2388","https://github.com/Helloprint/HelloPrintV4/pull/2388","MERGED · Jul 10"]],
-  context:"The country switcher (flag menu, top right) listed countries in random order, and its links passed through redirect hops. Now: alphabetical order, direct links.",
+  context:"<b>Problem:</b> the country switcher (flag menu, top right) listed markets in random order, and its links passed through redirect hops instead of pointing straight at each country's homepage. <b>Why it matters:</b> random order is poor usability; and since the switcher appears on every page of the site, its links are crawled constantly — pointing them through redirects leaks crawl efficiency sitewide. <b>The fix:</b> alphabetical order by country name, and every link goes directly to the final address (no hops).",
   finding:"Confirmed live 18 Jul: 11 markets in alphabetical order (België → United States); the France link goes directly to /fr-fr/.",
   url:"https://www.helloprint.com/en-ie",
   steps:[
@@ -385,7 +385,7 @@ const TICKETS = [
 {
   id:"PR #2540", ws:"PDP Pricing", title:"SSR uses defaultPresetQuantity → price parity on load", pri:"P0", status:"done", checkKind:"visual",
   prs:[["#2540","https://github.com/Helloprint/HelloPrintV4/pull/2540","MERGED · Jul 13"]],
-  context:"Product pages arriving with a preset configuration showed 'Total €0.00' for a moment (or until you clicked a quantity) because the server calculated the price with a different default than the browser. Fixed: the server now uses the same default quantity, so the first paint already shows the real price. This is the technical half of the broader ticket en-IE T2.",
+  context:"<b>Problem:</b> product pages that arrive with a preset configuration (e.g. from an ad or deep link with a quantity pre-chosen) showed 'Total €0.00' until the visitor clicked something. Cause: the server calculated the first-paint price using a different default quantity than the browser app used a moment later — two halves of the system disagreeing. <b>Why it matters:</b> €0.00 at the decisive moment looks broken and kills purchase confidence; the bug URL in this ticket came directly from customer-facing evidence. <b>The fix:</b> the server now uses the same default quantity (defaultPresetQuantity) as the browser, so the very first paint shows the real price. <b>Scope:</b> this is the technical half of the broader ticket en-IE T2 (which also covers category/filter pages).",
   finding:"Confirmed live 18 Jul on the exact URL from the bug report (cotton bags, quantity 100): the real total (~€307.99) shows immediately. Note for anyone inspecting the page with developer tools: a HIDDEN 'Total €0.00' element exists in the code — it's an inactive mobile bar with zero size, not the visible price. Judge by what you see on screen.",
   url:"https://www.helloprint.com/en-ie/cottonbagslonghandles140gm?quantity=100",
   steps:[
@@ -398,7 +398,7 @@ const TICKETS = [
 {
   id:"PR #2655", ws:"Breadcrumbs", title:"Breadcrumbs harden with GraphQL fallback + Redis split", pri:"P1", status:"done", checkKind:"visual",
   prs:[["#2655","https://github.com/Helloprint/HelloPrintV4/pull/2655","MERGED · Jul 15"]],
-  context:"The breadcrumb trail (Home › Category › Subcategory › Product, shown at the top of product pages) was fragile: it depended on a single cache and silently shrank to 'Home › Product' when that cache missed. Now there's a backup lookup straight to the content system, plus a tidier cache split.",
+  context:"<b>Background:</b> the breadcrumb trail (Home › Category › Subcategory › Product) at the top of product pages tells both users and Google where a product sits in the catalogue — under our flat URL structure it is THE primary hierarchy signal, and it appears in search results. <b>Problem:</b> the trail was built from a single cache; when that cache missed an entry, the trail silently shrank to 'Home › Product' — no error, just quietly degraded SEO. <b>The fix:</b> a fallback lookup straight to the content system when the cache misses, plus a tidier cache layout (routes and page-cache separated), so trails stay complete even during cache problems.",
   finding:"Confirmed live 18 Jul on /standardflyers: full 4-level trail — Home › Promotional Products › Leaflet Printing & Flyers › Flyers.",
   url:"https://www.helloprint.com/en-ie/standardflyers",
   steps:[
@@ -413,7 +413,7 @@ const TICKETS = [
 {
   id:"PR #2021", ws:"Web Vitals", title:"Defer desktop-only header scaffold on mobile", pri:"P0", status:"partial", checkKind:"source",
   prs:[["#2021","https://github.com/Helloprint/HelloPrintV4/pull/2021","MERGED · Jul 5"]],
-  context:"Phones were downloading and building ~350 invisible page elements that only desktop uses (search dropdown, account panel). These now sit in inert '<code>&lt;template&gt;</code>' containers — parked, not built — until first needed. Fewer built elements = faster phones.",
+  context:"<b>Problem:</b> phones were downloading and constructing ~350 invisible page elements that only desktop visitors ever use (the desktop search dropdown and account panel). <b>Why it matters:</b> page-speed scoring penalises 'excessive DOM size' — every element costs memory and build time on cheap phones, delaying the moment the page becomes usable. <b>The fix:</b> the desktop-only structures are parked inside inert <code>&lt;template&gt;</code> containers — shipped but not built — and only constructed the moment they're actually needed (first interaction).",
   finding:"Partially confirmed 18 Jul: the three template containers exist (search dropdown, account panel, mobile search). Still to do: a phone-mode speed test confirming the total element count actually dropped versus the old build.",
   url:"https://www.helloprint.com/en-ie",
   steps:[
@@ -426,7 +426,7 @@ const TICKETS = [
 {
   id:"PR #2024", ws:"Web Vitals", title:"Defer data-initial-pricing + strip data-display", pri:"P0", status:"partial", checkKind:"source",
   prs:[["#2024","https://github.com/Helloprint/HelloPrintV4/pull/2024","MERGED · Jul 5"]],
-  context:"Product pages used to embed ~140KB of raw pricing data (a 91KB price matrix + 47KB of other-countries text) directly in the page, making every visit heavier. The fix removes it from the initial page and fetches it a moment later, when needed.",
+  context:"<b>Problem:</b> every product page embedded ~140KB of raw pricing data directly in the page itself — a 91KB price-combination matrix plus 47KB of text for other countries' variants. Every visitor downloaded all of it before the page could finish. <b>Why it matters:</b> that's dead weight in the critical path — it delays first paint and hurts the mobile speed scores Google measures. <b>The fix:</b> the pricing block is stripped from the initial page and fetched separately a moment later, when the configurator actually needs it. <b>Related:</b> PR #2628 continues this pattern (lazy matrix + deferred analytics).",
   finding:"Partially confirmed 18 Jul: the embedded pricing block (<code>data-initial-pricing</code>) is gone from the initial page — consistent with the fix. Still to do: confirm via the Network tab that the pricing matrix arrives as a separate, later download.",
   url:"https://www.helloprint.com/en-ie/standardflyers",
   steps:[
@@ -439,7 +439,7 @@ const TICKETS = [
 {
   id:"PR #2528", ws:"Blog i18n", title:"Null untranslated blog article scalar fields", pri:"P1", status:"partial", checkKind:"source",
   prs:[["#2528","https://github.com/Helloprint/HelloPrintV4/pull/2528","MERGED · Jul 12"]],
-  context:"Blog articles that weren't translated to English leaked their original language (e.g. Dutch) into the page description Google shows in results. The fix empties untranslated fields so the filter can hide them properly.",
+  context:"<b>Problem:</b> blog articles that were never translated to English leaked their original language into the page description — so a Dutch or German snippet could show under an English result in Google. <b>Why it matters:</b> a wrong-language snippet tanks click-through and sends Google a confusing language signal for the whole blog section. <b>The fix:</b> untranslated fields are now emptied ('nulled') instead of falling back to the source language, so the existing untranslated-content filter can properly hide them.",
   finding:"Partially confirmed 18 Jul: spot-checked one article — clean English description, no leak. Still to do: test an article that genuinely has NO English translation (we haven't identified one yet — see missing-context list).",
   url:"https://www.helloprint.com/en-ie/blog",
   steps:[
@@ -452,7 +452,7 @@ const TICKETS = [
 {
   id:"PR #2628", ws:"Web Vitals", title:"Lazy-fetch PDP configurator matrix + defer Jitsu SDK", pri:"P1", status:"partial", checkKind:"network",
   prs:[["#2628","https://github.com/Helloprint/HelloPrintV4/pull/2628","MERGED · Jul 14"]],
-  context:"Two phone-speed savings on product pages: the price-combination matrix (large) now downloads only when needed instead of upfront, and the Jitsu analytics script waits until the page is otherwise done.",
+  context:"<b>Two phone-speed savings on product pages.</b> (1) The price-combination matrix (large data file) used to download upfront for everyone; now it downloads only when the configurator needs it. (2) The Jitsu analytics script (our event tracking) used to load with the page; now it waits until the page is otherwise finished. <b>Why it matters:</b> both were in the critical path of every product-page visit on mobile — deferring them buys first-paint speed without losing any functionality. <b>Related:</b> continuation of the PR #2024 pattern.",
   finding:"Not yet directly measured — pairs with PR #2024. Needs one Network-tab session on a phone-sized view to confirm both downloads happen late.",
   url:"https://www.helloprint.com/en-ie/standardflyers",
   steps:[
@@ -465,7 +465,7 @@ const TICKETS = [
 {
   id:"en-IE T2", ws:"en-IE Post-Deploy", title:"Price must always show on load (PDP + PLP/FLP)", pri:"P0", status:"partial", checkKind:"visual",
   prs:[["#2540","https://github.com/Helloprint/HelloPrintV4/pull/2540","MERGED · Jul 13"]],
-  context:"Customers should never see €0.00 or an endless 'loading' where a price belongs. Three surfaces are in scope: product pages (preset config must show its real total on load — fixed via PR #2540), category/listing pages (product cards must show a price, not fall back to 'Configure and see price'), and filter pages ('from €X'). Agreed rules: the default configuration per product lives in Contentful (closest to the most-sold configuration); always show it on load; never €0.00 at rest. Also keep an eye on the data card for Google: its price was correct during diagnosis, but €0.00 must never leak into it.",
+  context:"<b>The rule being enforced:</b> a customer must never see €0.00 or an endless loading state where a price belongs. <b>Three surfaces in scope:</b> product pages (a preset configuration must show its real total on first paint — fixed via PR #2540), category/listing pages (every product card must show a price, not fall back to 'Configure and see price'), and filter pages ('from €X'). <b>Agreed decisions from the handoff:</b> the default configuration per product lives in Contentful, chosen as the closest match to the most-sold configuration; it always shows on load; never €0.00 at rest. <b>One SEO guard:</b> the price inside the Google data card was correct during diagnosis — but €0.00 must never leak into it, so spot-checks stay part of this ticket.",
   finding:"Partial (18 Jul): product-page half verified fixed (see PR #2540). Remaining: (a) walk the main category pages and confirm no card is stuck on 'Configure and see price', (b) spot-check the Google data card price on a handful of products is > 0.",
   url:"https://www.helloprint.com/en-ie/brochure-and-booklet-printing",
   steps:[
@@ -481,7 +481,7 @@ const TICKETS = [
 {
   id:"PR #2020", ws:"QA Sprint", title:"Gate InstallBanner on cookie consent", pri:"P1", status:"open", checkKind:"visual",
   prs:[["#2020","https://github.com/Helloprint/HelloPrintV4/pull/2020","MERGED · Jul 5"]],
-  context:"On phones, the cookie-consent banner and the 'install our app' banner could pop up at the same time, stacking on top of each other. Google explicitly penalises intrusive stacked pop-ups on mobile. The fix holds the install banner back until cookies have been answered.",
+  context:"<b>Problem:</b> on phones, the cookie-consent banner and the 'install our app' banner could appear at the same time, stacked on top of each other. <b>Why it matters:</b> Google explicitly penalises 'intrusive interstitials' — stacked pop-ups that bury the content on mobile — and it's a terrible first impression for new visitors, exactly the group that sees both banners. <b>The fix:</b> the install banner is now held back until the visitor has answered the cookie banner; they can never show together.",
   finding:"Not verified yet — needs a completely fresh browser session (the banners don't re-appear once you've answered cookies). Anyone with a private/incognito window can do this one in 2 minutes.",
   url:"https://www.helloprint.com/en-ie",
   steps:[
@@ -496,7 +496,7 @@ const TICKETS = [
 {
   id:"WV T3", ws:"Web Vitals", title:"Chat widget lazy-load", pri:"P1", status:"open", checkKind:"network",
   prs:[["#2178","https://github.com/Helloprint/HelloPrintV4/pull/2178","context"]],
-  context:"The customer-chat widget is heavy. It's now supposed to stay un-downloaded until the visitor does something (click, scroll, key press) or the page has been idle for ~4 seconds — instead of loading immediately and slowing the first paint.",
+  context:"<b>Problem:</b> the customer-chat widget is one of the heaviest third-party scripts on the site, and it loaded immediately for every visitor — though only a small fraction ever opens a chat. <b>The fix (shipped in the loader):</b> the widget now stays un-downloaded until the visitor does something (click, scroll, key press), until a page element explicitly opens chat, or until the page has been idle ~4 seconds — whichever comes first. <b>Why it matters:</b> removing it from the initial load speeds up first paint on every page view; the idle timer guarantees the chat bubble still appears for visitors who simply read.",
   finding:"Not verified cleanly — our automated check couldn't avoid 'interacting', which legitimately triggers the widget. A human who loads the page and keeps their hands off mouse and keyboard for 10 seconds can settle it.",
   url:"https://www.helloprint.com/en-ie/booklets",
   steps:[
@@ -510,7 +510,7 @@ const TICKETS = [
 {
   id:"PR #2465", ws:"Schema", title:"Substitute {{product_name}} token in PDP meta (PCM)", pri:"P0", status:"done", checkKind:"source",
   prs:[["#2465","https://github.com/Helloprint/HelloPrintV4/pull/2465","MERGED · Jul 10"],["HEL-1168","https://linear.app/helloprint/issue/HEL-1168","sibling token leak · Done Jul 5"]],
-  context:"Some products come from the newer PCM catalogue (content type <code>pcmProduct</code> in Contentful space wm1n7oady8a5 — ~9,700 products: gifts, drinkware, merch and more). Their page titles are built from a template like '{{product_name}} | HelloPrint' — and the placeholder wasn't being replaced, so Google literally saw '{{product_name}}' as the title. The same token family also leaked into category-page product lists earlier; that sibling bug was fixed separately (Linear HEL-1168, Done 5 Jul).",
+  context:"<b>Background:</b> some products come from the newer PCM catalogue (content type <code>pcmProduct</code> in Contentful space wm1n7oady8a5 — ~9,700 products: gifts, drinkware, merch and more). Their page titles are assembled from a template like '{{product_name}} | HelloPrint'. <b>Problem:</b> for PCM products the placeholder wasn't replaced — Google literally saw '{{product_name}}' as the page title: broken-looking in search results and a wasted title signal. <b>The fix:</b> the template now substitutes the real product name for PCM products. <b>Related:</b> the same token family also leaked into category-page product lists earlier; that sibling was fixed separately (Linear HEL-1168, Done 5 Jul).",
   finding:"Verified 19 Jul on two live PCM products: /grsrecycledppandssmugwithhandle and /chocobar — real names in both titles, zero {{ }} placeholders anywhere on either page. One cosmetic observation: the mug's title joins with the word 'and' ('… Mug with Handle and HelloPrint') instead of the usual '| HelloPrint' separator — not this ticket, but worth a small follow-up.",
   url:"https://www.helloprint.com/en-ie/chocobar",
   steps:[
@@ -523,7 +523,7 @@ const TICKETS = [
 {
   id:"PR #2667", ws:"Breadcrumbs", title:"Breadcrumb fallback for pcmProductCollection", pri:"P1", status:"done", checkKind:"visual",
   prs:[["#2667","https://github.com/Helloprint/HelloPrintV4/pull/2667","MERGED · Jul 15"]],
-  context:"Products from the newer PCM catalogue had NO breadcrumb trail at all, because the breadcrumb builder only asked the old catalogue ('productCollection') and didn't know to also ask the new one ('pcmProductCollection'). PCM products live in Contentful space wm1n7oady8a5 (~9,700 entries).",
+  context:"<b>Problem:</b> products from the newer PCM catalogue had NO breadcrumb trail at all — the breadcrumb builder only queried the old catalogue ('productCollection') and didn't know to also ask the new one ('pcmProductCollection'). <b>Why it matters:</b> for ~9,700 PCM products (Contentful space wm1n7oady8a5), the missing trail meant no hierarchy signal for Google and no breadcrumb line in search results — a systematic disadvantage versus the old-catalogue products. <b>The fix:</b> the builder now queries both catalogues, so PCM products get the same full trail as everything else.",
   finding:"Verified 19 Jul on two live PCM products: the mug shows a full 5-level trail (Home › Corporate Gifts › Drinkware › Personalised Thermos Mugs › product) and the chocolate bar a 6-level trail — both visible on the page AND present in the Google data card (BreadcrumbList).",
   url:"https://www.helloprint.com/en-ie/grsrecycledppandssmugwithhandle",
   steps:[
@@ -536,7 +536,7 @@ const TICKETS = [
 {
   id:"PR #2408", ws:"Web Vitals", title:"Cut mobile JS/CSS/image weight for Lighthouse", pri:"P1", status:"open", checkKind:"lighthouse",
   prs:[["#2408","https://github.com/Helloprint/HelloPrintV4/pull/2408","MERGED · Jul 10"]],
-  context:"A broad slimming pass on what phones must download. The measured starting point (5 July, before the fix): Homepage speed score 74, category page 75, product page 56 (out of 100). The check is simply: are today's scores higher?",
+  context:"<b>What it is:</b> a broad slimming pass on everything phones must download — JavaScript, styling files and images — specifically to lift the mobile speed scores Google measures. <b>The measured starting point</b> (5 July, before the fix): homepage 74, category page 75, product page 56 — out of 100, where product pages sat firmly in the 'poor' zone. <b>Why it matters:</b> these scores approximate the Core Web Vitals that feed rankings, and slow product pages cost conversion directly. <b>The check</b> is simply whether today's scores beat those baselines.",
   finding:"Not verified — our automated speed-test service kept timing out. Anyone can run the three Lighthouse tests manually in ~5 minutes.",
   url:"https://www.helloprint.com/en-ie",
   steps:[
@@ -550,7 +550,7 @@ const TICKETS = [
 {
   id:"PR #2602", ws:"Web Vitals", title:"Concurrent product+meta fetch in cache warm (TTFB)", pri:"P0", status:"open", checkKind:"network",
   prs:[["#2602","https://github.com/Helloprint/HelloPrintV4/pull/2602","MERGED · Jul 14"]],
-  context:"TTFB ('time to first byte') is how long the server thinks before it starts answering. Category and product pages were slow to start (~0.5–0.6s vs the homepage's ~0.2s) because the server fetched two things one-after-another that it can fetch simultaneously. This PR makes them simultaneous in the cache-warming step.",
+  context:"<b>Background:</b> TTFB ('time to first byte') is how long the server thinks before it even starts answering — the very first component of every load time. The system pre-builds popular pages in a 'cache warm' step so they're ready before visitors ask. <b>Problem:</b> during that pre-build, two data lookups (product + page metadata) ran one-after-another although they don't depend on each other. <b>The fix:</b> they now run simultaneously, shaving server think-time. <b>Relationship:</b> the deeper TTFB problem (the serial price lookup) is the separate open ticket WV T2 — this PR is one slice of it.",
   finding:"Not verified — needs one Network-tab measurement (or ask an agent to re-run it). The deeper TTFB cause (the pricing lookup) is a separate open ticket, WV T2.",
   url:"https://www.helloprint.com/en-ie/brochure-and-booklet-printing",
   steps:[
@@ -564,7 +564,7 @@ const TICKETS = [
 {
   id:"en-IE T1", ws:"en-IE Post-Deploy", title:"Product page shows internal code instead of name", pri:"P0", status:"open", checkKind:"source",
   prs:[["#2035","https://github.com/Helloprint/HelloPrintV4/pull/2035","review doc"],["#2465","https://github.com/Helloprint/HelloPrintV4/pull/2465","related fix"]],
-  context:"A small slice of products (~1.3% of the catalogue, roughly 40–70 products) have no Irish content in the content system — so their pages show a raw internal code as the page title (e.g. 'foldedleafletstrifold5' instead of 'Trifold Leaflets'), a placeholder description, and 'Specifications not available yet'. These pages are still fully visible to Google. Extra risk discovered during review: the 'Specifications not available yet' text appears for normal visitors but NOT when Google's crawler fetches the page — serving different content to Google vs users is called cloaking and can trigger penalties; the cause must be found (gate G0.2). Agreed direction: fix the content and keep the addresses; don't automatically hide pages (but a deadline/SLA is recommended so thin pages don't linger in Google forever). Known precedent (Linear): the same 'product exists but data is missing' family was handled in May — HEL-48/HEL-49 populated missing configurator data for 5 products — so a repeatable populate-the-content routine exists. Content lives in Contentful space wm1n7oady8a5.",
+  context:"<b>Problem:</b> a small slice of products (~1.3% of the catalogue, roughly 40–70 products; a further ~2.6% missing content) have no Irish content in Contentful (space wm1n7oady8a5) — so their live pages show a raw internal code as the page title (e.g. 'foldedleafletstrifold5' instead of 'Trifold Leaflets'), a placeholder description, and 'Specifications not available yet'. These pages are fully open to Google's index. <b>The serious extra risk found during review:</b> the 'Specifications not available yet' text appears for normal visitors but NOT when Google's crawler fetches the same page. Serving different content to Google than to users is called cloaking — a penalty-grade offence — so the cause must be found before anything else is trusted (gate G0.2). <b>Agreed direction:</b> fix the content and keep the addresses; no automatic hiding of pages — but set a deadline so thin pages don't sit in Google indefinitely. <b>Precedent:</b> the same 'product exists, data missing' family was handled in May (HEL-48/HEL-49 populated 5 products), so a repeatable routine exists.",
   finding:"Open. Also blocked from precise counting by gate G0.2 — until we know why Google and Chrome see different HTML, any count made with one 'pair of eyes' is unreliable.",
   url:"https://www.helloprint.com/en-ie/trifoldleaflets",
   steps:[
@@ -579,7 +579,7 @@ const TICKETS = [
 {
   id:"en-IE T3", ws:"en-IE Post-Deploy", title:"Restore missing products on landing pages (mugs)", pri:"P0", status:"open", checkKind:"visual",
   prs:[["#2035","https://github.com/Helloprint/HelloPrintV4/pull/2035","review doc"]],
-  context:"The mugs category page exists but shows zero products — a dead end for customers and a 'thin page' for Google. The cause sits in the content system — Contentful space wm1n7oady8a5 (the product collection was emptied, unlinked, or unpublished) — and needs investigating there; it's a content fix, not a code fix.",
+  context:"<b>Problem:</b> the personalised-mugs category page exists and loads — but shows zero products. For customers it's a dead end at exactly the moment they wanted to buy; for Google it's a 'thin' page that wastes the ranking the URL has built up. <b>Where the cause sits:</b> in Contentful (space wm1n7oady8a5) — the product collection behind the page was either emptied, unlinked from the page, or its products unpublished; which of the three needs investigating there. <b>Type of work:</b> content restoration, not code.",
   finding:"Open — content fix needed in Contentful. Quick to re-check any time.",
   url:"https://www.helloprint.com/en-ie/personalised-mugs",
   steps:[
@@ -591,7 +591,7 @@ const TICKETS = [
 {
   id:"en-IE T4", ws:"en-IE Post-Deploy", title:"Configurator icons (odd/old/wrong) + empty alt texts", pri:"P1", status:"open", checkKind:"visual",
   prs:[["#2035","https://github.com/Helloprint/HelloPrintV4/pull/2035","review doc"]],
-  context:"In the product configurator (where you pick size, material, quantity), some option icons are outdated, mismatched, or odd-looking. Separately, 20–24 images per flagged page have empty 'alt text' (the text description of an image that Google and screen readers rely on). Owner: Sebastiaan. Judging 'does this icon look right' needs human eyes page-by-page until the automated tester (en-IE T7) can render JavaScript.",
+  context:"<b>Problem, two parts:</b> (1) in the product configurator (where customers pick size, material, quantity), some option icons are outdated, mismatched with the option they represent, or visually off — eroding confidence right at the decision point; (2) 20–24 images per flagged page carry an empty 'alt text' (the written description of an image that screen readers read aloud and search engines index). <b>Why alts matter:</b> accessibility compliance and image SEO both depend on them. <b>Owner:</b> Sebastiaan investigates and fixes. <b>Constraint:</b> judging whether an icon 'looks right' needs human eyes page-by-page until the automated tester (en-IE T7) can render JavaScript — so this starts as a manual visual pass on the two flagged example pages.",
   finding:"Open — needs a visual pass. The two flagged example pages are linked in the steps.",
   url:"https://www.helloprint.com/en-ie/customsizestickers",
   steps:[
@@ -605,7 +605,7 @@ const TICKETS = [
 {
   id:"en-IE T5", ws:"en-IE Post-Deploy", title:"Schema localisation on V4 pages", pri:"P1", status:"blocked", checkKind:"source",
   prs:[["#2467","https://github.com/Helloprint/HelloPrintV4/pull/2467","related"],["#2422","https://github.com/Helloprint/HelloPrintV4/pull/2422","related"]],
-  context:"Two localisation flaws in the Google data card on Irish pages: (1) it claims our customer service speaks German/French/Dutch/etc. (should be English for Ireland); (2) the card's identity links (@id) point to the bare helloprint.com root instead of the /en-ie/ version. HOWEVER — flagged as the most dangerous ticket of the set: 'fix' (2) naively and every country would define its own separate company identity, making Google see eleven small companies instead of one strong global brand (entity fragmentation). One shared global identity at the root is often the RIGHT answer. So before any change: complete the hreflang audit (gate G0.1) and take a deliberate architecture decision on the identity model, checking what the German/French/Dutch sites currently declare. Scope: shop pages only (the blog is a separate system, handed to Frederico).",
+  context:"<b>Problem, two parts, on Irish pages' Google data card:</b> (1) it claims our customer service speaks German, French, Dutch and more — should say English for Ireland; (2) the card's identity links (@id) point to the bare helloprint.com root instead of the /en-ie/ version. <b>Why this is the most dangerous ticket of the set:</b> 'fixing' (2) naively would give every country its own separate company identity — Google would see eleven small companies instead of one strong global brand (entity fragmentation), damaging every market at once. A single shared identity at the root is often the RIGHT answer. <b>Required before any change:</b> complete the hreflang audit (gate G0.1), check what the German/French/Dutch sites currently declare, and take a deliberate architecture decision on the identity model. <b>Scope:</b> shop pages only — the blog is a separate system (handed to Frederico).",
   finding:"Blocked by G0.1 + the identity-architecture decision. Live state re-confirmed 18 Jul: the card still lists 7 support languages and the identity still points to the root — i.e. unchanged, as expected while blocked.",
   url:"https://www.helloprint.com/en-ie",
   steps:[
@@ -619,7 +619,7 @@ const TICKETS = [
 {
   id:"en-IE T6", ws:"en-IE Post-Deploy", title:"Filter-page breadcrumbs", pri:"P1", status:"open", checkKind:"source",
   prs:[["#2035","https://github.com/Helloprint/HelloPrintV4/pull/2035","review doc"]],
-  context:"On filtered category views (e.g. flyers filtered to one material), the breadcrumb data for Google is broken. The rule — confirmed against the Page Content Model in the brain — is: a filter is a refinement view, not a category of its own. A query-parameter filter URL (?material=…) must keep the PARENT category's breadcrumb exactly (Home › Flyers), never adding the filter as a level; only 'earned' filter pages (dedicated curated URLs) may add the filter as one extra final crumb. And schema must mirror the visible breadcrumb exactly. The original handoff contained no example URLs of the breakage, so step one is collecting evidence.",
+  context:"<b>Problem:</b> on filtered category views (e.g. flyers narrowed to one material), the breadcrumb data for Google is broken. <b>The rule (confirmed against the Page Content Model in the brain):</b> a filter is a refinement view, not a category of its own. A query-parameter filter URL (?material=…) must carry the PARENT category's breadcrumb exactly (Home › Flyers) — never the filter as an extra level; only dedicated curated filter pages ('earned' URLs) may add the filter as one final crumb; and the data card must mirror the visible breadcrumb exactly. <b>First job:</b> the original handoff contained no example URLs of the breakage — so step one is collecting an evidence sample (which filter pages, what exactly each shows), then fixing against the rule above.",
   finding:"Open — needs an evidence sample first (which filter pages, what exactly is wrong), then the fix. Target behaviour is now documented (brain: breadcrumb contract, Approach C).",
   url:"https://www.helloprint.com/en-ie/flyers?material=170ggloss",
   steps:[
@@ -633,7 +633,7 @@ const TICKETS = [
 {
   id:"en-IE T7", ws:"en-IE Post-Deploy", title:"Extend product-tester for continuous detection", pri:"P1", status:"open", checkKind:"manual",
   prs:[["#2035","https://github.com/Helloprint/HelloPrintV4/pull/2035","review doc"],["HEL-286","https://linear.app/helloprint/issue/HEL-286","Lighthouse CI gate · Done"],["HEL-1038","https://linear.app/helloprint/issue/HEL-1038","nightly e2e example · Done"]],
-  context:"The content failures in T1–T6 keep happening silently — nobody notices until a customer or consultant does. The plan: extend Michael's existing automated product-tester to scan ALL pages continuously for six things: (1) title isn't an internal code, (2) content/specs present, (3) price resolves and displays, (4) icons load, (5) landing/filter pages aren't empty, (6) the Google data card is valid and in the right language. Findings feed the Content Engine. The make-or-break question: does the tester run JavaScript? If not, checks 3 and 4 physically can't work — the tester would give false all-clears, and six tickets that rely on it (T1,T2,T3,T4,T6,T8) can't safely close (gate G0.3). Effectively the highest-leverage item on this board. Useful existing infrastructure (from Linear): a Playwright end-to-end test suite already runs nightly against staging (e.g. HEL-1038 hardened its product-page checks), and Lighthouse CI runs on every code change as a deploy-blocking gate (HEL-286, done in May) — so 'the tester' likely means extending this suite, not building from zero.",
+  context:"<b>Problem:</b> the content failures in T1–T6 (broken titles, missing prices, empty pages, wrong icons) keep happening silently — nobody notices until a customer or consultant does. <b>The plan:</b> extend the existing automated product-tester to scan ALL pages continuously for six things: title isn't an internal code · content/specs present · price resolves and displays · icons load · landing/filter pages aren't empty · the Google data card is valid and in the right language. Findings feed the Content Engine. <b>The make-or-break question:</b> does the tester execute JavaScript? Prices and icons only exist after JavaScript runs — without it the tester reports false all-clears, and six tickets (T1, T2, T3, T4, T6, T8) can't safely close on its word (gate G0.3). <b>Existing infrastructure to build on (from Linear):</b> a Playwright end-to-end suite already runs nightly against staging (e.g. HEL-1038), and Lighthouse CI runs deploy-blocking on every code change (HEL-286) — this is an extension job, not a from-scratch build. <b>Leverage:</b> effectively the highest-value item on this board.",
   finding:"Open — JS-rendering capability unconfirmed with Michael; where the tester's output lands is also unconfirmed (see missing-context list).",
   url:"(infrastructure — no page to open)",
   steps:[
@@ -647,7 +647,7 @@ const TICKETS = [
 {
   id:"en-IE T8", ws:"en-IE Post-Deploy", title:"Sitemap quality (non-200 URLs)", pri:"P1", status:"open", checkKind:"source",
   prs:[["#2421","https://github.com/Helloprint/HelloPrintV4/pull/2421","trailing-slash part MERGED"],["HEL-320","https://linear.app/helloprint/issue/HEL-320","sitemap rebuild+crawler · CANCELED Jul 10"],["HEL-1784","https://linear.app/helloprint/issue/HEL-1784","EN-fallback removal · In Progress"]],
-  context:"About a third of the addresses in our sitemap don't lead to a working page: ~185 redirect somewhere else (including a 152-address '/industry/…' family) and ~9 are dead. Handing Google a list where 34% is stale wastes crawl budget and trust. Important nuance from the review: do NOT just delete them — first check where each redirect LEADS (gate G0.4), because three different causes need three different fixes: if /industry/ pages genuinely moved, their NEW addresses belong in the sitemap; if they redirect to a generic page, that's a 'soft 404' problem deletion would only hide; if it's a country-routing bug, the same bug probably affects links inside the site too. Linear context: the systemic fix (HEL-320 — rebuild the sitemap generator with a post-regen crawler that would catch exactly this) was CANCELED on 10 Jul, so this clean-up currently has no owning build ticket. Related and In Progress: HEL-1784 (Michael) removes the English-URL fallback that lets pages exist at addresses that shouldn't be live — one plausible source of the stale entries.",
+  context:"<b>Problem:</b> about a third of the addresses in our sitemap don't lead to a working page — at review time ~194 of 576 entries: ~185 redirect somewhere else (including a 152-address '/industry/…' family) and ~9 are dead. Handing Google a list that is 34% stale wastes crawl budget and erodes trust in the whole sitemap. <b>The critical nuance from review — do NOT just delete (gate G0.4):</b> first classify where each redirect LEADS, because three causes need three different fixes: if /industry/ pages genuinely moved, their NEW addresses belong in the sitemap; if they redirect to a generic page, that's a hidden 'soft 404' problem deletion would only mask; if it's a country-routing bug, the same bug probably corrupts links inside the site too. <b>Linear context:</b> the systemic fix (HEL-320 — rebuild the sitemap generator with a crawler that would catch exactly this) was CANCELED 10 Jul, so this clean-up currently has no owning build ticket; related and In Progress: HEL-1784 (Michael) removes the English-URL fallback that lets pages exist at addresses that shouldn't be live — one plausible source of the stale entries. <b>Already fixed separately:</b> the trailing-slash sub-issue (PR #2421).",
   finding:"Open. Re-checked 18 Jul: the sitemap now lists 707 addresses and still contains 150 /industry/ entries — the classification sweep hasn't happened. (The trailing-slash sub-issue is fixed separately — PR #2421.)",
   url:"https://www.helloprint.com/en-ie/sitemap_collections_1.xml",
   steps:[
@@ -661,7 +661,7 @@ const TICKETS = [
 {
   id:"WV T1", ws:"Web Vitals", title:"Configurator CLS 0.369 on 77% of PDPs", pri:"P0", status:"open", checkKind:"lighthouse",
   prs:[["#2178","https://github.com/Helloprint/HelloPrintV4/pull/2178","investigation only"]],
-  context:"CLS measures how much a page 'jumps around' while loading (0 = calm, above 0.25 = poor; Google uses it in ranking). 77% of our product pages score a poor 0.369 — and the identical score across unrelated products points at one shared component: the configurator. Root cause (corrected after deeper review): it's NOT the loading spinner — three content containers (order summary, delivery section, mobile accordion) are empty when the server sends the page, then grow when JavaScript fills them, shoving everything below downward. Fix direction: reserve their space up front. Investigated, but no fix shipped yet.",
+  context:"<b>Background:</b> CLS measures how much a page 'jumps around' while loading (0 = perfectly calm; above 0.25 = poor; Google uses it in ranking). <b>Problem:</b> 77% of our product pages score a poor 0.369 — and the score being IDENTICAL across unrelated products points to one shared component: the configurator. <b>Root cause (corrected after deeper review — the first diagnosis was wrong):</b> it's NOT the loading spinner. Three content containers (order summary, delivery section, mobile accordion) are empty when the server sends the page, then grow when JavaScript fills them — shoving everything below them downward. <b>Fix direction:</b> reserve each container's space up front so filling them doesn't move the page. <b>Status:</b> investigated (PR #2178 = docs only); no code fix shipped yet.",
   finding:"Open — investigation done, no code fix. Any Lighthouse run on a product page settles the current number.",
   url:"https://www.helloprint.com/en-ie/booklets",
   steps:[
@@ -675,7 +675,7 @@ const TICKETS = [
 {
   id:"WV T2", ws:"Web Vitals", title:"TTFB on category/product pages (498–600ms)", pri:"P0", status:"open", checkKind:"network",
   prs:[["#2602","https://github.com/Helloprint/HelloPrintV4/pull/2602","adjacent perf"],["#2628","https://github.com/Helloprint/HelloPrintV4/pull/2628","adjacent perf"],["#2408","https://github.com/Helloprint/HelloPrintV4/pull/2408","adjacent perf"]],
-  context:"The server takes ~0.5–0.6 seconds to START answering on category/product pages, versus ~0.2s on the homepage. Diagnosis: the delay is one specific step — the price lookup — which runs while everything else waits (serial instead of parallel). Three adjacent speed PRs merged since the diagnosis (concurrent cache warm #2602, lazy matrix #2628, weight cut #2408) may already have moved the number — re-measure before building anything.",
+  context:"<b>Background:</b> TTFB ('time to first byte') is how long the server thinks before it starts answering. <b>Problem:</b> category and product pages take ~0.5–0.6 seconds to start, versus ~0.2s on the homepage — the visitor stares at a blank tab meanwhile, and it delays every other speed metric downstream. <b>Diagnosis:</b> the data lookups are already parallelised except one — the price lookup runs serially while everything else waits. <b>Status:</b> three adjacent speed PRs merged since the diagnosis (concurrent cache warm #2602, lazy matrix #2628, weight cut #2408) may already have moved the number — so the next action is a re-measurement, and only if still slow, making the price lookup non-blocking in the page build.",
   finding:"Open — no handoff; this stays on our board. Next action is simply a re-measurement (steps below); if still slow, the fix is making the price lookup non-blocking in the page build.",
   url:"https://www.helloprint.com/en-ie/brochure-and-booklet-printing",
   steps:[
@@ -688,7 +688,7 @@ const TICKETS = [
 {
   id:"WV T4", ws:"Web Vitals", title:"Render-blocking CSS (Button.css 139KB)", pri:"P1", status:"open", checkKind:"lighthouse",
   prs:[["#2178","https://github.com/Helloprint/HelloPrintV4/pull/2178","attempted + REVERTED"]],
-  context:"Two styling files (one 139KB) must fully download before the browser is allowed to draw ANYTHING — the screen stays blank meanwhile. A quick fix was attempted and rolled back because it made the page flash unstyled for a moment (worse for users). The proper fix is 'critical CSS': inline the few styles needed for the first screen and load the rest calmly (tooling: astro-critters or vite-plugin-critical). Nothing is currently shipped.",
+  context:"<b>Background:</b> 'render-blocking' means the browser is forbidden from drawing ANYTHING until a file has fully downloaded — the visitor sees a blank screen for the duration. <b>Problem:</b> two styling files block first paint on every page, the largest a 139KB button-styles file — for a first screen that needs only a fraction of those styles. <b>What happened so far:</b> a quick fix (deferring the CSS) was attempted in PR #2178 and rolled back the same day, because it made pages flash unstyled for a moment (FOUC) — worse for users than the delay. <b>The proper fix:</b> 'critical CSS' — inline the small set of styles the first screen needs, load the rest calmly in the background (tooling exists: astro-critters or vite-plugin-critical). <b>Status:</b> nothing currently shipped; pages still render-block today.",
   finding:"Open — the attempt was reverted; the page still render-blocks on CSS today.",
   url:"https://www.helloprint.com/en-ie/booklets",
   steps:[
@@ -701,7 +701,7 @@ const TICKETS = [
 {
   id:"WV T6", ws:"Web Vitals", title:"Unused JS in analytics.js / page.js chunks", pri:"P2", status:"open", checkKind:"lighthouse",
   prs:[["#2178","https://github.com/Helloprint/HelloPrintV4/pull/2178","investigation"]],
-  context:"Every page ships an analytics bundle that eagerly includes plug-ins (Google Ads, Klaviyo, GA4 extras) that most pages never use — about 55KB of downloaded-but-never-run code per visit. Diagnosed; a follow-up ticket exists to split the bundle so each page only gets what it uses. Not shipped yet.",
+  context:"<b>Problem:</b> every page ships an analytics bundle that eagerly includes plug-ins (Google Ads, Klaviyo, GA4 extras) which most pages never actually use — about 55KB of downloaded-but-never-executed code per visit. <b>Why it matters:</b> it's pure dead weight on every page view, and 'reduce unused JavaScript' is one of the named findings in Google's speed scoring. <b>The fix direction:</b> split the bundle so each page only downloads the plug-ins it really uses. <b>Status:</b> diagnosed; a follow-up chunk-splitting ticket exists; not yet shipped.",
   finding:"Open — follow-up chunk-splitting ticket exists, not yet shipped.",
   url:"https://www.helloprint.com/en-ie/booklets",
   steps:[
@@ -715,7 +715,7 @@ const TICKETS = [
 {
   id:"HEL-PL1–PL4", ws:"PLP Crawlability", title:"PLP product-link crawlability, grid count, pagination", pri:"P0", status:"open", checkKind:"source",
   prs:[["HEL-318","https://linear.app/helloprint/issue/HEL-318","PLP epic (parent)"],["HEL-1141","https://linear.app/helloprint/issue/HEL-1141","FLP filter engine · Done Jul 16"],["HEL-329","https://linear.app/helloprint/issue/HEL-329","PLP grid build · CANCELED Jul 10"]],
-  context:"Category pages currently hide most of the catalogue from Google, three ways at once: (PL1) product cards aren't real links — they're click-handlers (<code>data-pdp-href</code>) Google doesn't follow; (PL2) the grid shows only 12 products although the content system says 48; (PL3) there is no crawlable pagination, so products beyond the grid are unreachable (the agreed scheme is path-based: /page/2, /page/3…); (PL4) is the verification sweep across all category templates once PL1–3 land. Review flags to respect during the build: don't nest buttons inside links (accessibility hazard); PL2 alone is NOT enough (48 of 95 products still hidden without PL3); /page/1 must redirect to the base page; out-of-range pages must return 'not found'; and the sitemap strategy for paginated pages still needs defining. Reviewed 2 July; none of it is implemented. Linear context: these live under the PLP epic HEL-318. The FLP sibling (HEL-1141 — SSR-crawlable facets + pagination for filter pages) was completed 16 Jul, so the pattern exists in the codebase; the PLP grid build ticket (HEL-329) was CANCELED 10 Jul and needs re-raising for PL1–PL3.",
+  context:"<b>Problem:</b> category pages currently hide most of the catalogue from Google, three ways at once: (PL1) product cards aren't real links — they're JavaScript click-handlers (<code>data-pdp-href</code>) that Google doesn't follow, so from a category page Google discovers zero products; (PL2) the grid shows only 12 products although the content system says 48; (PL3) there is no crawlable pagination, so products beyond the grid are unreachable — the agreed scheme is path-based (/page/2, /page/3 …); (PL4) is the verification sweep across all category templates once PL1–3 land. <b>Review flags to respect during the build:</b> don't nest buttons inside links (accessibility hazard); PL2 alone is NOT enough (48 of 95 products would still be hidden without PL3); /page/1 must redirect to the base page; out-of-range page numbers must return 'not found'; and the sitemap strategy for paginated pages still needs defining. <b>Linear context:</b> these live under the PLP epic HEL-318; the FLP sibling (HEL-1141 — crawlable facets + pagination for filter pages) was completed 16 Jul, so the pattern exists in the codebase; the PLP grid build ticket (HEL-329) was CANCELED 10 Jul and needs re-raising. <b>Status:</b> reviewed 2 July; none implemented.",
   finding:"Open — none implemented. Verified current state: cards still use data-pdp-href, grid still shows 12, no /page/2 links exist.",
   url:"https://www.helloprint.com/en-ie/brochure-and-booklet-printing",
   steps:[
@@ -730,7 +730,7 @@ const TICKETS = [
 {
   id:"HEL-IMG1/IMG2", ws:"Images", title:"Image loading priority + responsive srcset", pri:"P1", status:"open", checkKind:"source",
   prs:[["HEL-329","https://linear.app/helloprint/issue/HEL-329","Linear counterpart · CANCELED Jul 10"]],
-  context:"Two image-delivery improvements, reviewed 2 July, not implemented: (IMG1) the main product photo — the biggest thing on screen — should be marked 'download me first' (<code>fetchpriority=\"high\"</code>) so the page's hero doesn't dawdle behind less important files; (IMG2) images should offer multiple sizes (<code>srcset</code>) so a phone downloads a phone-sized photo instead of a desktop-sized one. Linear context: the counterpart build ticket (HEL-329 — PLP grid image pipeline incl. fetchpriority + CLS) was CANCELED 10 Jul — needs re-raising.",
+  context:"<b>Two image-delivery improvements, reviewed 2 July, not implemented.</b> (IMG1) The main product photo — the biggest element on screen and the page's 'LCP' (the moment Google considers the page visually loaded) — should be marked 'download me first' (<code>fetchpriority=\"high\"</code>); today it queues behind less important files. (IMG2) Images should offer multiple sizes (<code>srcset</code>) so a phone downloads a phone-sized photo instead of the desktop original — on product grids that's the difference of hundreds of KB per view. <b>Linear context:</b> the counterpart build ticket (HEL-329 — grid image pipeline incl. fetchpriority + CLS work) was CANCELED 10 Jul — needs re-raising.",
   finding:"Open — neither implemented on product pages.",
   url:"https://www.helloprint.com/en-ie/standardflyers",
   steps:[

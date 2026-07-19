@@ -358,7 +358,7 @@ const TICKETS = [
 {
   id:"PR #2529/#2524", ws:"Hreflang", title:"Blog hreflang repair (blog runs on a separate system)", pri:"P1", status:"done", checkKind:"source",
   prs:[["#2529","https://github.com/Helloprint/HelloPrintV4/pull/2529","MERGED · Jul 12"],["#2524","https://github.com/Helloprint/HelloPrintV4/pull/2524","MERGED · Jul 12"]],
-  context:"The blog runs on a different technical system (Nuxt) than the shop (Astro), so the shop's hreflang fix didn't cover it. These PRs repaired the country-version tags on all three blog surfaces: blog homepage, article pages, and category pages.",
+  context:"The blog runs on a different technical system (Nuxt) than the shop (Astro), so the shop's hreflang fix didn't cover it. These PRs repaired the country-version tags on all three blog surfaces: blog homepage, article pages, and category pages. Note: an automated code scan has since flagged a follow-up (Linear HEL-1794, in the Hermes queue) — some blog alternates are built from a legacy address format and go through an extra redirect hop. Tags are present and correct; the follow-up makes them point directly.",
   finding:"Confirmed live 18 Jul: 12-entry country list on both /blog and a category page (/blog/artwork/).",
   url:"https://www.helloprint.com/en-ie/blog",
   steps:[
@@ -508,29 +508,28 @@ const TICKETS = [
   ]
 },
 {
-  id:"PR #2465", ws:"Schema", title:"Substitute {{product_name}} token in PDP meta (PCM)", pri:"P0", status:"open", checkKind:"source",
-  prs:[["#2465","https://github.com/Helloprint/HelloPrintV4/pull/2465","MERGED · Jul 10"]],
-  context:"Some products come from a newer catalogue system ('PCM'). Their page titles are built from a template like '{{product_name}} | HelloPrint' — and the placeholder wasn't being replaced, so Google literally showed '{{product_name}}' as the title. The code fix is merged; we need a live PCM product to confirm. Note: we checked the IE content system and 'pcmProduct' doesn't exist as a type there, so identifying a PCM product needs input from the team (see missing-context list).",
-  finding:"Not verified — we don't yet know a live PCM product address to test on. Once we have 1–2 example URLs this is a 1-minute check.",
-  url:"(needs a PCM product URL — see missing context)",
+  id:"PR #2465", ws:"Schema", title:"Substitute {{product_name}} token in PDP meta (PCM)", pri:"P0", status:"done", checkKind:"source",
+  prs:[["#2465","https://github.com/Helloprint/HelloPrintV4/pull/2465","MERGED · Jul 10"],["HEL-1168","https://linear.app/helloprint/issue/HEL-1168","sibling token leak · Done Jul 5"]],
+  context:"Some products come from the newer PCM catalogue (content type <code>pcmProduct</code> in Contentful space wm1n7oady8a5 — ~9,700 products: gifts, drinkware, merch and more). Their page titles are built from a template like '{{product_name}} | HelloPrint' — and the placeholder wasn't being replaced, so Google literally saw '{{product_name}}' as the title. The same token family also leaked into category-page product lists earlier; that sibling bug was fixed separately (Linear HEL-1168, Done 5 Jul).",
+  finding:"Verified 19 Jul on two live PCM products: /grsrecycledppandssmugwithhandle and /chocobar — real names in both titles, zero {{ }} placeholders anywhere on either page. One cosmetic observation: the mug's title joins with the word 'and' ('… Mug with Handle and HelloPrint') instead of the usual '| HelloPrint' separator — not this ticket, but worth a small follow-up.",
+  url:"https://www.helloprint.com/en-ie/chocobar",
   steps:[
-    "Get 1–2 example PCM product addresses from the catalogue/dev team",
-    "Open one → look at the browser tab title: it must show the real product name",
-    "Use <b>Tool A</b>: View Page Source, search <code>{{</code> (two curly braces)",
-    "You should find <b>0</b> matches anywhere in the page",
-    "✅ Correct if no curly-brace placeholders. ❌ Broken if '{{product_name}}' or similar appears in the title or description"
+    ["Open the product link above → the browser tab title shows the real product name ('Premium Chocolate Bar | HelloPrint')",true],
+    ["Use <b>Tool A</b>: View Page Source, search <code>{{</code> (two curly braces) → 0 matches",true],
+    ["Repeat on a second PCM product, e.g. /en-ie/grsrecycledppandssmugwithhandle → same result",true],
+    "✅ Correct if no curly-brace placeholders anywhere. ❌ Broken if '{{product_name}}' or similar appears in the title or description"
   ]
 },
 {
-  id:"PR #2667", ws:"Breadcrumbs", title:"Breadcrumb fallback for pcmProductCollection", pri:"P1", status:"open", checkKind:"visual",
+  id:"PR #2667", ws:"Breadcrumbs", title:"Breadcrumb fallback for pcmProductCollection", pri:"P1", status:"done", checkKind:"visual",
   prs:[["#2667","https://github.com/Helloprint/HelloPrintV4/pull/2667","MERGED · Jul 15"]],
-  context:"Products from the newer PCM catalogue had NO breadcrumb trail at all, because the breadcrumb builder only asked the old catalogue ('productCollection') and didn't know to also ask the new one ('pcmProductCollection'). The code fix is merged; needs the same PCM example URL as PR #2465 to confirm.",
-  finding:"Not verified — waiting on a PCM product URL (same blocker as PR #2465; one example unlocks both checks).",
-  url:"(needs a PCM product URL — see missing context)",
+  context:"Products from the newer PCM catalogue had NO breadcrumb trail at all, because the breadcrumb builder only asked the old catalogue ('productCollection') and didn't know to also ask the new one ('pcmProductCollection'). PCM products live in Contentful space wm1n7oady8a5 (~9,700 entries).",
+  finding:"Verified 19 Jul on two live PCM products: the mug shows a full 5-level trail (Home › Corporate Gifts › Drinkware › Personalised Thermos Mugs › product) and the chocolate bar a 6-level trail — both visible on the page AND present in the Google data card (BreadcrumbList).",
+  url:"https://www.helloprint.com/en-ie/grsrecycledppandssmugwithhandle",
   steps:[
-    "Open a PCM product page (same example as for PR #2465)",
-    "Look above the product name: a full breadcrumb trail should show (Home › Category › … › Product)",
-    "Use <b>Tool A</b>: View Page Source, search <code>BreadcrumbList</code> → exactly 1 match with real category names in it",
+    ["Open the PCM product link above → a full breadcrumb trail shows above the product name (Home › Corporate Gifts › Drinkware › …)",true],
+    ["Use <b>Tool A</b>: View Page Source, search <code>BreadcrumbList</code> → exactly 1 match with real category names in it",true],
+    ["Repeat on /en-ie/chocobar → 6-level trail present",true],
     "✅ Correct if the trail exists and is complete. ❌ Broken if there's no trail or it only says Home › product"
   ]
 },
@@ -565,7 +564,7 @@ const TICKETS = [
 {
   id:"en-IE T1", ws:"en-IE Post-Deploy", title:"Product page shows internal code instead of name", pri:"P0", status:"open", checkKind:"source",
   prs:[["#2035","https://github.com/Helloprint/HelloPrintV4/pull/2035","review doc"],["#2465","https://github.com/Helloprint/HelloPrintV4/pull/2465","related fix"]],
-  context:"A small slice of products (~1.3% of the catalogue, roughly 40–70 products) have no Irish content in the content system — so their pages show a raw internal code as the page title (e.g. 'foldedleafletstrifold5' instead of 'Trifold Leaflets'), a placeholder description, and 'Specifications not available yet'. These pages are still fully visible to Google. Extra risk discovered during review: the 'Specifications not available yet' text appears for normal visitors but NOT when Google's crawler fetches the page — serving different content to Google vs users is called cloaking and can trigger penalties; the cause must be found (gate G0.2). Agreed direction: fix the content and keep the addresses; don't automatically hide pages (but a deadline/SLA is recommended so thin pages don't linger in Google forever).",
+  context:"A small slice of products (~1.3% of the catalogue, roughly 40–70 products) have no Irish content in the content system — so their pages show a raw internal code as the page title (e.g. 'foldedleafletstrifold5' instead of 'Trifold Leaflets'), a placeholder description, and 'Specifications not available yet'. These pages are still fully visible to Google. Extra risk discovered during review: the 'Specifications not available yet' text appears for normal visitors but NOT when Google's crawler fetches the page — serving different content to Google vs users is called cloaking and can trigger penalties; the cause must be found (gate G0.2). Agreed direction: fix the content and keep the addresses; don't automatically hide pages (but a deadline/SLA is recommended so thin pages don't linger in Google forever). Known precedent (Linear): the same 'product exists but data is missing' family was handled in May — HEL-48/HEL-49 populated missing configurator data for 5 products — so a repeatable populate-the-content routine exists. Content lives in Contentful space wm1n7oady8a5.",
   finding:"Open. Also blocked from precise counting by gate G0.2 — until we know why Google and Chrome see different HTML, any count made with one 'pair of eyes' is unreliable.",
   url:"https://www.helloprint.com/en-ie/trifoldleaflets",
   steps:[
@@ -580,7 +579,7 @@ const TICKETS = [
 {
   id:"en-IE T3", ws:"en-IE Post-Deploy", title:"Restore missing products on landing pages (mugs)", pri:"P0", status:"open", checkKind:"visual",
   prs:[["#2035","https://github.com/Helloprint/HelloPrintV4/pull/2035","review doc"]],
-  context:"The mugs category page exists but shows zero products — a dead end for customers and a 'thin page' for Google. The cause sits in the content system (the product collection was emptied, unlinked, or unpublished) and needs investigating there; it's a content fix, not a code fix.",
+  context:"The mugs category page exists but shows zero products — a dead end for customers and a 'thin page' for Google. The cause sits in the content system — Contentful space wm1n7oady8a5 (the product collection was emptied, unlinked, or unpublished) — and needs investigating there; it's a content fix, not a code fix.",
   finding:"Open — content fix needed in Contentful. Quick to re-check any time.",
   url:"https://www.helloprint.com/en-ie/personalised-mugs",
   steps:[
@@ -633,8 +632,8 @@ const TICKETS = [
 },
 {
   id:"en-IE T7", ws:"en-IE Post-Deploy", title:"Extend product-tester for continuous detection", pri:"P1", status:"open", checkKind:"manual",
-  prs:[["#2035","https://github.com/Helloprint/HelloPrintV4/pull/2035","review doc"]],
-  context:"The content failures in T1–T6 keep happening silently — nobody notices until a customer or consultant does. The plan: extend Michael's existing automated product-tester to scan ALL pages continuously for six things: (1) title isn't an internal code, (2) content/specs present, (3) price resolves and displays, (4) icons load, (5) landing/filter pages aren't empty, (6) the Google data card is valid and in the right language. Findings feed the Content Engine. The make-or-break question: does the tester run JavaScript? If not, checks 3 and 4 physically can't work — the tester would give false all-clears, and six tickets that rely on it (T1,T2,T3,T4,T6,T8) can't safely close (gate G0.3). Effectively the highest-leverage item on this board.",
+  prs:[["#2035","https://github.com/Helloprint/HelloPrintV4/pull/2035","review doc"],["HEL-286","https://linear.app/helloprint/issue/HEL-286","Lighthouse CI gate · Done"],["HEL-1038","https://linear.app/helloprint/issue/HEL-1038","nightly e2e example · Done"]],
+  context:"The content failures in T1–T6 keep happening silently — nobody notices until a customer or consultant does. The plan: extend Michael's existing automated product-tester to scan ALL pages continuously for six things: (1) title isn't an internal code, (2) content/specs present, (3) price resolves and displays, (4) icons load, (5) landing/filter pages aren't empty, (6) the Google data card is valid and in the right language. Findings feed the Content Engine. The make-or-break question: does the tester run JavaScript? If not, checks 3 and 4 physically can't work — the tester would give false all-clears, and six tickets that rely on it (T1,T2,T3,T4,T6,T8) can't safely close (gate G0.3). Effectively the highest-leverage item on this board. Useful existing infrastructure (from Linear): a Playwright end-to-end test suite already runs nightly against staging (e.g. HEL-1038 hardened its product-page checks), and Lighthouse CI runs on every code change as a deploy-blocking gate (HEL-286, done in May) — so 'the tester' likely means extending this suite, not building from zero.",
   finding:"Open — JS-rendering capability unconfirmed with Michael; where the tester's output lands is also unconfirmed (see missing-context list).",
   url:"(infrastructure — no page to open)",
   steps:[
@@ -647,8 +646,8 @@ const TICKETS = [
 },
 {
   id:"en-IE T8", ws:"en-IE Post-Deploy", title:"Sitemap quality (non-200 URLs)", pri:"P1", status:"open", checkKind:"source",
-  prs:[["#2421","https://github.com/Helloprint/HelloPrintV4/pull/2421","trailing-slash part MERGED"]],
-  context:"About a third of the addresses in our sitemap don't lead to a working page: ~185 redirect somewhere else (including a 152-address '/industry/…' family) and ~9 are dead. Handing Google a list where 34% is stale wastes crawl budget and trust. Important nuance from the review: do NOT just delete them — first check where each redirect LEADS (gate G0.4), because three different causes need three different fixes: if /industry/ pages genuinely moved, their NEW addresses belong in the sitemap; if they redirect to a generic page, that's a 'soft 404' problem deletion would only hide; if it's a country-routing bug, the same bug probably affects links inside the site too.",
+  prs:[["#2421","https://github.com/Helloprint/HelloPrintV4/pull/2421","trailing-slash part MERGED"],["HEL-320","https://linear.app/helloprint/issue/HEL-320","sitemap rebuild+crawler · CANCELED Jul 10"],["HEL-1784","https://linear.app/helloprint/issue/HEL-1784","EN-fallback removal · In Progress"]],
+  context:"About a third of the addresses in our sitemap don't lead to a working page: ~185 redirect somewhere else (including a 152-address '/industry/…' family) and ~9 are dead. Handing Google a list where 34% is stale wastes crawl budget and trust. Important nuance from the review: do NOT just delete them — first check where each redirect LEADS (gate G0.4), because three different causes need three different fixes: if /industry/ pages genuinely moved, their NEW addresses belong in the sitemap; if they redirect to a generic page, that's a 'soft 404' problem deletion would only hide; if it's a country-routing bug, the same bug probably affects links inside the site too. Linear context: the systemic fix (HEL-320 — rebuild the sitemap generator with a post-regen crawler that would catch exactly this) was CANCELED on 10 Jul, so this clean-up currently has no owning build ticket. Related and In Progress: HEL-1784 (Michael) removes the English-URL fallback that lets pages exist at addresses that shouldn't be live — one plausible source of the stale entries.",
   finding:"Open. Re-checked 18 Jul: the sitemap now lists 707 addresses and still contains 150 /industry/ entries — the classification sweep hasn't happened. (The trailing-slash sub-issue is fixed separately — PR #2421.)",
   url:"https://www.helloprint.com/en-ie/sitemap_collections_1.xml",
   steps:[
@@ -676,8 +675,8 @@ const TICKETS = [
 {
   id:"WV T2", ws:"Web Vitals", title:"TTFB on category/product pages (498–600ms)", pri:"P0", status:"open", checkKind:"network",
   prs:[["#2602","https://github.com/Helloprint/HelloPrintV4/pull/2602","adjacent perf"],["#2628","https://github.com/Helloprint/HelloPrintV4/pull/2628","adjacent perf"],["#2408","https://github.com/Helloprint/HelloPrintV4/pull/2408","adjacent perf"]],
-  context:"The server takes ~0.5–0.6 seconds to START answering on category/product pages, versus ~0.2s on the homepage. Diagnosis: the delay is one specific step — the price lookup — which runs while everything else waits. That lookup belongs to the pricing system, which was declared off-limits this round, so the item was handed to the pricing team. Three adjacent speed PRs merged since may have already moved the number — worth re-measuring before chasing it.",
-  finding:"Open — owned by the pricing team; their ticket reference/status is unknown to us (see missing-context list). Re-measure first: the fix may partially exist already.",
+  context:"The server takes ~0.5–0.6 seconds to START answering on category/product pages, versus ~0.2s on the homepage. Diagnosis: the delay is one specific step — the price lookup — which runs while everything else waits (serial instead of parallel). Three adjacent speed PRs merged since the diagnosis (concurrent cache warm #2602, lazy matrix #2628, weight cut #2408) may already have moved the number — re-measure before building anything.",
+  finding:"Open — no handoff; this stays on our board. Next action is simply a re-measurement (steps below); if still slow, the fix is making the price lookup non-blocking in the page build.",
   url:"https://www.helloprint.com/en-ie/brochure-and-booklet-printing",
   steps:[
     "Open the category link above → <b>Tool B</b> (Network tab) → reload",
@@ -715,8 +714,8 @@ const TICKETS = [
 },
 {
   id:"HEL-PL1–PL4", ws:"PLP Crawlability", title:"PLP product-link crawlability, grid count, pagination", pri:"P0", status:"open", checkKind:"source",
-  prs:[["review Jul 2","https://github.com/Helloprint/HelloPrintV4","critical review done"]],
-  context:"Category pages currently hide most of the catalogue from Google, three ways at once: (PL1) product cards aren't real links — they're click-handlers (<code>data-pdp-href</code>) Google doesn't follow; (PL2) the grid shows only 12 products although the content system says 48; (PL3) there is no crawlable pagination, so products beyond the grid are unreachable (the agreed scheme is path-based: /page/2, /page/3…); (PL4) is the verification sweep across all category templates once PL1–3 land. Review flags to respect during the build: don't nest buttons inside links (accessibility hazard); PL2 alone is NOT enough (48 of 95 products still hidden without PL3); /page/1 must redirect to the base page; out-of-range pages must return 'not found'; and the sitemap strategy for paginated pages still needs defining. Reviewed 2 July; none of it is implemented.",
+  prs:[["HEL-318","https://linear.app/helloprint/issue/HEL-318","PLP epic (parent)"],["HEL-1141","https://linear.app/helloprint/issue/HEL-1141","FLP filter engine · Done Jul 16"],["HEL-329","https://linear.app/helloprint/issue/HEL-329","PLP grid build · CANCELED Jul 10"]],
+  context:"Category pages currently hide most of the catalogue from Google, three ways at once: (PL1) product cards aren't real links — they're click-handlers (<code>data-pdp-href</code>) Google doesn't follow; (PL2) the grid shows only 12 products although the content system says 48; (PL3) there is no crawlable pagination, so products beyond the grid are unreachable (the agreed scheme is path-based: /page/2, /page/3…); (PL4) is the verification sweep across all category templates once PL1–3 land. Review flags to respect during the build: don't nest buttons inside links (accessibility hazard); PL2 alone is NOT enough (48 of 95 products still hidden without PL3); /page/1 must redirect to the base page; out-of-range pages must return 'not found'; and the sitemap strategy for paginated pages still needs defining. Reviewed 2 July; none of it is implemented. Linear context: these live under the PLP epic HEL-318. The FLP sibling (HEL-1141 — SSR-crawlable facets + pagination for filter pages) was completed 16 Jul, so the pattern exists in the codebase; the PLP grid build ticket (HEL-329) was CANCELED 10 Jul and needs re-raising for PL1–PL3.",
   finding:"Open — none implemented. Verified current state: cards still use data-pdp-href, grid still shows 12, no /page/2 links exist.",
   url:"https://www.helloprint.com/en-ie/brochure-and-booklet-printing",
   steps:[
@@ -730,8 +729,8 @@ const TICKETS = [
 },
 {
   id:"HEL-IMG1/IMG2", ws:"Images", title:"Image loading priority + responsive srcset", pri:"P1", status:"open", checkKind:"source",
-  prs:[["review Jul 2","https://github.com/Helloprint/HelloPrintV4","critical review done"]],
-  context:"Two image-delivery improvements, reviewed 2 July, not implemented: (IMG1) the main product photo — the biggest thing on screen — should be marked 'download me first' (<code>fetchpriority=\"high\"</code>) so the page's hero doesn't dawdle behind less important files; (IMG2) images should offer multiple sizes (<code>srcset</code>) so a phone downloads a phone-sized photo instead of a desktop-sized one.",
+  prs:[["HEL-329","https://linear.app/helloprint/issue/HEL-329","Linear counterpart · CANCELED Jul 10"]],
+  context:"Two image-delivery improvements, reviewed 2 July, not implemented: (IMG1) the main product photo — the biggest thing on screen — should be marked 'download me first' (<code>fetchpriority=\"high\"</code>) so the page's hero doesn't dawdle behind less important files; (IMG2) images should offer multiple sizes (<code>srcset</code>) so a phone downloads a phone-sized photo instead of a desktop-sized one. Linear context: the counterpart build ticket (HEL-329 — PLP grid image pipeline incl. fetchpriority + CLS) was CANCELED 10 Jul — needs re-raising.",
   finding:"Open — neither implemented on product pages.",
   url:"https://www.helloprint.com/en-ie/standardflyers",
   steps:[
